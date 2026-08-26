@@ -80,6 +80,9 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .monthMeta .prof{font-size:11px;color:var(--muted);margin-top:5px}
 .matchLine{margin-top:8px;display:flex;align-items:center;gap:7px;font-size:11px;background:rgba(30,107,30,.22);border:1px solid rgba(30,107,30,.55);border-radius:8px;padding:5px 8px}
 .matchLine.none{background:none;border-style:dashed;border-color:var(--line);color:var(--muted)}
+.extRow{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
+.matchLineSm{display:flex;align-items:center;gap:4px;font-size:9px;line-height:1.3;border-radius:6px;padding:2px 6px;border:1px solid;flex:1;min-width:120px}
+.matchLineSm b{font-size:9px}
 .gaugesBox{background:var(--panel);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px 4px}
 .miniBars{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;align-items:flex-end;gap:7px;cursor:pointer}
 .miniBars:hover{border-color:var(--accent)}
@@ -580,6 +583,26 @@ const MATCHES=[
 ].sort((a,b)=>a.d.localeCompare(b.d));
 const COMP_LABEL={n2:'N2',ce:'Challenge Espoirs',amical:'Amical'};
 const COMP_COLOR={n2:'#1e6b1e',ce:'#8b7bff',amical:'#6E6880'};
+const EXT_LABEL={l1:'Ligue 1',cdf:'Coupe de France',u18r1:'U18 Régional 1',gamb:'Gambardella'};
+const EXT_TEAM_COLOR={pro:'var(--warn)',u18:'var(--info)'};
+let EXT_MATCHES={pro:[],u18:[]};
+async function loadExtMatches(){
+  const {data,error}=await supa.from('external_matches').select('*').order('date');
+  if(error){console.error(error);return;}
+  EXT_MATCHES={pro:[],u18:[]};
+  (data||[]).forEach(m=>{(EXT_MATCHES[m.team]??=[]).push(m);});
+}
+function extMatchesForWeek(team,w){
+  const d0=iso(w.days[0]),d1=iso(w.days[6]);
+  return (EXT_MATCHES[team]||[]).filter(m=>m.date>=d0&&m.date<=d1);
+}
+function extMatchCardHTML(team,w){
+  const label=team==='pro'?'Pro':'U18',color=EXT_TEAM_COLOR[team];
+  const ms=extMatchesForWeek(team,w);
+  if(!ms.length)return'';
+  return ms.map(m=>`<div class="matchLineSm" style="background:${color}22;border-color:${color};color:${color}">
+    <b>${label}</b>&nbsp;· ${EXT_LABEL[m.comp]||m.comp} · ${m.dom?'🏠':'✈️'} ${m.opponent}${m.time?' — '+m.time:''}</div>`).join('');
+}
 function compOf(m){return m.comp||'n2'}
 function matchTime(m){return m.time||'18:00'}
 function matchTimeLabel(m){return m.time?m.time:'18h00 (à confirmer)'}
@@ -778,6 +801,7 @@ async function afterLogin(user){
     await loadIndiv();
     await loadSeances();
     await loadGauges();
+    await loadExtMatches();
   }catch(e){
     document.getElementById('loadingScreen').classList.remove('on');
     document.getElementById('loginScreen').style.display='flex';
@@ -846,6 +870,7 @@ function renderMonth(){
           <div class="wk">Semaine ${w.n}</div><div class="rng">${fmtD(w.days[0])} – ${fmtD(w.days[6])}</div>
           <div class="prof">${w.n===5?'Décharge (2-4) · fin de préparation':(w.matches&&w.matches.length>1)?'⚠️ Double match cette semaine':w.match?'Normale (1-5)':'Cycle long (sans match)'}</div>
           ${matchHTML}
+          <div class="extRow">${extMatchCardHTML('pro',w)}${extMatchCardHTML('u18',w)}</div>
         </div>
         <div class="gaugesBox">${gaugeSVGManual(w.n,'coeur','❤️')}${gaugeSVGManual(w.n,'sprint','⚡')}</div>
         <div class="miniBars" onclick="setWeek(${w.n});goTab('semaine')">${bars}</div>
