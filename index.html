@@ -1316,7 +1316,7 @@ async function uploadPlayerPhoto(ev,id){
     // 900px suffit largement pour une carte joueur (même en écran très large), quel que soit le poids d'origine
     ({blob,ext}=await compressImage(file,900,.85));
   }catch(e){alert('Erreur de compression : '+e.message);return;}
-  const path=`${id}-${Date.now()}.${ext}`;
+  const path=`${slugify(id)||'joueur'}-${Date.now()}.${ext}`;
   const {error}=await supa.storage.from('player-photos').upload(path,blob,{upsert:true});
   if(error){alert('Erreur d\'envoi de la photo : '+error.message);return;}
   const oldPath=(IPLAYERS.find(x=>x.id===id)||{}).photo_path;
@@ -1326,9 +1326,12 @@ async function uploadPlayerPhoto(ev,id){
   if(oldPath)supa.storage.from('player-photos').remove([oldPath]);
   renderPlayers();
 }
+function slugify(s){
+  return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
 function addPlayer(){
   const name=prompt('Nom du joueur à ajouter (ex : P. Nom) :'); if(!name||!name.trim())return;
-  const base=name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  const base=slugify(name);
   const id=base+'-'+Math.random().toString(36).slice(2,6);
   const row={id,name:name.trim(),statut:'V?',zones:[],contra:{},actif:true,dispo:true,affectation:null};
   supa.from('indiv_players').insert(row).then(({error})=>{
