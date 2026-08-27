@@ -72,13 +72,14 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .boardItem .boardCheck{margin-right:6px}
 .boardAssign{display:inline-block;padding:1px 6px;border-radius:6px;background:rgba(255,255,255,.08);font-size:10px}
 :root{--julien:#22c1c3;--pierrick:#f2a94c}
-.boardSub{display:none}
-.boardSub.on{display:block}
+.boardSection{margin-bottom:32px}
+.boardSectionTitle{font-size:15px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 .btn.ghost{background:transparent;border:1px solid var(--line);margin-top:6px}
 .boardItem.urgent{border-color:#ff5c5c;box-shadow:0 0 0 1px #ff5c5c33}
 .boardItem .pin{margin-right:4px}
 .boardSeen{cursor:pointer;font-size:11px;opacity:.6;background:none;border:none;color:inherit;padding:0}
 .boardSeen.active{opacity:1;color:#8cff66}
+.boardPlayerTag{display:inline-block;padding:2px 8px;border-radius:6px;background:#8b7bff;color:#fff;font-weight:700;font-size:11px;margin-right:6px}
 .agendaLegend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:12px;font-size:12px}
 .agendaLegend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
 .agendaGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
@@ -398,73 +399,10 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <h2>Board</h2>
     <span class="tag live" id="boardSyncTag">Synchronisé en temps réel</span>
   </div>
-  <p class="note" style="margin-bottom:6px">Communication rapide entre Pierrick et Julien — planning ponctuel, missions entre vous, informations à passer.</p>
+  <p class="note" style="margin-bottom:16px">Communication rapide entre Pierrick et Julien — agenda de la semaine, notes générales, informations par joueur.</p>
 
-  <nav class="tabs" id="boardSubTabs" style="margin-bottom:14px">
-    <button data-bt="notes" class="on" onclick="boardSubTab('notes')">Notes</button>
-    <button data-bt="agenda" onclick="boardSubTab('agenda')">Agenda de la semaine</button>
-    <button data-bt="joueurs" onclick="boardSubTab('joueurs')">Infos joueurs</button>
-  </nav>
-
-  <div class="boardSub on" id="boardSub-notes">
-  <div class="boardCols">
-
-    <div class="boardCol">
-      <div class="boardColHead"><span class="dot" style="background:#f2dfae"></span>📅 Planning</div>
-      <div class="boardForm">
-        <textarea id="boardInput-planning" placeholder="Ex : jeudi je pars plus tôt de l'entraînement"></textarea>
-        <div class="row">
-          <input type="date" id="boardDate-planning" title="Date associée (optionnel)">
-          <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardUrgent-planning"> Urgent</label>
-          <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardPin-planning"> 📌 Fixer (intemporel)</label>
-        </div>
-        <button class="btn" onclick="addBoardItem('planning')">Ajouter</button>
-      </div>
-      <div class="boardList" id="boardList-planning"></div>
-      <button class="btn ghost" style="font-size:11px" onclick="toggleArchive('planning')" id="archBtn-planning">Voir les archivées</button>
-    </div>
-
-    <div class="boardCol">
-      <div class="boardColHead"><span class="dot" style="background:#2438f0"></span>✅ Missions entre nous</div>
-      <div class="boardForm">
-        <textarea id="boardInput-mission" placeholder="Ex : envoyer le rapport GPS à Julien"></textarea>
-        <div class="row">
-          <select id="boardAssign-mission">
-            <option value="">Assigné à —</option>
-            <option value="Pierrick">Pierrick</option>
-            <option value="Julien">Julien</option>
-          </select>
-          <input type="date" id="boardDue-mission" title="Échéance (optionnel)">
-        </div>
-        <div class="row">
-          <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardUrgent-mission"> Urgent</label>
-          <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardPin-mission"> 📌 Fixer (intemporel)</label>
-        </div>
-        <button class="btn" onclick="addBoardItem('mission')">Ajouter</button>
-      </div>
-      <div class="boardList" id="boardList-mission"></div>
-      <button class="btn ghost" style="font-size:11px" onclick="toggleArchive('mission')" id="archBtn-mission">Voir les archivées</button>
-    </div>
-
-    <div class="boardCol">
-      <div class="boardColHead"><span class="dot" style="background:#4caf50"></span>💬 Informations</div>
-      <div class="boardForm">
-        <textarea id="boardInput-info" placeholder="Ex : le kiné ne sera pas là mercredi"></textarea>
-        <div class="row">
-          <input type="date" id="boardDate-info" title="Date associée (optionnel)">
-          <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardUrgent-info"> Urgent</label>
-          <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardPin-info"> 📌 Fixer (intemporel)</label>
-        </div>
-        <button class="btn" onclick="addBoardItem('info')">Ajouter</button>
-      </div>
-      <div class="boardList" id="boardList-info"></div>
-      <button class="btn ghost" style="font-size:11px" onclick="toggleArchive('info')" id="archBtn-info">Voir les archivées</button>
-    </div>
-
-  </div>
-  </div>
-
-  <div class="boardSub" id="boardSub-agenda">
+  <div class="boardSection">
+    <h3 class="boardSectionTitle">📆 Planning Julien + Pierrick</h3>
     <div class="weekCtrls">
       <label class="note">Semaine :</label>
       <select id="agendaWeekSel" onchange="renderAgenda(parseInt(this.value))"></select>
@@ -478,13 +416,72 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="agendaGrid" id="agendaGrid"></div>
   </div>
 
-  <div class="boardSub" id="boardSub-joueurs">
-    <div class="weekCtrls">
-      <label class="note">Joueur :</label>
-      <select id="playerInfoSel" onchange="renderPlayerInfos()"></select>
+  <div class="boardSection">
+    <h3 class="boardSectionTitle">💬 Notes générales</h3>
+    <div class="boardCols">
+
+      <div class="boardCol">
+        <div class="boardColHead"><span class="dot" style="background:#f2dfae"></span>📅 Planning</div>
+        <div class="boardForm">
+          <textarea id="boardInput-planning" placeholder="Ex : jeudi je pars plus tôt de l'entraînement"></textarea>
+          <div class="row">
+            <input type="date" id="boardDate-planning" title="Date associée (optionnel)">
+            <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardUrgent-planning"> Urgent</label>
+            <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardPin-planning"> 📌 Fixer (intemporel)</label>
+          </div>
+          <button class="btn" onclick="addBoardItem('planning')">Ajouter</button>
+        </div>
+        <div class="boardList" id="boardList-planning"></div>
+        <button class="btn ghost" style="font-size:11px" onclick="toggleArchive('planning')" id="archBtn-planning">Voir les archivées</button>
+      </div>
+
+      <div class="boardCol">
+        <div class="boardColHead"><span class="dot" style="background:#2438f0"></span>✅ Missions entre nous</div>
+        <div class="boardForm">
+          <textarea id="boardInput-mission" placeholder="Ex : envoyer le rapport GPS à Julien"></textarea>
+          <div class="row">
+            <select id="boardAssign-mission">
+              <option value="">Assigné à —</option>
+              <option value="Pierrick">Pierrick</option>
+              <option value="Julien">Julien</option>
+            </select>
+            <input type="date" id="boardDue-mission" title="Échéance (optionnel)">
+          </div>
+          <div class="row">
+            <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardUrgent-mission"> Urgent</label>
+            <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardPin-mission"> 📌 Fixer (intemporel)</label>
+          </div>
+          <button class="btn" onclick="addBoardItem('mission')">Ajouter</button>
+        </div>
+        <div class="boardList" id="boardList-mission"></div>
+        <button class="btn ghost" style="font-size:11px" onclick="toggleArchive('mission')" id="archBtn-mission">Voir les archivées</button>
+      </div>
+
+      <div class="boardCol">
+        <div class="boardColHead"><span class="dot" style="background:#4caf50"></span>💬 Informations</div>
+        <div class="boardForm">
+          <textarea id="boardInput-info" placeholder="Ex : le kiné ne sera pas là mercredi"></textarea>
+          <div class="row">
+            <input type="date" id="boardDate-info" title="Date associée (optionnel)">
+            <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardUrgent-info"> Urgent</label>
+            <label class="note" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="boardPin-info"> 📌 Fixer (intemporel)</label>
+          </div>
+          <button class="btn" onclick="addBoardItem('info')">Ajouter</button>
+        </div>
+        <div class="boardList" id="boardList-info"></div>
+        <button class="btn ghost" style="font-size:11px" onclick="toggleArchive('info')" id="archBtn-info">Voir les archivées</button>
+      </div>
+
     </div>
-    <div id="playerInfoBox" class="boardCol" style="display:none;max-width:520px">
+  </div>
+
+  <div class="boardSection">
+    <h3 class="boardSectionTitle">🧑‍🤝‍🧑 Notes joueurs</h3>
+    <div class="boardCol" style="max-width:560px;margin-bottom:16px">
       <div class="boardForm">
+        <select id="playerNoteSel">
+          <option value="">— Choisir un joueur —</option>
+        </select>
         <textarea id="boardInput-player" placeholder="Info à transmettre sur ce joueur"></textarea>
         <div class="row">
           <input type="date" id="boardDate-player" title="Date associée (optionnel)">
@@ -493,8 +490,8 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
         </div>
         <button class="btn" onclick="addBoardItem('player')">Envoyer</button>
       </div>
-      <div class="boardList" id="boardList-player"></div>
     </div>
+    <div class="boardList" id="boardList-player" style="max-width:720px"></div>
   </div>
 
 </section>
@@ -673,7 +670,6 @@ let CURRENT_USER_LABEL='';
 let BOARD_ARCH_SHOWN={planning:false,mission:false,info:false};
 let BOARD_PRESENCE=[];
 let currentAgendaWeek=null;
-let currentPlayerInfoId=null;
 
 /* ═══════ TYPES DE SÉANCE (planning, statique) ═══════ */
 const SEANCE_TYPES=[
@@ -753,12 +749,7 @@ async function loadBoard(){
   BOARD_ITEMS=items||[];
   BOARD_PRESENCE=pres||[];
 }
-function boardSubTab(name){
-  document.querySelectorAll('#boardSubTabs button').forEach(b=>b.classList.toggle('on',b.dataset.bt===name));
-  document.querySelectorAll('.boardSub').forEach(s=>s.classList.toggle('on',s.id==='boardSub-'+name));
-  if(name==='agenda')fillAgendaWeekSel();
-  if(name==='joueurs')fillPlayerInfoSel();
-}
+function playerName(id){const p=IPLAYERS.find(p=>p.id===id);return p?p.name:'?';}
 function isArchived(i){
   if(i.pinned)return false;
   if(i.due_date)return new Date(i.due_date+'T23:59:59')<new Date();
@@ -769,13 +760,14 @@ function renderBoardItemHTML(i){
   const date=new Date(i.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
   const check=cat==='mission'?`<input type="checkbox" class="boardCheck" ${i.done?'checked':''} onchange="toggleMissionDone('${i.id}',this.checked)">`:'';
   const assign=(cat==='mission'&&i.assigned_to)?`<span class="boardAssign">→ ${i.assigned_to}</span>`:'';
+  const playerTag=cat==='player'?`<span class="boardPlayerTag">${playerName(i.player_id)}</span>`:'';
   const due=i.due_date?` · ${new Date(i.due_date+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}`:'';
   const seenArr=i.seen_by||[];
   const seenHas=seenArr.includes(CURRENT_USER_LABEL);
   const seenTitle=seenArr.length?('Vu par '+seenArr.join(', ')):'Marquer comme vu';
   return `<div class="boardItem${i.done?' done':''}${i.urgent?' urgent':''}">
     <button class="boardDel" onclick="deleteBoardItem('${i.id}')" title="Supprimer">✕</button>
-    <div>${i.pinned?'<span class="pin">📌</span>':''}${check}<span class="boardContent">${(i.content||'').replace(/</g,'&lt;')}</span></div>
+    <div>${i.pinned?'<span class="pin">📌</span>':''}${playerTag}${check}<span class="boardContent">${(i.content||'').replace(/</g,'&lt;')}</span></div>
     <div class="boardMeta">
       <span>${i.author||'?'} · ${date}${due}${i.urgent?' · 🔴 urgent':''}</span>
       <span>${assign}<button class="boardSeen${seenHas?' active':''}" onclick="toggleSeen('${i.id}')" title="${seenTitle}">👍${seenArr.length?' '+seenArr.length:''}</button></span>
@@ -792,14 +784,27 @@ function renderBoard(){
     if(archBtn)archBtn.textContent=showArch?'Masquer les archivées':'Voir les archivées';
     box.innerHTML=items.length?items.map(renderBoardItemHTML).join(''):'<div class="note">Rien pour l\'instant.</div>';
   });
-  renderPlayerInfos();
+  renderPlayerNotes();
+}
+function renderPlayerNotes(){
+  const box=document.getElementById('boardList-player');
+  if(!box)return;
+  // Toujours toutes visibles, quel que soit le joueur choisi dans le formulaire —
+  // corrige le bug où les notes disparaissaient sans sélection.
+  const items=BOARD_ITEMS.filter(i=>i.category==='player')
+    .sort((a,b)=>(b.pinned-a.pinned)||(new Date(b.created_at)-new Date(a.created_at)));
+  box.innerHTML=items.length?items.map(renderBoardItemHTML).join(''):'<div class="note">Rien pour l\'instant.</div>';
 }
 function toggleArchive(cat){BOARD_ARCH_SHOWN[cat]=!BOARD_ARCH_SHOWN[cat];renderBoard();}
 async function addBoardItem(cat){
   const ta=document.getElementById('boardInput-'+cat);
   const content=ta.value.trim();
   if(!content)return;
-  if(cat==='player'&&!currentPlayerInfoId)return;
+  let playerId=null;
+  if(cat==='player'){
+    playerId=document.getElementById('playerNoteSel').value;
+    if(!playerId){alert('Choisis un joueur avant d\'envoyer.');return;}
+  }
   const row={category:cat,content,author:CURRENT_USER_LABEL};
   const urgentEl=document.getElementById('boardUrgent-'+cat);
   const pinEl=document.getElementById('boardPin-'+cat);
@@ -811,7 +816,7 @@ async function addBoardItem(cat){
     const a=document.getElementById('boardAssign-mission').value;
     if(a)row.assigned_to=a;
   }
-  if(cat==='player')row.player_id=currentPlayerInfoId;
+  if(cat==='player')row.player_id=playerId;
   const {error}=await supa.from('board_items').insert(row);
   if(error){console.error(error);alert('Erreur d\'enregistrement : '+error.message);return;}
   ta.value='';
@@ -819,6 +824,7 @@ async function addBoardItem(cat){
   if(pinEl)pinEl.checked=false;
   if(dateEl)dateEl.value='';
   if(cat==='mission')document.getElementById('boardAssign-mission').value='';
+  if(cat==='player')document.getElementById('playerNoteSel').value='';
 }
 async function toggleMissionDone(id,done){
   const {error}=await supa.from('board_items').update({done}).eq('id',id);
@@ -889,27 +895,13 @@ async function cycleSlotPresence(weekN,dayI,blockIdx){
   if(error){console.error(error);alert('Erreur : '+error.message);}
 }
 
-/* ─── Infos joueurs ─── */
-function fillPlayerInfoSel(){
-  const sel=document.getElementById('playerInfoSel');
+/* ─── Notes joueurs ─── */
+function fillPlayerNoteSel(){
+  const sel=document.getElementById('playerNoteSel');
+  if(!sel)return;
   sel.innerHTML='<option value="">— Choisir un joueur —</option>'+
     [...IPLAYERS].filter(p=>p.actif!==false).sort((a,b)=>(a.name||'').localeCompare(b.name||''))
       .map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-  sel.value=currentPlayerInfoId||'';
-  renderPlayerInfos();
-}
-function renderPlayerInfos(){
-  const sel=document.getElementById('playerInfoSel');
-  if(!sel)return;
-  currentPlayerInfoId=sel.value||null;
-  const wrap=document.getElementById('playerInfoBox');
-  if(!wrap)return;
-  if(!currentPlayerInfoId){wrap.style.display='none';return;}
-  wrap.style.display='flex';
-  const box=document.getElementById('boardList-player');
-  const items=BOARD_ITEMS.filter(i=>i.category==='player'&&i.player_id===currentPlayerInfoId)
-    .sort((a,b)=>(b.pinned-a.pinned)||(new Date(b.created_at)-new Date(a.created_at)));
-  box.innerHTML=items.length?items.map(renderBoardItemHTML).join(''):'<div class="note">Rien pour l\'instant sur ce joueur.</div>';
 }
 
 function setupBoardRealtime(){
@@ -1159,7 +1151,7 @@ async function afterLogin(user){
   const JOURS_L=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
   document.getElementById('headerDate').textContent=`N2 Poule A — Saison 2026/27 · ${JOURS_L[TODAY.getDay()]} ${TODAY.getDate()} ${MOIS[TODAY.getMonth()]} ${TODAY.getFullYear()}`;
   try{
-    fillWeekSel();renderWeek();renderMonth();renderSeances();renderPlayers();renderTypes();renderLogos();renderIndiv();initLogoZone();renderBoard();setupBoardRealtime();
+    fillWeekSel();renderWeek();renderMonth();renderSeances();renderPlayers();renderTypes();renderLogos();renderIndiv();initLogoZone();fillAgendaWeekSel();fillPlayerNoteSel();renderBoard();setupBoardRealtime();
   }catch(e){
     document.getElementById('app').innerHTML='<div style="padding:40px;color:#ff6b6b;font-family:monospace">Erreur d\'affichage : '+e.message+'<br><br>Envoie ce message tel quel pour que je corrige.</div>';
     console.error(e);
