@@ -88,7 +88,6 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .agendaRepos{font-size:11px;opacity:.5;text-align:center;padding:10px 0}
 .agendaSlot{border-radius:8px;padding:6px;font-size:10px;cursor:pointer;text-align:center;background:rgba(255,255,255,.06);border:1px solid var(--line);user-select:none}
 .agendaSlot .who{font-size:9px;opacity:.8;display:block;margin-top:2px}
-.agendaJulienAbs{font-size:9px;text-decoration:underline;opacity:.6;text-align:center;cursor:pointer;margin-top:2px}
 @media (max-width:900px){.agendaGrid{grid-template-columns:repeat(2,1fr)}}
 .rowHead{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 .rowHead h2{font-size:16px}
@@ -474,7 +473,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <span><span class="dot" style="background:var(--julien)"></span> Julien</span>
       <span><span class="dot" style="background:var(--pierrick)"></span> Pierrick</span>
       <span><span class="dot" style="background:linear-gradient(90deg,var(--julien),var(--pierrick))"></span> Les deux</span>
-      <span class="note">Clic sur une case = te positionner (Pierrick). Julien présent par défaut sur toutes les cases d'un jour d'entraînement, sauf marquage "absent".</span>
+      <span class="note">Clic sur une séance : Julien → Julien + Pierrick → Pierrick seul → (nouveau clic) retour à Julien. Les séances affichées sont celles réellement planifiées dans Planification semaine.</span>
     </div>
     <div class="agendaGrid" id="agendaGrid"></div>
   </div>
@@ -484,8 +483,8 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <label class="note">Joueur :</label>
       <select id="playerInfoSel" onchange="renderPlayerInfos()"></select>
     </div>
-    <div id="playerInfoBox" style="display:none">
-      <div class="boardForm" style="max-width:520px;margin-bottom:14px">
+    <div id="playerInfoBox" class="boardCol" style="display:none;max-width:520px">
+      <div class="boardForm">
         <textarea id="boardInput-player" placeholder="Info à transmettre sur ce joueur"></textarea>
         <div class="row">
           <input type="date" id="boardDate-player" title="Date associée (optionnel)">
@@ -494,7 +493,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
         </div>
         <button class="btn" onclick="addBoardItem('player')">Envoyer</button>
       </div>
-      <div class="boardList" id="boardList-player" style="max-width:520px"></div>
+      <div class="boardList" id="boardList-player"></div>
     </div>
   </div>
 
@@ -675,7 +674,6 @@ let BOARD_ARCH_SHOWN={planning:false,mission:false,info:false};
 let BOARD_PRESENCE=[];
 let currentAgendaWeek=null;
 let currentPlayerInfoId=null;
-const AGENDA_SLOTS=[{k:'matin',label:'Matin (10h30-12h)'},{k:'muscu_midi',label:'Muscu (12h-12h30)'},{k:'muscu_pm',label:'Muscu PM (14h-15h)'}];
 
 /* ═══════ TYPES DE SÉANCE (planning, statique) ═══════ */
 const SEANCE_TYPES=[
@@ -850,8 +848,8 @@ function fillAgendaWeekSel(){
   sel.value=currentAgendaWeek;
   renderAgenda(currentAgendaWeek);
 }
-function presenceFor(weekN,dayI,slot){
-  const row=BOARD_PRESENCE.find(p=>p.week_n===weekN&&p.day_i===dayI&&p.slot===slot);
+function presenceFor(weekN,dayI,blockIdx){
+  const row=BOARD_PRESENCE.find(p=>p.week_n===weekN&&p.day_i===dayI&&p.block_index===blockIdx);
   return row?{pierrick:row.pierrick,julien:row.julien}:{pierrick:false,julien:true};
 }
 function renderAgenda(weekN){
@@ -860,41 +858,35 @@ function renderAgenda(weekN){
   if(!wk)return;
   const box=document.getElementById('agendaGrid');
   box.innerHTML=wk.days.map((d,i)=>{
-    const tKey=WEEK_TYPES[weekN][i],T=TYPES[tKey];
     const isToday=iso(d)===iso(TODAY);
-    if(T.repos){
-      return `<div class="agendaDay${isToday?' today':''}"><div class="agendaDayLabel">${DAYN[i]} ${d.getDate()}</div><div class="agendaRepos">😴 Repos</div></div>`;
+    const blocks=blocksFor(wk,i);
+    const seances=blocks.map((b,bi)=>({b,bi})).filter(x=>x.b.kind==='seance');
+    if(!seances.length){
+      return `<div class="agendaDay${isToday?' today':''}"><div class="agendaDayLabel">${DAYN[i]} ${d.getDate()}</div><div class="agendaRepos">${TYPES[WEEK_TYPES[weekN][i]]?.repos?'😴 Repos':'Pas de séance'}</div></div>`;
     }
-    const slotsHTML=AGENDA_SLOTS.map(s=>{
-      const p=presenceFor(weekN,i,s.k);
+    const slotsHTML=seances.map(({b,bi})=>{
+      const p=presenceFor(weekN,i,bi);
       let bg='rgba(255,255,255,.06)',who='';
       if(p.pierrick&&p.julien){bg='linear-gradient(90deg,var(--julien),var(--pierrick))';who='Julien + Pierrick';}
       else if(p.julien){bg='var(--julien)';who='Julien';}
       else if(p.pierrick){bg='var(--pierrick)';who='Pierrick';}
-      return `<div class="agendaSlot" style="background:${bg}" onclick="togglePierrickPresence(${weekN},${i},'${s.k}')" title="Cliquer pour te positionner (Pierrick)">${s.label}${who?`<span class="who">${who}</span>`:''}</div>`;
+      return `<div class="agendaSlot" style="background:${bg}" onclick="cycleSlotPresence(${weekN},${i},${bi})" title="Cliquer pour faire tourner : Julien → Julien+Pierrick → Pierrick seul">${b.ic||''} ${b.n}${b.time?` — ${b.time}`:''}${who?`<span class="who">${who}</span>`:''}</div>`;
     }).join('');
-    const allAbsent=AGENDA_SLOTS.every(s=>!presenceFor(weekN,i,s.k).julien);
     return `<div class="agendaDay${isToday?' today':''}">
       <div class="agendaDayLabel">${DAYN[i]} ${d.getDate()}</div>
       ${slotsHTML}
-      <div class="agendaJulienAbs" onclick="toggleJulienAbsentDay(${weekN},${i})">${allAbsent?'Julien absent (annuler)':'Marquer Julien absent'}</div>
     </div>`;
   }).join('');
 }
-async function togglePierrickPresence(weekN,dayI,slot){
-  const cur=presenceFor(weekN,dayI,slot);
-  const row={week_n:weekN,day_i:dayI,slot,pierrick:!cur.pierrick,julien:cur.julien};
-  const {error}=await supa.from('board_presence').upsert(row,{onConflict:'week_n,day_i,slot'});
+async function cycleSlotPresence(weekN,dayI,blockIdx){
+  const cur=presenceFor(weekN,dayI,blockIdx);
+  let next;
+  if(cur.julien&&!cur.pierrick)next={julien:true,pierrick:true};       // Julien seul → les deux
+  else if(cur.julien&&cur.pierrick)next={julien:false,pierrick:true};  // les deux → Pierrick seul
+  else next={julien:true,pierrick:false};                              // Pierrick seul → retour Julien
+  const row={week_n:weekN,day_i:dayI,block_index:blockIdx,...next};
+  const {error}=await supa.from('board_presence').upsert(row,{onConflict:'week_n,day_i,block_index'});
   if(error){console.error(error);alert('Erreur : '+error.message);}
-}
-async function toggleJulienAbsentDay(weekN,dayI){
-  const allAbsent=AGENDA_SLOTS.every(s=>!presenceFor(weekN,dayI,s.k).julien);
-  for(const s of AGENDA_SLOTS){
-    const cur=presenceFor(weekN,dayI,s.k);
-    const row={week_n:weekN,day_i:dayI,slot:s.k,pierrick:cur.pierrick,julien:allAbsent};
-    const {error}=await supa.from('board_presence').upsert(row,{onConflict:'week_n,day_i,slot'});
-    if(error){console.error(error);alert('Erreur : '+error.message);return;}
-  }
 }
 
 /* ─── Infos joueurs ─── */
@@ -913,7 +905,7 @@ function renderPlayerInfos(){
   const wrap=document.getElementById('playerInfoBox');
   if(!wrap)return;
   if(!currentPlayerInfoId){wrap.style.display='none';return;}
-  wrap.style.display='block';
+  wrap.style.display='flex';
   const box=document.getElementById('boardList-player');
   const items=BOARD_ITEMS.filter(i=>i.category==='player'&&i.player_id===currentPlayerInfoId)
     .sort((a,b)=>(b.pinned-a.pinned)||(new Date(b.created_at)-new Date(a.created_at)));
