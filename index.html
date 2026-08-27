@@ -647,7 +647,8 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
           <option value="mental">Mental</option>
         </select>
         <textarea id="progDescription" placeholder="Description (optionnel)" style="min-height:36px"></textarea>
-        <input type="file" id="progPdfInput" accept="application/pdf">
+        <input type="file" id="progPdfInput" accept="application/pdf,image/png,image/jpeg">
+        <span class="note" style="font-size:11px">PDF, PNG ou JPEG accepté</span>
         <button class="btn" onclick="addProgramme()">Ajouter</button>
       </div>
     </div>
@@ -658,7 +659,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <h3 class="boardSectionTitle">🧩 Reconstruction du programme — <span id="progDetailTitre"></span></h3>
     <button class="btn ghost" onclick="closeProgrammeDetail()">← Retour à la bibliothèque</button>
     <div style="margin:14px 0">
-      <a id="progDetailPdfLink" href="#" target="_blank" class="btn ghost" style="text-decoration:none;display:none">📄 Ouvrir le PDF d'origine</a>
+      <a id="progDetailPdfLink" href="#" target="_blank" class="btn ghost" style="text-decoration:none;display:none">📄 Ouvrir le fichier d'origine</a>
     </div>
     <div class="boardForm" style="max-width:560px;margin-bottom:14px">
       <select id="progAddExSel"><option value="">— Choisir un exercice de la banque —</option></select>
@@ -1046,7 +1047,7 @@ function renderProgList(){
   if(!box)return;
   if(!PROGRAMMES.length){box.innerHTML='<div class="note">Aucun programme pour l\'instant.</div>';return;}
   box.innerHTML=PROGRAMMES.map(p=>{
-    const pdfLink=p.pdf_path?`<a href="${supa.storage.from('programmes').getPublicUrl(p.pdf_path).data.publicUrl}" target="_blank" class="btn ghost" style="text-decoration:none;font-size:11px">📄 PDF</a>`:'';
+    const pdfLink=p.pdf_path?`<a href="${supa.storage.from('programmes').getPublicUrl(p.pdf_path).data.publicUrl}" target="_blank" class="btn ghost" style="text-decoration:none;font-size:11px">📄 Fichier</a>`:'';
     return `<div class="progCard">
       <div>
         <h4>${(p.titre||'').replace(/</g,'&lt;')}</h4>
@@ -1070,11 +1071,23 @@ async function addProgramme(){
   const file=fileEl.files[0];
   let pdf_path=null;
   if(file){
-    if(file.type!=='application/pdf'){alert('Choisis un fichier PDF.');return;}
-    if(file.size>60*1024*1024){alert('PDF trop lourd (60 Mo max).');return;}
-    pdf_path=`${slugify(titre)}-${Date.now()}.pdf`;
-    const {error:upErr}=await supa.storage.from('programmes').upload(pdf_path,file,{upsert:true});
-    if(upErr){alert('Erreur d\'envoi du PDF : '+upErr.message);return;}
+    const isPdf=file.type==='application/pdf';
+    const isImg=file.type==='image/png'||file.type==='image/jpeg';
+    if(!isPdf&&!isImg){alert('Choisis un fichier PDF, PNG ou JPEG.');return;}
+    if(file.size>60*1024*1024){alert('Fichier trop lourd (60 Mo max).');return;}
+    if(isPdf){
+      pdf_path=`${slugify(titre)}-${Date.now()}.pdf`;
+      const {error:upErr}=await supa.storage.from('programmes').upload(pdf_path,file,{upsert:true});
+      if(upErr){alert('Erreur d\'envoi du fichier : '+upErr.message);return;}
+    }else{
+      // 1600px : plus généreux que les photos joueurs, pour garder un texte scanné lisible
+      let blob,ext;
+      try{({blob,ext}=await compressImage(file,1600,.88));}
+      catch(e){alert('Erreur de compression : '+e.message);return;}
+      pdf_path=`${slugify(titre)}-${Date.now()}.${ext}`;
+      const {error:upErr}=await supa.storage.from('programmes').upload(pdf_path,blob,{upsert:true});
+      if(upErr){alert('Erreur d\'envoi du fichier : '+upErr.message);return;}
+    }
   }
   const {error}=await supa.from('programmes').insert({titre,categorie,description,pdf_path,created_by:CURRENT_USER_LABEL});
   if(error){alert('Erreur d\'enregistrement : '+error.message);return;}
