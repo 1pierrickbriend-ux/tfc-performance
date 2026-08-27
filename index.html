@@ -116,13 +116,15 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .progInline h4{font-size:13px;margin-bottom:8px}
 #sheetCanvasWrap{width:100%;max-width:960px;overflow:auto}
 #sheetCanvas{position:relative;width:960px;height:540px;background-size:cover;background-position:center;background-color:#2a1a4a;border-radius:8px;border:1px solid var(--line);user-select:none}
-.sheetItem{position:absolute;width:150px;background:rgba(255,255,255,.95);color:#17122b;border-radius:8px;padding:6px 8px;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.35);cursor:grab;touch-action:none}
-.sheetItem .num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#c0392b;color:#fff;font-weight:800;font-size:10px;margin-right:5px}
-.sheetItem .exName{font-weight:700;display:block;margin-bottom:4px}
+.sheetItem{position:absolute;width:170px;background:rgba(255,255,255,.97);color:#17122b;border-radius:8px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.4);cursor:grab;touch-action:none;font-size:11px}
+.sheetItem .sheetItemImg{width:100%;height:100px;object-fit:cover;display:block;background:#e5e0ee}
+.sheetItem .sheetItemImg.noImg{display:flex;align-items:center;justify-content:center;font-size:26px;color:#a89ecb}
+.sheetItem .sheetItemBody{padding:6px 8px}
+.sheetItem .num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#c0392b;color:#fff;font-weight:800;font-size:10px;margin-bottom:5px;flex:none}
 .sheetItem .sheetFields{display:flex;gap:3px}
 .sheetItem .sheetFields input{width:32px;font-size:10px;padding:1px 2px;border:1px solid #ccc;border-radius:4px;text-align:center}
 .sheetItem .sheetFields label{font-size:8px;opacity:.7;display:block;text-align:center}
-.sheetItem .delSheetItem{position:absolute;top:-6px;right:-6px;width:16px;height:16px;border-radius:50%;background:#c0392b;color:#fff;border:none;font-size:10px;cursor:pointer;line-height:16px}
+.sheetItem .delSheetItem{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:#c0392b;color:#fff;border:none;font-size:10px;cursor:pointer;line-height:18px;z-index:2}
 @media print{
   body *{visibility:hidden}
   #sheetCanvasWrap,#sheetCanvasWrap *{visibility:visible}
@@ -1304,13 +1306,18 @@ function renderSheetCanvas(){
   canvas.innerHTML=sheetLayout.map((it,idx)=>{
     const ex=EXBANK.find(e=>e.id===it.exercise_id);
     const name=ex?ex.nom:'?';
-    return `<div class="sheetItem" data-id="${it.id}" style="left:${it.x}%;top:${it.y}%">
+    const img=ex&&ex.image_path?supa.storage.from('exercise-images').getPublicUrl(ex.image_path).data.publicUrl:null;
+    const imgHtml=img?`<img class="sheetItemImg" src="${img}" draggable="false">`:`<div class="sheetItemImg noImg">🖼</div>`;
+    return `<div class="sheetItem" data-id="${it.id}" style="left:${it.x}%;top:${it.y}%" title="${name.replace(/"/g,'&quot;')}">
       <button class="delSheetItem" onclick="removeSheetItem('${it.id}')">✕</button>
-      <span class="exName"><span class="num">${idx+1}</span>${name.replace(/</g,'&lt;')}</span>
-      <div class="sheetFields">
-        <div><label>Reps</label><input value="${it.reps||''}" oninput="updateSheetField('${it.id}','reps',this.value)"></div>
-        <div><label>Séries</label><input value="${it.series||''}" oninput="updateSheetField('${it.id}','series',this.value)"></div>
-        <div><label>R</label><input value="${it.recup||''}" oninput="updateSheetField('${it.id}','recup',this.value)"></div>
+      ${imgHtml}
+      <div class="sheetItemBody">
+        <span class="num">${idx+1}</span>
+        <div class="sheetFields">
+          <div><label>Reps</label><input value="${it.reps||''}" oninput="updateSheetField('${it.id}','reps',this.value)"></div>
+          <div><label>Séries</label><input value="${it.series||''}" oninput="updateSheetField('${it.id}','series',this.value)"></div>
+          <div><label>R</label><input value="${it.recup||''}" oninput="updateSheetField('${it.id}','recup',this.value)"></div>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -1326,7 +1333,7 @@ function addExerciseToSheet(){
   sheetLayout.push({
     id:'p'+Date.now()+Math.random().toString(36).slice(2,7),
     exercise_id:exId,
-    x:5+(n%5)*18, y:8+Math.floor(n/5)*40,
+    x:Math.min(20+(n%4)*20,78), y:Math.min(10+Math.floor(n/4)*33,80),
     reps:'', series:'', recup:'',
   });
   sel.value='';
