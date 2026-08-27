@@ -1295,6 +1295,7 @@ function closeSheetBuilder(){
   document.getElementById('sheetBuilderSection').style.display='none';
 }
 function renderSheetCanvas(){
+  sheetDrag=null;
   const canvas=document.getElementById('sheetCanvas');
   const bgName=document.getElementById('sheetBgSel').value;
   if(bgName){
@@ -1352,16 +1353,27 @@ function startSheetDrag(e){
   const el=e.currentTarget;
   const canvas=document.getElementById('sheetCanvas');
   const cRect=canvas.getBoundingClientRect();
-  sheetDrag={id:el.dataset.id,cRect};
+  const it=sheetLayout.find(i=>i.id===el.dataset.id);
+  if(!it)return;
+  // point exact où le bloc a été attrapé, pour qu'il suive le curseur
+  // depuis cet endroit précis au lieu de recaler son coin dessus
+  const grabXPct=((e.clientX-cRect.left)/cRect.width)*100-it.x;
+  const grabYPct=((e.clientY-cRect.top)/cRect.height)*100-it.y;
+  sheetDrag={id:el.dataset.id,cRect,grabXPct,grabYPct,startX:e.clientX,startY:e.clientY,moved:false};
   el.setPointerCapture(e.pointerId);
   el.addEventListener('pointermove',onSheetDragMove);
   el.addEventListener('pointerup',endSheetDrag);
 }
 function onSheetDragMove(e){
   if(!sheetDrag)return;
-  const {cRect,id}=sheetDrag;
-  let x=((e.clientX-cRect.left)/cRect.width)*100;
-  let y=((e.clientY-cRect.top)/cRect.height)*100;
+  if(!sheetDrag.moved){
+    // seuil : un simple contact/survol léger ne doit rien déplacer
+    if(Math.hypot(e.clientX-sheetDrag.startX,e.clientY-sheetDrag.startY)<4)return;
+    sheetDrag.moved=true;
+  }
+  const {cRect,id,grabXPct,grabYPct}=sheetDrag;
+  let x=((e.clientX-cRect.left)/cRect.width)*100-grabXPct;
+  let y=((e.clientY-cRect.top)/cRect.height)*100-grabYPct;
   x=Math.max(0,Math.min(92,x)); y=Math.max(0,Math.min(88,y));
   const it=sheetLayout.find(i=>i.id===id);
   if(it){it.x=x;it.y=y;}
