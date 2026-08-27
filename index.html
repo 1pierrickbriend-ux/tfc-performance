@@ -91,6 +91,25 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .agendaSlot{border-radius:8px;padding:6px;font-size:10px;cursor:pointer;text-align:center;background:rgba(255,255,255,.06);border:1px solid var(--line);user-select:none}
 .agendaSlot .who{font-size:9px;opacity:.8;display:block;margin-top:2px}
 @media (max-width:900px){.agendaGrid{grid-template-columns:repeat(2,1fr)}}
+.progCard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.progCard h4{font-size:14px;margin-bottom:2px}
+.progStatus{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.progStatus.pdf_only{background:rgba(255,255,255,.08);color:var(--muted)}
+.progStatus.en_cours{background:rgba(255,180,84,.18);color:var(--warn)}
+.progStatus.structure{background:rgba(79,209,145,.18);color:var(--ok)}
+.progActions{display:flex;gap:8px;align-items:center}
+.exGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.exCard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative}
+.exCard img{width:100%;height:100px;object-fit:cover;display:block}
+.exCard .exBody{padding:8px 10px}
+.exCard h5{font-size:13px;margin-bottom:3px}
+.exCard .exTags{font-size:10px;opacity:.6}
+.exCard .boardDel{position:absolute;top:4px;right:6px}
+.peRow{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.peRow .peName{flex:1;font-weight:600;font-size:13px}
+.peRow .peNotes{font-size:12px;opacity:.7}
+.peRow button{background:none;border:none;color:inherit;cursor:pointer;opacity:.6;font-size:13px}
+.peRow button:hover{opacity:1}
 .rowHead{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 .rowHead h2{font-size:16px}
 .tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--panel3);color:var(--muted)}
@@ -379,6 +398,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   <button data-t="semaine">Planification semaine</button>
   <button data-t="seances">Séances</button>
   <button data-t="indiv">Individualisation</button>
+  <button data-t="programmes">Programmes</button>
   <button data-t="joueurs">Joueurs</button>
   <button data-t="legende">Légende &amp; types</button>
   <button data-t="logos">Logos</button>
@@ -605,6 +625,84 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     </div>
     <div id="indivHisto"></div>
   </div>
+</section>
+
+<section class="view" id="v-programmes">
+  <div class="rowHead">
+    <h2>Programmes</h2>
+  </div>
+  <p class="note" style="margin-bottom:16px">Bibliothèque des programmes d'entraînement (PDF) + banque d'exercices réutilisable, partagées entre Pierrick et Julien.</p>
+
+  <div class="boardSection">
+    <h3 class="boardSectionTitle">📄 Bibliothèque de programmes</h3>
+    <div class="boardCol" style="max-width:560px;margin-bottom:16px">
+      <div class="boardForm">
+        <input type="text" id="progTitre" placeholder="Titre du programme">
+        <select id="progCategorie">
+          <option value="autre">Catégorie —</option>
+          <option value="technique">Technique</option>
+          <option value="tactique">Tactique</option>
+          <option value="physique">Physique</option>
+          <option value="echauffement">Échauffement</option>
+          <option value="mental">Mental</option>
+        </select>
+        <textarea id="progDescription" placeholder="Description (optionnel)" style="min-height:36px"></textarea>
+        <input type="file" id="progPdfInput" accept="application/pdf">
+        <button class="btn" onclick="addProgramme()">Ajouter</button>
+      </div>
+    </div>
+    <div id="progListWrap"></div>
+  </div>
+
+  <div class="boardSection" id="progDetailSection" style="display:none">
+    <h3 class="boardSectionTitle">🧩 Reconstruction du programme — <span id="progDetailTitre"></span></h3>
+    <button class="btn ghost" onclick="closeProgrammeDetail()">← Retour à la bibliothèque</button>
+    <div style="margin:14px 0">
+      <a id="progDetailPdfLink" href="#" target="_blank" class="btn ghost" style="text-decoration:none;display:none">📄 Ouvrir le PDF d'origine</a>
+    </div>
+    <div class="boardForm" style="max-width:560px;margin-bottom:14px">
+      <select id="progAddExSel"><option value="">— Choisir un exercice de la banque —</option></select>
+      <input type="text" id="progAddExLibre" placeholder="…ou nom libre si pas encore dans la banque">
+      <textarea id="progAddExNotes" placeholder="Notes spécifiques à ce programme (optionnel)" style="min-height:36px"></textarea>
+      <button class="btn" onclick="addExerciseToProgramme()">Ajouter à ce programme</button>
+    </div>
+    <div id="progExList"></div>
+    <button class="btn" style="margin-top:14px" onclick="markProgrammeStructured()">✅ Marquer comme entièrement reconstruit</button>
+  </div>
+
+  <div class="boardSection">
+    <h3 class="boardSectionTitle">🗂️ Banque d'exercices</h3>
+    <div class="boardCol" style="max-width:560px;margin-bottom:16px">
+      <div class="boardForm">
+        <input type="text" id="exNom" placeholder="Nom de l'exercice">
+        <select id="exCategorie">
+          <option value="autre">Catégorie —</option>
+          <option value="technique">Technique</option>
+          <option value="tactique">Tactique</option>
+          <option value="physique">Physique</option>
+          <option value="echauffement">Échauffement</option>
+          <option value="mental">Mental</option>
+        </select>
+        <textarea id="exDescription" placeholder="Description (optionnel)" style="min-height:36px"></textarea>
+        <input type="text" id="exTags" placeholder="Tags séparés par une virgule (optionnel)">
+        <input type="file" id="exImageInput" accept="image/*">
+        <button class="btn" onclick="addExercise()">Ajouter à la banque</button>
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:10px;gap:8px">
+      <select id="exFilterCat" onchange="renderExerciseBank()">
+        <option value="">Toutes catégories</option>
+        <option value="technique">Technique</option>
+        <option value="tactique">Tactique</option>
+        <option value="physique">Physique</option>
+        <option value="echauffement">Échauffement</option>
+        <option value="mental">Mental</option>
+      </select>
+      <input type="text" id="exSearch" placeholder="Recherche (nom ou tag)" oninput="renderExerciseBank()">
+    </div>
+    <div class="exGrid" id="exBankGrid"></div>
+  </div>
+
 </section>
 
 <section class="view" id="v-joueurs">
@@ -923,6 +1021,232 @@ function setupBoardRealtime(){
     })
     .subscribe();
 }
+
+/* ═══════ PROGRAMMES + BANQUE D'EXERCICES ═══════ */
+let PROGRAMMES=[], EXBANK=[], PROG_EX=[], currentProgId=null;
+const CAT_LABEL={technique:'Technique',tactique:'Tactique',physique:'Physique',echauffement:'Échauffement',mental:'Mental',autre:'Autre'};
+const STATUS_LABEL={pdf_only:'PDF seul',en_cours:'En reconstruction',structure:'Structuré'};
+
+async function loadProgrammes(){
+  const [{data:pr,error:e1},{data:ex,error:e2}]=await Promise.all([
+    supa.from('programmes').select('*').order('created_at',{ascending:false}),
+    supa.from('exercise_bank').select('*').order('nom'),
+  ]);
+  if(e1)console.error(e1);
+  if(e2)console.error(e2);
+  PROGRAMMES=pr||[];
+  EXBANK=ex||[];
+}
+function renderProgrammes(){
+  renderProgList();
+  renderExerciseBank();
+}
+function renderProgList(){
+  const box=document.getElementById('progListWrap');
+  if(!box)return;
+  if(!PROGRAMMES.length){box.innerHTML='<div class="note">Aucun programme pour l\'instant.</div>';return;}
+  box.innerHTML=PROGRAMMES.map(p=>{
+    const pdfLink=p.pdf_path?`<a href="${supa.storage.from('programmes').getPublicUrl(p.pdf_path).data.publicUrl}" target="_blank" class="btn ghost" style="text-decoration:none;font-size:11px">📄 PDF</a>`:'';
+    return `<div class="progCard">
+      <div>
+        <h4>${(p.titre||'').replace(/</g,'&lt;')}</h4>
+        <span class="progStatus ${p.structure_status}">${STATUS_LABEL[p.structure_status]||p.structure_status}</span>
+        <span class="note" style="margin-left:6px">${CAT_LABEL[p.categorie]||''}</span>
+      </div>
+      <div class="progActions">
+        ${pdfLink}
+        <button class="btn" style="font-size:11px" onclick="openProgrammeDetail('${p.id}')">Reconstruire</button>
+        <button class="boardDel" onclick="deleteProgramme('${p.id}')" title="Supprimer" style="position:static">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function addProgramme(){
+  const titre=document.getElementById('progTitre').value.trim();
+  if(!titre){alert('Le titre est obligatoire.');return;}
+  const categorie=document.getElementById('progCategorie').value;
+  const description=document.getElementById('progDescription').value.trim()||null;
+  const fileEl=document.getElementById('progPdfInput');
+  const file=fileEl.files[0];
+  let pdf_path=null;
+  if(file){
+    if(file.type!=='application/pdf'){alert('Choisis un fichier PDF.');return;}
+    if(file.size>60*1024*1024){alert('PDF trop lourd (60 Mo max).');return;}
+    pdf_path=`${slugify(titre)}-${Date.now()}.pdf`;
+    const {error:upErr}=await supa.storage.from('programmes').upload(pdf_path,file,{upsert:true});
+    if(upErr){alert('Erreur d\'envoi du PDF : '+upErr.message);return;}
+  }
+  const {error}=await supa.from('programmes').insert({titre,categorie,description,pdf_path,created_by:CURRENT_USER_LABEL});
+  if(error){alert('Erreur d\'enregistrement : '+error.message);return;}
+  document.getElementById('progTitre').value='';
+  document.getElementById('progDescription').value='';
+  fileEl.value='';
+  await loadProgrammes();renderProgrammes();
+}
+async function deleteProgramme(id){
+  if(!confirm('Supprimer ce programme ? Cette action est définitive (le PDF et le contenu structuré associés seront aussi supprimés).'))return;
+  const p=PROGRAMMES.find(x=>x.id===id);
+  const {error}=await supa.from('programmes').delete().eq('id',id);
+  if(error){alert('Erreur : '+error.message);return;}
+  if(p&&p.pdf_path)supa.storage.from('programmes').remove([p.pdf_path]);
+  await loadProgrammes();renderProgrammes();
+}
+async function openProgrammeDetail(id){
+  currentProgId=id;
+  const p=PROGRAMMES.find(x=>x.id===id);
+  if(!p)return;
+  document.getElementById('progDetailTitre').textContent=p.titre;
+  const link=document.getElementById('progDetailPdfLink');
+  if(p.pdf_path){link.href=supa.storage.from('programmes').getPublicUrl(p.pdf_path).data.publicUrl;link.style.display='inline-block';}
+  else{link.style.display='none';}
+  const sel=document.getElementById('progAddExSel');
+  sel.innerHTML='<option value="">— Choisir un exercice de la banque —</option>'+
+    EXBANK.map(e=>`<option value="${e.id}">${e.nom}</option>`).join('');
+  document.getElementById('progDetailSection').style.display='block';
+  document.getElementById('progDetailSection').scrollIntoView({behavior:'smooth',block:'start'});
+  const {data,error}=await supa.from('programme_exercises').select('*').eq('programme_id',id).order('sort_order');
+  if(error){console.error(error);return;}
+  PROG_EX=data||[];
+  renderProgExList();
+}
+function closeProgrammeDetail(){
+  currentProgId=null;
+  document.getElementById('progDetailSection').style.display='none';
+}
+function renderProgExList(){
+  const box=document.getElementById('progExList');
+  if(!box)return;
+  if(!PROG_EX.length){box.innerHTML='<div class="note">Aucun exercice ajouté pour l\'instant.</div>';return;}
+  box.innerHTML=PROG_EX.map((pe,idx)=>{
+    const ex=EXBANK.find(e=>e.id===pe.exercise_id);
+    const name=ex?ex.nom:(pe.nom_libre||'?');
+    return `<div class="peRow">
+      <span class="peName">${idx+1}. ${name.replace(/</g,'&lt;')}</span>
+      ${pe.notes?`<span class="peNotes">${pe.notes.replace(/</g,'&lt;')}</span>`:''}
+      <button onclick="moveProgEx('${pe.id}',-1)" title="Monter">↑</button>
+      <button onclick="moveProgEx('${pe.id}',1)" title="Descendre">↓</button>
+      <button onclick="removeProgEx('${pe.id}')" title="Retirer">✕</button>
+    </div>`;
+  }).join('');
+}
+async function addExerciseToProgramme(){
+  if(!currentProgId)return;
+  const exId=document.getElementById('progAddExSel').value;
+  const libre=document.getElementById('progAddExLibre').value.trim();
+  if(!exId&&!libre){alert('Choisis un exercice de la banque ou saisis un nom libre.');return;}
+  const notes=document.getElementById('progAddExNotes').value.trim()||null;
+  const sort_order=PROG_EX.length?Math.max(...PROG_EX.map(p=>p.sort_order))+1:0;
+  const row={programme_id:currentProgId,exercise_id:exId||null,nom_libre:exId?null:libre,notes,sort_order};
+  const {data,error}=await supa.from('programme_exercises').insert(row).select().single();
+  if(error){alert('Erreur : '+error.message);return;}
+  PROG_EX.push(data);
+  document.getElementById('progAddExSel').value='';
+  document.getElementById('progAddExLibre').value='';
+  document.getElementById('progAddExNotes').value='';
+  renderProgExList();
+  // Premier exercice ajouté : passe automatiquement le programme en "en_cours"
+  const p=PROGRAMMES.find(x=>x.id===currentProgId);
+  if(p&&p.structure_status==='pdf_only'){
+    await supa.from('programmes').update({structure_status:'en_cours'}).eq('id',currentProgId);
+    p.structure_status='en_cours';
+    renderProgList();
+  }
+}
+async function removeProgEx(peId){
+  if(!confirm('Retirer cet exercice du programme ?'))return;
+  const {error}=await supa.from('programme_exercises').delete().eq('id',peId);
+  if(error){alert('Erreur : '+error.message);return;}
+  PROG_EX=PROG_EX.filter(p=>p.id!==peId);
+  renderProgExList();
+}
+async function moveProgEx(peId,dir){
+  const idx=PROG_EX.findIndex(p=>p.id===peId);
+  const swapIdx=idx+dir;
+  if(idx<0||swapIdx<0||swapIdx>=PROG_EX.length)return;
+  const a=PROG_EX[idx],b=PROG_EX[swapIdx];
+  const aOrder=a.sort_order,bOrder=b.sort_order;
+  const [{error:e1},{error:e2}]=await Promise.all([
+    supa.from('programme_exercises').update({sort_order:bOrder}).eq('id',a.id),
+    supa.from('programme_exercises').update({sort_order:aOrder}).eq('id',b.id),
+  ]);
+  if(e1||e2){alert('Erreur : '+((e1||e2).message));return;}
+  a.sort_order=bOrder;b.sort_order=aOrder;
+  PROG_EX.sort((x,y)=>x.sort_order-y.sort_order);
+  renderProgExList();
+}
+async function markProgrammeStructured(){
+  if(!currentProgId)return;
+  const {error}=await supa.from('programmes').update({structure_status:'structure'}).eq('id',currentProgId);
+  if(error){alert('Erreur : '+error.message);return;}
+  const p=PROGRAMMES.find(x=>x.id===currentProgId);
+  if(p)p.structure_status='structure';
+  renderProgList();
+  alert('Programme marqué comme entièrement reconstruit.');
+}
+
+function renderExerciseBank(){
+  const box=document.getElementById('exBankGrid');
+  if(!box)return;
+  const cat=document.getElementById('exFilterCat')?.value||'';
+  const q=(document.getElementById('exSearch')?.value||'').trim().toLowerCase();
+  let items=EXBANK.filter(e=>{
+    if(cat&&e.categorie!==cat)return false;
+    if(q){
+      const hay=(e.nom+' '+(e.tags||[]).join(' ')).toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  });
+  if(!items.length){box.innerHTML='<div class="note">Aucun exercice trouvé.</div>';return;}
+  box.innerHTML=items.map(e=>{
+    const img=e.image_path?supa.storage.from('exercise-images').getPublicUrl(e.image_path).data.publicUrl:null;
+    return `<div class="exCard">
+      <button class="boardDel" onclick="deleteExercise('${e.id}')" title="Supprimer">✕</button>
+      ${img?`<img src="${img}" alt="">`:''}
+      <div class="exBody">
+        <h5>${(e.nom||'').replace(/</g,'&lt;')}</h5>
+        <div class="note" style="font-size:11px">${CAT_LABEL[e.categorie]||''}</div>
+        ${(e.tags&&e.tags.length)?`<div class="exTags">${e.tags.join(', ')}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+async function addExercise(){
+  const nom=document.getElementById('exNom').value.trim();
+  if(!nom){alert('Le nom est obligatoire.');return;}
+  const categorie=document.getElementById('exCategorie').value;
+  const description=document.getElementById('exDescription').value.trim()||null;
+  const tagsRaw=document.getElementById('exTags').value.trim();
+  const tags=tagsRaw?tagsRaw.split(',').map(t=>t.trim()).filter(Boolean):[];
+  const fileEl=document.getElementById('exImageInput');
+  const file=fileEl.files[0];
+  let image_path=null;
+  if(file){
+    if(!file.type.startsWith('image/')){alert('Choisis une image.');return;}
+    let blob,ext;
+    try{({blob,ext}=await compressImage(file,700,.85));}
+    catch(e){alert('Erreur de compression : '+e.message);return;}
+    image_path=`${slugify(nom)}-${Date.now()}.${ext}`;
+    const {error:upErr}=await supa.storage.from('exercise-images').upload(image_path,blob,{upsert:true});
+    if(upErr){alert('Erreur d\'envoi de l\'image : '+upErr.message);return;}
+  }
+  const {error}=await supa.from('exercise_bank').insert({nom,categorie,description,tags,image_path,created_by:CURRENT_USER_LABEL});
+  if(error){alert('Erreur d\'enregistrement : '+error.message);return;}
+  document.getElementById('exNom').value='';
+  document.getElementById('exDescription').value='';
+  document.getElementById('exTags').value='';
+  fileEl.value='';
+  await loadProgrammes();renderProgrammes();
+}
+async function deleteExercise(id){
+  if(!confirm('Supprimer cet exercice de la banque ? Il sera aussi retiré des programmes qui l\'utilisent.'))return;
+  const e=EXBANK.find(x=>x.id===id);
+  const {error}=await supa.from('exercise_bank').delete().eq('id',id);
+  if(error){alert('Erreur : '+error.message);return;}
+  if(e&&e.image_path)supa.storage.from('exercise-images').remove([e.image_path]);
+  await loadProgrammes();renderProgrammes();
+}
+
 function extMatchesForWeek(team,w){
   const d0=iso(w.days[0]),d1=iso(w.days[6]);
   return (EXT_MATCHES[team]||[]).filter(m=>m.date>=d0&&m.date<=d1);
@@ -1135,6 +1459,7 @@ async function afterLogin(user){
     await loadGauges();
     await loadExtMatches();
     await loadBoard();
+    await loadProgrammes();
   }catch(e){
     document.getElementById('loadingScreen').classList.remove('on');
     document.getElementById('loginScreen').style.display='flex';
@@ -1152,7 +1477,7 @@ async function afterLogin(user){
   const JOURS_L=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
   document.getElementById('headerDate').textContent=`N2 Poule A — Saison 2026/27 · ${JOURS_L[TODAY.getDay()]} ${TODAY.getDate()} ${MOIS[TODAY.getMonth()]} ${TODAY.getFullYear()}`;
   try{
-    fillWeekSel();renderWeek();renderMonth();renderSeances();renderPlayers();renderTypes();renderLogos();renderIndiv();initLogoZone();fillAgendaWeekSel();fillPlayerNoteSel();renderBoard();setupBoardRealtime();
+    fillWeekSel();renderWeek();renderMonth();renderSeances();renderPlayers();renderTypes();renderLogos();renderIndiv();initLogoZone();fillAgendaWeekSel();fillPlayerNoteSel();renderBoard();renderProgrammes();setupBoardRealtime();
   }catch(e){
     document.getElementById('app').innerHTML='<div style="padding:40px;color:#ff6b6b;font-family:monospace">Erreur d\'affichage : '+e.message+'<br><br>Envoie ce message tel quel pour que je corrige.</div>';
     console.error(e);
