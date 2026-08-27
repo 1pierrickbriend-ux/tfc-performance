@@ -111,6 +111,8 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .peRow .peNotes{font-size:12px;opacity:.7}
 .peRow button{background:none;border:none;color:inherit;cursor:pointer;opacity:.6;font-size:13px}
 .peRow button:hover{opacity:1}
+.progInline{background:rgba(139,123,255,.08);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:14px}
+.progInline h4{font-size:13px;margin-bottom:8px}
 .rowHead{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 .rowHead h2{font-size:16px}
 .tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--panel3);color:var(--muted)}
@@ -582,10 +584,18 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   </div>
   <div id="sub-banque" style="display:none">
     <div class="filterRow">
-      <select><option>Tous les types</option><option>Force</option><option>Vitesse</option><option>Grands Espaces</option><option>Reprise</option></select>
-      <input type="search" placeholder="Rechercher un exercice…">
-      <button class="btn" style="margin-left:auto" onclick="alert('Session dédiée à venir pour ce chantier.')">+ Ajouter un exercice</button>
+      <select id="banqueFilterCat" onchange="renderSeanceBanque()">
+        <option value="">Toutes catégories</option>
+        <option value="technique">Technique</option>
+        <option value="tactique">Tactique</option>
+        <option value="physique">Physique</option>
+        <option value="echauffement">Échauffement</option>
+        <option value="mental">Mental</option>
+      </select>
+      <input type="search" id="banqueSearch" placeholder="Rechercher un exercice…" oninput="renderSeanceBanque()">
+      <button class="btn" style="margin-left:auto" onclick="goToExerciseBank()">+ Ajouter un exercice</button>
     </div>
+    <p class="note" style="margin:6px 0">Banque commune, partagée avec l'onglet Programmes.</p>
     <div class="cardGrid" id="banqueGrid"></div>
   </div>
 </section>
@@ -1788,19 +1798,7 @@ function genCycle(){
   if(curWeek>=t0&&curWeek<t0+n)renderGps();
 }
 
-/* ═══════ BANQUE D'EXERCICES (toujours fictif — chantier séparé, non couvert ici) ═══════ */
-const BANQUE=[
-  {n:'Squat barre',cat:'force',dose:'4×6 @ 80%',mat:'Rack, barre'},
-  {n:'Nordic hamstring',cat:'force',dose:'3×5',mat:'Partenaire'},
-  {n:'Sprints lancés 30 m',cat:'vitesse',dose:'6 reps · R 2\'',mat:'Cônes, chrono'},
-  {n:'Jeu de position 8v8+3',cat:'ge',dose:'3×6\' · R 2\'',mat:'Chasubles, plots'},
-  {n:'Circuit réactivation',cat:'reprise',dose:'2 tours · 8 ateliers',mat:'Élastiques'},
-  {n:'Copenhagen plank',cat:'force',dose:'3×20\" /côté',mat:'Banc'},
-  {n:'Accélérations 10 m',cat:'vitesse',dose:'8 reps',mat:'Cônes'},
-  {n:'Conservation 6v6',cat:'veille',dose:'2×5\'',mat:'Chasubles'},
-];
 function catColor(c){return TYPES[c]?.color||'#8a6fd6'}
-function catTextColor(c){return c==='force'?'#ffffff':'#17122b'}
 
 /* ═══════ SÉANCES RÉELLES + PRÉSENCE (Supabase) ═══════ */
 let SEANCES=[]; // [{id,date,cat,nom,presences:[{player_id,valide}]}]
@@ -1818,15 +1816,39 @@ function renderSeances(){
   if(!SEANCES.length){list.innerHTML='<p class="note">Aucune séance créée pour l\'instant. Utilise « + Créer une séance » ci-dessus.</p>';}
   else list.innerHTML=SEANCES.map(s=>{
     const nb=s.presences.length, done=s.presences.filter(p=>p.valide).length;
+    const prog=s.programme_id?PROGRAMMES.find(p=>p.id===s.programme_id):null;
+    const progTag=prog?`<span class="catTag" style="background:rgba(139,123,255,.18);color:var(--accent);font-size:10px">📄 ${prog.titre}</span>`:'';
     return `<div class="sessRow" onclick="openSeanceDetail('${s.id}')">
       <span class="sessDate">${fmtDateFR(s.date)}</span>
       <span style="width:9px;height:9px;border-radius:50%;background:${catColor(s.cat)};flex:none"></span>
-      <h3>${s.nom}</h3><span class="cnt">${done}/${nb} présents</span></div>`;
+      <h3>${s.nom}</h3>${progTag}<span class="cnt">${done}/${nb} présents</span></div>`;
   }).join('');
-  document.getElementById('banqueGrid').innerHTML=BANQUE.map(e=>`
-    <div class="exoCard"><div class="exoImg">🖼 Image de l'exercice</div>
-      <div class="exoBody"><span class="catTag" style="background:${catColor(e.cat)};color:${catTextColor(e.cat)}">${TYPES[e.cat]?.nom||e.cat}</span>
-      <h3>${e.n}</h3><div class="meta">Dose : ${e.dose}<br>Matériel : ${e.mat}</div></div></div>`).join('');
+  renderSeanceBanque();
+}
+function goToExerciseBank(){
+  goTab('programmes');
+  setTimeout(()=>document.getElementById('exNom')?.scrollIntoView({behavior:'smooth',block:'center'}),50);
+}
+function renderSeanceBanque(){
+  const box=document.getElementById('banqueGrid');
+  if(!box)return;
+  const cat=document.getElementById('banqueFilterCat')?.value||'';
+  const q=(document.getElementById('banqueSearch')?.value||'').trim().toLowerCase();
+  let items=EXBANK.filter(e=>{
+    if(cat&&e.categorie!==cat)return false;
+    if(q){
+      const hay=(e.nom+' '+(e.tags||[]).join(' ')).toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  });
+  if(!items.length){box.innerHTML='<p class="note">Aucun exercice — ajoute-en depuis « + Ajouter un exercice ».</p>';return;}
+  box.innerHTML=items.map(e=>{
+    const img=e.image_path?supa.storage.from('exercise-images').getPublicUrl(e.image_path).data.publicUrl:null;
+    return `<div class="exoCard"><div class="exoImg">${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover">`:'🖼 Pas d\'image'}</div>
+      <div class="exoBody"><span class="catTag" style="background:rgba(139,123,255,.15);color:var(--accent)">${CAT_LABEL[e.categorie]||e.categorie}</span>
+      <h3>${(e.nom||'').replace(/</g,'&lt;')}</h3><div class="meta">${(e.tags&&e.tags.length)?e.tags.join(', '):''}</div></div></div>`;
+  }).join('');
 }
 
 let seanceCheckSel=new Set();
@@ -1841,6 +1863,8 @@ function openCreateSeance(){
       <label>Date</label><input id="newSeanceDate" type="date" value="${new Date().toISOString().slice(0,10)}">
       <label>Type de jour (facultatif)</label>
       <select id="newSeanceCat"><option value="">—</option>${Object.entries(TYPES).filter(([k,v])=>!v.repos).map(([k,v])=>`<option value="${k}">${v.nom}</option>`).join('')}</select>
+      <label>Programme associé (facultatif)</label>
+      <select id="newSeanceProgramme"><option value="">—</option>${PROGRAMMES.map(p=>`<option value="${p.id}">${p.titre}</option>`).join('')}</select>
       <label>Joueurs convoqués</label>
       <div class="checkAllRow">
         <button class="btn" onclick="seanceCheckSel=new Set(IPLAYERS.filter(p=>p.actif!==false).map(p=>p.id));renderSeanceCheckList()">Tout cocher</button>
@@ -1866,38 +1890,56 @@ async function submitCreateSeance(){
   const nom=document.getElementById('newSeanceNom').value.trim();
   const date=document.getElementById('newSeanceDate').value;
   const cat=document.getElementById('newSeanceCat').value||null;
+  const programme_id=document.getElementById('newSeanceProgramme').value||null;
   if(!nom){alert('Donne un nom à la séance.');return;}
   if(!date){alert('Choisis une date.');return;}
   if(seanceCheckSel.size===0){alert('Sélectionne au moins un joueur convoqué.');return;}
-  const {data,error}=await supa.from('seances').insert({nom,date,cat}).select().single();
+  const {data,error}=await supa.from('seances').insert({nom,date,cat,programme_id}).select().single();
   if(error){alert('Erreur de création : '+error.message);return;}
   const rows=[...seanceCheckSel].map(pid=>({seance_id:data.id,player_id:pid,valide:false}));
   const {error:e2}=await supa.from('seance_presences').insert(rows);
   if(e2){alert('Erreur présence : '+e2.message);return;}
   await loadSeances();renderSeances();closeSeanceModal();
 }
-function openSeanceDetail(id){
+let seanceDetailProgEx=[];
+async function openSeanceDetail(id){
   const s=SEANCES.find(x=>x.id===id); if(!s)return;
   document.getElementById('seanceModalTitle').textContent=s.nom;
   document.getElementById('seanceModalSub').textContent=fmtDateFR(s.date)+(TYPES[s.cat]?' · '+TYPES[s.cat].nom:'');
-  const render=()=>{
-    const done=s.presences.filter(p=>p.valide).length;
-    document.getElementById('seanceModalBody').innerHTML=`
-      <div class="presCount">${done}/${s.presences.length} présents — clique sur un joueur pour valider ou annuler sa présence.</div>
-      <div class="presList">${s.presences.map(p=>{
-        const pl=IPLAYERS.find(x=>x.id===p.player_id);
-        return `<div class="presRow ${p.valide?'done':''}" onclick="togglePresence('${s.id}','${p.player_id}')">
-          <span class="ck">${p.valide?'✓':''}</span><span class="nm">${pl?pl.name:p.player_id}</span></div>`;
-      }).join('')}</div>`;
-  };
-  render();
+  seanceDetailProgEx=[];
+  if(s.programme_id){
+    const {data,error}=await supa.from('programme_exercises').select('*').eq('programme_id',s.programme_id).order('sort_order');
+    if(error)console.error(error); else seanceDetailProgEx=data||[];
+  }
+  renderSeanceDetail(s);
   document.getElementById('seanceModal').classList.add('on');
+}
+function renderSeanceDetail(s){
+  const done=s.presences.filter(p=>p.valide).length;
+  const prog=s.programme_id?PROGRAMMES.find(p=>p.id===s.programme_id):null;
+  const progBlock=prog?`
+    <div class="progInline">
+      <h4>📄 Programme : ${prog.titre.replace(/</g,'&lt;')}</h4>
+      ${seanceDetailProgEx.length?seanceDetailProgEx.map((pe,i)=>{
+        const ex=EXBANK.find(e=>e.id===pe.exercise_id);
+        const name=ex?ex.nom:(pe.nom_libre||'?');
+        return `<div class="peRow" style="cursor:default"><span class="peName">${i+1}. ${name.replace(/</g,'&lt;')}</span>${pe.notes?`<span class="peNotes">${pe.notes.replace(/</g,'&lt;')}</span>`:''}</div>`;
+      }).join(''):'<p class="note">Ce programme n\'a pas encore de contenu structuré (voir onglet Programmes pour le reconstruire).</p>'}
+    </div>`:'';
+  document.getElementById('seanceModalBody').innerHTML=`
+    ${progBlock}
+    <div class="presCount">${done}/${s.presences.length} présents — clique sur un joueur pour valider ou annuler sa présence.</div>
+    <div class="presList">${s.presences.map(p=>{
+      const pl=IPLAYERS.find(x=>x.id===p.player_id);
+      return `<div class="presRow ${p.valide?'done':''}" onclick="togglePresence('${s.id}','${p.player_id}')">
+        <span class="ck">${p.valide?'✓':''}</span><span class="nm">${pl?pl.name:p.player_id}</span></div>`;
+    }).join('')}</div>`;
 }
 async function togglePresence(seanceId,playerId){
   const s=SEANCES.find(x=>x.id===seanceId); if(!s)return;
   const p=s.presences.find(x=>x.player_id===playerId); if(!p)return;
   p.valide=!p.valide;
-  openSeanceDetail(seanceId); renderSeances();
+  renderSeanceDetail(s); renderSeances();
   const {error}=await supa.from('seance_presences').update({valide:p.valide}).eq('seance_id',seanceId).eq('player_id',playerId);
   if(error)alert('Erreur de sauvegarde : '+error.message);
 }
