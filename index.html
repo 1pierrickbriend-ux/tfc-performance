@@ -74,7 +74,7 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .boardItem .boardDel:hover{opacity:1}
 .boardItem .boardCheck{margin-right:6px}
 .boardAssign{display:inline-block;padding:1px 6px;border-radius:6px;background:rgba(255,255,255,.08);font-size:10px}
-:root{--julien:#22c1c3;--pierrick:#f2a94c}
+:root{--julien:#e1b57a;--pierrick:#dd8aab;--both:#c0b4cd}
 .boardSection{margin-bottom:32px}
 .progCreateRow{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
 @media (max-width:820px){.progCreateRow{grid-template-columns:1fr}}
@@ -451,7 +451,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="agendaLegend">
       <span><span class="dot" style="background:var(--julien)"></span> Julien</span>
       <span><span class="dot" style="background:var(--pierrick)"></span> Pierrick</span>
-      <span><span class="dot" style="background:linear-gradient(90deg,var(--julien),var(--pierrick))"></span> Les deux</span>
+      <span><span class="dot" style="background:var(--both)"></span> Les deux</span>
       <span class="note">Clic sur une séance : Julien → Julien + Pierrick → Pierrick seul → (nouveau clic) retour à Julien. Les séances affichées sont celles réellement planifiées dans Planification semaine.</span>
     </div>
     <div class="agendaGrid" id="agendaGrid"></div>
@@ -1040,11 +1040,12 @@ function renderAgenda(weekN){
     }
     const slotsHTML=seances.map(({b,bi})=>{
       const p=presenceFor(weekN,i,bi);
-      let bg='rgba(255,255,255,.06)',who='';
-      if(p.pierrick&&p.julien){bg='linear-gradient(90deg,var(--julien),var(--pierrick))';who='Julien + Pierrick';}
-      else if(p.julien){bg='var(--julien)';who='Julien';}
-      else if(p.pierrick){bg='var(--pierrick)';who='Pierrick';}
-      return `<div class="agendaSlot" style="background:${bg}" onclick="cycleSlotPresence(${weekN},${i},${bi})" title="Cliquer pour faire tourner : Julien → Julien+Pierrick → Pierrick seul">${b.ic||''} ${b.n}${b.time?` — ${b.time}`:''}${who?`<span class="who">${who}</span>`:''}</div>`;
+      let bg='rgba(255,255,255,.06)',who='',filled=false;
+      if(p.pierrick&&p.julien){bg='var(--both)';who='Julien + Pierrick';filled=true;}
+      else if(p.julien){bg='var(--julien)';who='Julien';filled=true;}
+      else if(p.pierrick){bg='var(--pierrick)';who='Pierrick';filled=true;}
+      const style=`background:${bg}${filled?';color:#17122b':''}`;
+      return `<div class="agendaSlot" style="${style}" onclick="cycleSlotPresence(${weekN},${i},${bi})" title="Cliquer pour faire tourner : Julien → Julien+Pierrick → Pierrick seul">${b.ic||''} ${b.n}${b.time?` — ${b.time}`:''}${who?`<span class="who">${who}</span>`:''}</div>`;
     }).join('');
     return `<div class="agendaDay${isToday?' today':''}">
       <div class="agendaDayLabel">${DAYN[i]} ${d.getDate()}</div>
