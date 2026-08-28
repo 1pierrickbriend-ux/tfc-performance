@@ -1577,14 +1577,22 @@ async function buildSheetCanvas(){
     ctx.fillText(String(idx+1), x+bodyPad+numR, y+imgH+bodyPad+numR+0.5*S);
     ctx.textAlign='left'; ctx.textBaseline='alphabetic';
 
-    const fieldsY=y+imgH+bodyPad+numR*2+10*S;
+    const fieldsY=y+imgH+bodyPad+numR*2+8*S;
     const colW=(boxW-bodyPad*2)/3;
+    const boxFieldW=colW-4*S, boxFieldH=14*S;
     let fx=x+bodyPad;
     [['Reps',it.reps],['Séries',it.series],['R',it.recup]].forEach(([lab,val])=>{
       ctx.fillStyle='#888'; ctx.font=Math.round(8*S)+'px Arial';
       ctx.fillText(lab, fx, fieldsY);
-      ctx.fillStyle='#17122b'; ctx.font='700 '+Math.round(11*S)+'px Arial';
-      ctx.fillText(val||'—', fx, fieldsY+13*S);
+      ctx.strokeStyle='#ccc'; ctx.lineWidth=1*S;
+      roundRectPath(ctx, fx, fieldsY+4*S, boxFieldW, boxFieldH, 3*S);
+      ctx.stroke();
+      if(val){
+        ctx.fillStyle='#17122b'; ctx.font='700 '+Math.round(10*S)+'px Arial';
+        ctx.textAlign='center';
+        ctx.fillText(val, fx+boxFieldW/2, fieldsY+4*S+boxFieldH/2+3.5*S);
+        ctx.textAlign='left';
+      }
       fx+=colW;
     });
   }
@@ -1602,8 +1610,14 @@ async function printSheetVisual(){
   if(!window.jspdf){alert('Génération PDF indisponible (librairie non chargée).');return;}
   const canvas=await buildSheetCanvas();
   const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF({orientation:canvas.width>=canvas.height?'landscape':'portrait',unit:'px',format:[canvas.width,canvas.height]});
-  pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,canvas.width,canvas.height);
+  // Conversion explicite px->pt (96dpi standard écran) : évite de laisser
+  // jsPDF interpréter l'unité "px" avec sa propre hypothèse de résolution,
+  // qui pouvait légèrement décaler/redimensionner le rendu par rapport à
+  // l'éditeur.
+  const pxToPt=72/96;
+  const pageW=canvas.width*pxToPt, pageH=canvas.height*pxToPt;
+  const pdf=new jsPDF({orientation:canvas.width>=canvas.height?'landscape':'portrait',unit:'pt',format:[pageW,pageH]});
+  pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,pageW,pageH);
   const titre=document.getElementById('sheetTitre').value.trim();
   pdf.save((titre||'fiche')+'.pdf');
 }
