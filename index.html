@@ -429,33 +429,34 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   .wDay .wdHead .dn{font-size:8.5pt;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;font-family:'Barlow Condensed',Arial,sans-serif}
   .wDay .wdHead .dd{font-size:6.6pt;opacity:.75;margin-top:.3mm}
   .wDay .wdHead .rel{font-size:6pt;font-weight:800;color:#e1b57a;letter-spacing:.8px;margin-top:.4mm}
-  .wdTop{padding:2mm 1.4mm 1.6mm;text-align:center;border-bottom:.25mm solid #e8e3ee;background:#fff}
-  .wdTop .tName{font-size:7.4pt;font-weight:800;color:#3d2c56;line-height:1.15}
-  .wdTop .tRpe{font-size:6.2pt;font-weight:700;color:#8a7fa0;font-family:'Spline Sans Mono',monospace;margin-top:.5mm}
-  .wdTop .tBar{height:2.2mm;border-radius:1.1mm;margin:1.4mm auto 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wdTop{padding:2mm 1.4mm 1.8mm;text-align:center;border-bottom:.25mm solid #e8e3ee;background:#fff}
+  .wdTop .tZone{height:26mm;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;margin-bottom:1.4mm}
+  .wdTop .tBarV{width:56%;border-radius:1.4mm 1.4mm .4mm .4mm;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wdTop .tBarV .rp{position:absolute;top:-4.6mm;left:50%;transform:translateX(-50%);font-size:7pt;font-weight:800;color:#5a4b74;font-family:'Spline Sans Mono',monospace}
+  .wdTop .tName{font-size:8.2pt;font-weight:800;color:#3d2c56;line-height:1.15}
+  .wdTop .tRpe{font-size:6.6pt;font-weight:700;color:#8a7fa0;font-family:'Spline Sans Mono',monospace;margin-top:.5mm}
   .wdTop .tLogo{width:20mm;height:16mm;margin:0 auto 1.2mm;display:flex;align-items:center;justify-content:center}
   .wdTop .tLogo img{max-width:20mm;max-height:16mm;width:auto;height:auto;object-fit:contain}
   .wdTop .tLogo .ini{font-size:11pt;font-weight:800;color:#0f3d18}
-  .wDay .wdList{padding:1.8mm 1.4mm;flex:1;min-height:78mm}
+  .wDay .wdList{padding:2.2mm 1.8mm;flex:1;min-height:64mm}
   .wDay.isMatchDay .wdTop{background:#0f3d18}
   .wDay.isMatchDay .wdTop .tName{color:#fff}
   .wDay.isMatchDay .wdTop .tRpe{color:#9fd6a8}
-  .wDay .wdList .it{display:flex;align-items:flex-start;gap:1.4mm;padding:1.3mm 0;border-bottom:.2mm dotted #e4dfeb}
+  .wDay .wdList .it{display:flex;align-items:flex-start;gap:1.8mm;padding:2mm 0;border-bottom:.2mm dotted #e4dfeb}
   .wDay .wdList .it:last-child{border-bottom:none}
-  .wdIc{width:5.2mm;height:5.2mm;border-radius:1.2mm;display:flex;align-items:center;justify-content:center;font-size:6.6pt;flex:none;background:#efeaf4;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wdIc{width:6.4mm;height:6.4mm;border-radius:1.5mm;display:flex;align-items:center;justify-content:center;font-size:8.4pt;flex:none;background:#efeaf4;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .wdTxt{flex:1;min-width:0}
-  .wdTxt .h{display:block;font-size:6.4pt;font-weight:800;color:#9186a8;font-family:'Spline Sans Mono',monospace;letter-spacing:-.2px;line-height:1.1}
-  .wdTxt .n{display:block;font-size:7.2pt;font-weight:700;color:#3d2c56;line-height:1.2;margin-top:.3mm}
+  .wdTxt .h{display:block;font-size:7.4pt;font-weight:800;color:#9186a8;font-family:'Spline Sans Mono',monospace;letter-spacing:-.2px;line-height:1.1}
+  .wdTxt .n{display:block;font-size:8.4pt;font-weight:700;color:#3d2c56;line-height:1.22;margin-top:.4mm}
   .wDay .wdList .rest{font-size:9.5pt;font-weight:800;color:#c0b8cc;text-align:center;padding:16mm 0;letter-spacing:1.5px}
 
-  .gRow{display:flex;gap:6mm;margin-bottom:5mm;align-items:stretch}
-  .gGauge{flex:1;border:.25mm solid #e8e3ee;border-radius:2.4mm;padding:3.5mm 3mm;text-align:center;background:#faf9fb}
-  .gGauge .gTitle{font-size:8pt;font-weight:800;text-transform:uppercase;color:#3d2c56;letter-spacing:1px;margin-bottom:2.5mm}
-  .gGauge .gSvg{width:44mm;height:27mm;display:block;margin:0 auto}
-  .gGauge .gEmo{font-size:13pt;margin-top:1mm;line-height:1}
-  .gNote{font-size:6.5pt;color:#9186a8;margin-top:1.2mm;font-weight:600}
+  .gRow{display:flex;gap:4mm;margin-bottom:9mm;align-items:stretch;justify-content:flex-start}
+  .gGauge{width:44mm;border:.25mm solid #e8e3ee;border-radius:2mm;padding:2mm 2mm 1.6mm;text-align:center;background:#faf9fb}
+  .gGauge .gTitle{font-size:6.6pt;font-weight:800;text-transform:uppercase;color:#3d2c56;letter-spacing:.8px;margin-bottom:1.2mm}
+  .gGauge .gSvg{width:26mm;height:16mm;display:block;margin:0 auto}
+  .gGauge .gEmo{font-size:9pt;margin-top:.4mm;line-height:1}
 
-  .pMacro{display:flex;gap:2.5mm;align-items:flex-end;height:44mm;margin-bottom:5mm}
+  .pMacro{display:flex;gap:2.5mm;align-items:flex-end;height:44mm;margin-bottom:6mm}
   .pMacro .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
   .pMacro .bar{width:74%;border:.3mm solid rgba(0,0,0,.3);border-radius:1mm 1mm 0 0;-webkit-print-color-adjust:exact;print-color-adjust:exact;position:relative}
   .pMacro .bar .rp{position:absolute;top:-4.4mm;left:50%;transform:translateX(-50%);font-size:6.8pt;font-weight:800;color:#3d2c56}
@@ -3018,10 +3019,10 @@ function coverPage(){
 function pdfHead(title,sub){
   const a=pdfAssets();
   return `<div class="pHead">${a.crest?`<img src="${a.crest}">`:''}${a.n2?`<img src="${a.n2}">`:''}
-    <div><h1>${title}</h1><div class="sub">${sub}</div></div></div>`;
+    <div><h1>${title}</h1>${sub?`<div class="sub">${sub}</div>`:''}</div></div>`;
 }
-function pdfFoot(pageLabel){
-  return `<div class="pFoot"><span>TFC · Équipe réserve — Performance</span><span>${pageLabel}</span></div>`;
+function pdfFoot(){
+  return `<div class="pFoot"><span>TFC · Équipe réserve — Performance</span></div>`;
 }
 function typeLegend(){
   const seen={};
@@ -3065,12 +3066,12 @@ function monthPage(monthOffset){
     }).join('');
   });
   return `<div class="pg">
-    ${pdfHead(MOIS[base.getMonth()]+' '+base.getFullYear(),'Vue d\'ensemble — hauteur des barres = RPE prévu')}
+    ${pdfHead(MOIS[base.getMonth()]+' '+base.getFullYear(),'')}
     <div class="pBody">
       <div class="mGrid">${cells}</div>
       ${typeLegend()}
     </div>
-    ${pdfFoot('Vue mensuelle')}
+    ${pdfFoot()}
   </div>`;
 }
 function weekSchedPage(){
@@ -3081,15 +3082,17 @@ function weekSchedPage(){
     const rpe=rpeOf(wk.n,i,T);
     let top;
     if(isM){
-      top=`<div class="wdTop">${pdfLogo(md.team,'tLogo')}
+      top=`<div class="wdTop">
+        <div class="tZone">${pdfLogo(md.team,'tLogo')}</div>
         <div class="tName">${md.team}</div>
         <div class="tRpe">${md.dom?'DOMICILE':'EXTÉRIEUR'}</div></div>`;
     }else if(T.repos){
-      top=`<div class="wdTop"><div class="tName" style="color:#a49ab5">Repos</div></div>`;
+      top=`<div class="wdTop"><div class="tZone"></div><div class="tName" style="color:#a49ab5">Repos</div></div>`;
     }else{
-      top=`<div class="wdTop"><div class="tName">${T.nom}</div>
-        <div class="tRpe">RPE ${rpe}</div>
-        <div class="tBar" style="width:${Math.max(20,(rpe/10)*100)}%;background:${barBg(T)}"></div></div>`;
+      top=`<div class="wdTop">
+        <div class="tZone"><div class="tBarV" style="height:${Math.max(14,(rpe/10)*100)}%;background:${barBg(T)}"><span class="rp">${rpe}</span></div></div>
+        <div class="tName">${T.nom}</div>
+        <div class="tRpe">RPE ${rpe}</div></div>`;
     }
     const blocks=blocksFor(wk,i);
     const list=blocks.length
@@ -3109,12 +3112,12 @@ function weekSchedPage(){
     </div>`;
   }).join('');
   return `<div class="pg">
-    ${pdfHead('Planning semaine '+wk.n,fmtD(wk.days[0])+' – '+fmtD(wk.days[6])+' · type de séance, RPE prévu et déroulé horaire')}
+    ${pdfHead('Planning semaine '+wk.n,fmtD(wk.days[0])+' – '+fmtD(wk.days[6]))}
     <div class="pBody"><div class="wGrid">${cols}</div></div>
-    ${pdfFoot('Semaine détaillée')}
+    ${pdfFoot()}
   </div>`;
 }
-function pdfGauge(title,pct,emoji,note){
+function pdfGauge(title,pct,emoji){
   const ang=-90+pct*180;
   const nx=28+18*Math.sin(ang*Math.PI/180), ny=28-18*Math.cos(ang*Math.PI/180);
   return `<div class="gGauge">
@@ -3123,7 +3126,6 @@ function pdfGauge(title,pct,emoji,note){
       <line x1="28" y1="28" x2="${nx}" y2="${ny}" stroke="#2a1a4a" stroke-width="2.4" stroke-linecap="round"/>
       <circle cx="28" cy="28" r="3" fill="#2a1a4a"/></svg>
     <div class="gEmo">${emoji}</div>
-    <div class="gNote">${note}</div>
   </div>`;
 }
 function macroGpsPage(){
@@ -3154,11 +3156,11 @@ function macroGpsPage(){
   const rpeMoy=rpeDays?(rpeSum/rpeDays).toFixed(1):0;
   const charge=Math.round(rpeSum*10)/10;
   return `<div class="pg">
-    ${pdfHead('Rapport GPS prévisionnel — semaine '+wk.n,'Charge prévue · distances en mètres')}
+    ${pdfHead('Rapport GPS prévisionnel — semaine '+wk.n,'')}
     <div class="pBody">
       <div class="gRow">
-        ${pdfGauge('Effort cardiaque',gaugePct(curWeek,'coeur'),'❤️','Positionné en Vue d\'ensemble')}
-        ${pdfGauge('Effort énergétique',gaugePct(curWeek,'sprint'),'⚡','Positionné en Vue d\'ensemble')}
+        ${pdfGauge('Effort cardiaque',gaugePct(curWeek,'coeur'),'❤️')}
+        ${pdfGauge('Effort énergétique',gaugePct(curWeek,'sprint'),'⚡')}
       </div>
       <div class="pMacro">${bars}</div>
       <table class="pTable">
@@ -3166,7 +3168,7 @@ function macroGpsPage(){
         ${rows}
       </table>
     </div>
-    ${pdfFoot('Rapport GPS prévisionnel')}
+    ${pdfFoot()}
   </div>`;
 }
 function genererPDF(){
