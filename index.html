@@ -410,7 +410,8 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   .mCell.isMatch{background:#0f3d18;border-color:#0f3d18}
   .mCell.isMatch .dNum{color:rgba(255,255,255,.5)}
   .mCell.isMatch .mLab{color:#fff}
-  .mCell.isMatch .mLab .vs{display:block;font-size:5.8pt;font-weight:700;color:#9fd6a8;letter-spacing:.4px;text-transform:uppercase}
+  .mCell.isMatch .mLab .vs{display:block;font-size:7.2pt;font-weight:800;color:#b6e0bd;letter-spacing:.4px;text-transform:uppercase;margin-bottom:.4mm}
+  .mCell.isMatch .mLab .vs .em{font-size:8.8pt;vertical-align:-.4mm;margin-right:.6mm}
   .mLogo{width:16mm;height:13mm;margin:0 auto;display:flex;align-items:center;justify-content:center}
   .mLogo img{max-width:16mm;max-height:13mm;width:auto;height:auto;object-fit:contain}
   .mLogo .ini{font-size:9pt;font-weight:800;color:#fff;letter-spacing:.5px}
@@ -435,6 +436,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   .wdTop .tBarV .rp{position:absolute;top:-4.6mm;left:50%;transform:translateX(-50%);font-size:7pt;font-weight:800;color:#5a4b74;font-family:'Spline Sans Mono',monospace}
   .wdTop .tName{font-size:8.2pt;font-weight:800;color:#3d2c56;line-height:1.15}
   .wdTop .tRpe{font-size:6.6pt;font-weight:700;color:#8a7fa0;font-family:'Spline Sans Mono',monospace;margin-top:.5mm}
+  .wdTop .tRpe .em{font-size:9.5pt;vertical-align:-.5mm;margin-right:.6mm}
   .wdTop .tLogo{width:20mm;height:16mm;margin:0 auto 1.2mm;display:flex;align-items:center;justify-content:center}
   .wdTop .tLogo img{max-width:20mm;max-height:16mm;width:auto;height:auto;object-fit:contain}
   .wdTop .tLogo .ini{font-size:11pt;font-weight:800;color:#0f3d18}
@@ -3054,7 +3056,7 @@ function monthPage(monthOffset){
       let inner;
       if(isM){
         inner=`${pdfLogo(md.team,'mLogo')}
-               <div class="mLab"><span class="vs">${md.dom?'Domicile':'Extérieur'}</span>${md.team}</div>`;
+               <div class="mLab"><span class="vs"><span class="em">${md.dom?'🏠':'✈️'}</span>${md.dom?'Domicile':'Extérieur'}</span>${md.team}</div>`;
       }else if(T.repos){
         inner=`<div class="mLab">Repos</div>`;
       }else{
@@ -3085,7 +3087,7 @@ function weekSchedPage(){
       top=`<div class="wdTop">
         <div class="tZone">${pdfLogo(md.team,'tLogo')}</div>
         <div class="tName">${md.team}</div>
-        <div class="tRpe">${md.dom?'DOMICILE':'EXTÉRIEUR'}</div></div>`;
+        <div class="tRpe"><span class="em">${md.dom?'🏠':'✈️'}</span>${md.dom?'DOMICILE':'EXTÉRIEUR'}</div></div>`;
     }else if(T.repos){
       top=`<div class="wdTop"><div class="tZone"></div><div class="tName" style="color:#a49ab5">Repos</div></div>`;
     }else{
@@ -3147,11 +3149,20 @@ function macroGpsPage(){
   const data=GPS[curWeek];
   const cols=['DT','D15-20','D20-25','D+25','D+30','D Acc3','D Dec3','D Acc4','D Dec4','D Acc5','D Dec5'];
   const grp=['grpA','grpA','grpA','grpB','grpB','grpC','grpC','grpC','grpC','grpC','grpC'];
+  // Le GPS prévisionnel ne retient que les jours réellement travaillés :
+  // ni les jours de match, ni les jours de repos (détectés depuis la planification).
+  const trainIdx=wk.days.map((d,i)=>i).filter(i=>{
+    const T=TYPES[WEEK_TYPES[wk.n][i]];
+    if(T.repos)return false;
+    if(matchOnDay(wk,wk.days[i]))return false;
+    return true;
+  });
   let rows='';
-  wk.days.forEach((d,i)=>{
+  trainIdx.forEach(i=>{
     rows+=`<tr><td>${DAYFULL[i]}</td>${data[i].map(v=>`<td>${v}</td>`).join('')}</tr>`;
   });
-  const tot=Array(11).fill(0);data.forEach(r=>r.forEach((v,c)=>tot[c]+=v));
+  const tot=Array(11).fill(0);
+  trainIdx.forEach(i=>data[i].forEach((v,c)=>tot[c]+=v));
   rows+=`<tr class="pTot"><td>Total</td>${tot.map(v=>`<td>${v}</td>`).join('')}</tr>`;
   const rpeMoy=rpeDays?(rpeSum/rpeDays).toFixed(1):0;
   const charge=Math.round(rpeSum*10)/10;
