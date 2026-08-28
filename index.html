@@ -1531,18 +1531,24 @@ async function buildSheetCanvas(){
 
   const titre=document.getElementById('sheetTitre').value.trim();
   const desc=document.getElementById('sheetSubtitle').value.trim();
+  // 34px / 14px : mêmes tailles que #sheetTitleOverlay à l'écran (mises à
+  // l'échelle par S), pour que le titre ne grossisse pas de façon
+  // disproportionnée par rapport à l'éditeur.
+  const titleFontPx=34*S, descFontPx=14*S;
   if(titre){
     ctx.fillStyle='#ffffff';
-    ctx.font='800 '+Math.round(60*S)+'px "Barlow Condensed",Arial';
+    ctx.font='800 '+Math.round(titleFontPx)+'px "Barlow Condensed",Arial';
     ctx.textBaseline='top';
-    ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=8*S;
+    ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=6*S;
     ctx.fillText(titre.toUpperCase(), OUT_W*0.04, OUT_H*0.04);
   }
   if(desc){
     ctx.fillStyle='#ffffff';
-    ctx.font='700 '+Math.round(24*S)+'px Barlow,Arial';
-    ctx.shadowBlur=6*S;
-    ctx.fillText(desc, OUT_W*0.04, OUT_H*0.04+70*S);
+    ctx.font='700 '+Math.round(descFontPx)+'px Barlow,Arial';
+    ctx.shadowBlur=4*S;
+    // hauteur de ligne du titre (1.05) + margin-top 6px, comme à l'écran
+    const descY=OUT_H*0.04+titleFontPx*1.05+6*S;
+    ctx.fillText(desc, OUT_W*0.04, descY);
   }
   ctx.shadowBlur=0;
 
