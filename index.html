@@ -410,8 +410,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   .mCell.isMatch{background:#0f3d18;border-color:#0f3d18}
   .mCell.isMatch .dNum{color:rgba(255,255,255,.5)}
   .mCell.isMatch .mLab{color:#fff}
-  .mCell.isMatch .mLab .vs{display:block;font-size:7.2pt;font-weight:800;color:#b6e0bd;letter-spacing:.4px;text-transform:uppercase;margin-bottom:.4mm}
-  .mCell.isMatch .mLab .vs .em{font-size:8.8pt;vertical-align:-.4mm;margin-right:.6mm}
+  .mCell .venue{position:absolute;top:1.4mm;right:1.6mm;width:6.4mm;height:6.4mm;border-radius:1.6mm;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:8.6pt;line-height:1;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .mLogo{width:16mm;height:13mm;margin:0 auto;display:flex;align-items:center;justify-content:center}
   .mLogo img{max-width:16mm;max-height:13mm;width:auto;height:auto;object-fit:contain}
   .mLogo .ini{font-size:9pt;font-weight:800;color:#fff;letter-spacing:.5px}
@@ -436,7 +435,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   .wdTop .tBarV .rp{position:absolute;top:-4.6mm;left:50%;transform:translateX(-50%);font-size:7pt;font-weight:800;color:#5a4b74;font-family:'Spline Sans Mono',monospace}
   .wdTop .tName{font-size:8.2pt;font-weight:800;color:#3d2c56;line-height:1.15}
   .wdTop .tRpe{font-size:6.6pt;font-weight:700;color:#8a7fa0;font-family:'Spline Sans Mono',monospace;margin-top:.5mm}
-  .wdTop .tRpe .em{font-size:9.5pt;vertical-align:-.5mm;margin-right:.6mm}
+  .wdTop .tVenue{width:8mm;height:8mm;border-radius:2mm;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:11pt;line-height:1;margin:1mm auto 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .wdTop .tLogo{width:20mm;height:16mm;margin:0 auto 1.2mm;display:flex;align-items:center;justify-content:center}
   .wdTop .tLogo img{max-width:20mm;max-height:16mm;width:auto;height:auto;object-fit:contain}
   .wdTop .tLogo .ini{font-size:11pt;font-weight:800;color:#0f3d18}
@@ -3055,8 +3054,8 @@ function monthPage(monthOffset){
       const h=Math.max(14,(rpe/10)*100);
       let inner;
       if(isM){
-        inner=`${pdfLogo(md.team,'mLogo')}
-               <div class="mLab"><span class="vs"><span class="em">${md.dom?'🏠':'✈️'}</span>${md.dom?'Domicile':'Extérieur'}</span>${md.team}</div>`;
+        inner=`<span class="venue">${md.dom?'🏠':'✈️'}</span>${pdfLogo(md.team,'mLogo')}
+               <div class="mLab">${md.team}</div>`;
       }else if(T.repos){
         inner=`<div class="mLab">Repos</div>`;
       }else{
@@ -3087,7 +3086,7 @@ function weekSchedPage(){
       top=`<div class="wdTop">
         <div class="tZone">${pdfLogo(md.team,'tLogo')}</div>
         <div class="tName">${md.team}</div>
-        <div class="tRpe"><span class="em">${md.dom?'🏠':'✈️'}</span>${md.dom?'DOMICILE':'EXTÉRIEUR'}</div></div>`;
+        <div class="tVenue">${md.dom?'🏠':'✈️'}</div></div>`;
     }else if(T.repos){
       top=`<div class="wdTop"><div class="tZone"></div><div class="tName" style="color:#a49ab5">Repos</div></div>`;
     }else{
