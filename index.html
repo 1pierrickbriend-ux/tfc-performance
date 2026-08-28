@@ -1617,7 +1617,7 @@ async function printSheetVisual(){
   const pxToPt=72/96;
   const pageW=canvas.width*pxToPt, pageH=canvas.height*pxToPt;
   const pdf=new jsPDF({orientation:canvas.width>=canvas.height?'landscape':'portrait',unit:'pt',format:[pageW,pageH]});
-  pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,pageW,pageH);
+  pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,pageW,pageH);
   const titre=document.getElementById('sheetTitre').value.trim();
   pdf.save((titre||'fiche')+'.pdf');
 }
