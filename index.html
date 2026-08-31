@@ -116,6 +116,213 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .peRow button:hover{opacity:1}
 .progInline{background:rgba(139,123,255,.08);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:14px}
 .progInline h4{font-size:13px;margin-bottom:8px}
+.chgTop{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;align-items:start}
+@media (max-width:900px){.chgTop{grid-template-columns:1fr}}
+.chgCard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.chgCardHead{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.chgForm label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);font-weight:600}
+.chgForm input,.chgForm select,.chgForm textarea{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);font-family:inherit;font-size:13px;width:100%}
+.chgForm textarea{min-height:38px;margin-bottom:10px;resize:vertical}
+.chgRow2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:end}
+.chgRow4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.chgFeedback{background:var(--panel2);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.chgFbHead{font-size:11px;font-weight:700;margin-bottom:8px;color:var(--muted)}
+.chgSliders{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px}
+.chgSl{font-size:10px;color:var(--muted);font-weight:600}
+.chgSl .lab{display:flex;justify-content:space-between;margin-bottom:2px}
+.chgSl .val{font-weight:800;color:var(--ink);font-family:'Spline Sans Mono',monospace}
+.chgSl input[type=range]{width:100%;accent-color:var(--accent);height:14px}
+.chgKpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.chgKpi{background:var(--panel2);border-radius:10px;padding:9px 10px;text-align:center}
+.chgKpi .k{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.chgKpi .v{font-size:19px;font-weight:800;font-family:'Barlow Condensed',sans-serif;line-height:1.1;margin-top:2px}
+.chgKpi .u{font-size:9px;color:var(--muted)}
+.chgSpark{display:flex;align-items:flex-end;gap:2px;height:56px;padding:0 2px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.chgSpark .sb{flex:1;background:var(--accent);border-radius:2px 2px 0 0;min-height:2px;opacity:.85}
+.chgSpark .sb.hi{background:var(--warn)}
+.chgSparkLab{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:12px}
+.chgBreak .bkRow{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:11px}
+.chgBreak .bkName{width:130px;flex:none;color:var(--muted);font-weight:600}
+.chgBreak .bkBar{flex:1;height:8px;background:var(--panel2);border-radius:4px;overflow:hidden}
+.chgBreak .bkBar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.chgBreak .bkVal{width:44px;text-align:right;font-weight:700;font-family:'Spline Sans Mono',monospace;font-size:11px}
+.chgRow{display:grid;grid-template-columns:88px 1fr 150px 120px 90px 28px;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);font-size:12px}
+.chgRow:last-child{border-bottom:none}
+.chgRow .cd{font-family:'Spline Sans Mono',monospace;font-size:11px;color:var(--muted)}
+.chgRow .cn{font-weight:700}
+.chgRow .cs{font-size:11px;color:var(--muted)}
+.chgRow .cq{font-family:'Spline Sans Mono',monospace;font-size:11px}
+.chgRow .cr{font-size:11px}
+.chgRow .cr b{font-family:'Spline Sans Mono',monospace}
+.chgRow button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px}
+.chgRow button:hover{color:var(--bad)}
+.chgEmpty{padding:18px;text-align:center;color:var(--muted);font-size:12px}
+.prAddRow{display:grid;grid-template-columns:100px 1fr 1.3fr 1fr auto;gap:8px;margin-bottom:14px;align-items:center}
+.prAddRow select,.prAddRow input{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);font-family:inherit;font-size:12px;width:100%}
+@media (max-width:900px){.prAddRow{grid-template-columns:1fr}}
+.prBloc{margin-bottom:14px}
+.prBlocHead{background:var(--accent);color:#fff;border-radius:8px 8px 0 0;padding:6px 12px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;display:flex;gap:10px;align-items:center}
+.prBlocHead .cat{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:5px;font-size:10px}
+.prItem{background:var(--panel2);border:1px solid var(--line);border-top:none;padding:10px 12px}
+.prItem:last-child{border-radius:0 0 8px 8px}
+.prItemTop{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.prItemTop .nm{font-weight:700;font-size:13px;flex:1}
+.prItemTop .num{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex:none}
+.prItemTop button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px}
+.prItemTop button:hover{color:var(--bad)}
+.prGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.prGrid.txt{grid-template-columns:1fr 1fr;margin-bottom:8px}
+.prF{display:flex;flex-direction:column;gap:3px}
+.prF label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+.prF input,.prF textarea{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 7px;color:var(--ink);font-family:inherit;font-size:12px;width:100%}
+.prF textarea{min-height:34px;resize:vertical}
+@media (max-width:900px){.prGrid{grid-template-columns:1fr 1fr}.prGrid.txt{grid-template-columns:1fr}}
+.prRow{display:grid;grid-template-columns:88px 1fr 130px 90px 90px 28px;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);font-size:12px}
+.prRow:last-child{border-bottom:none}
+.prRow .cd{font-family:'Spline Sans Mono',monospace;font-size:11px;color:var(--muted)}
+.prRow .cn{font-weight:700}
+.prRow .cs{font-size:11px;color:var(--muted)}
+.prRow button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px}
+.prRow button:hover{color:var(--ink)}
+.prSt{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.3px}
+.prSt.prevu{background:rgba(139,123,255,.18);color:var(--accent)}
+.prSt.fait{background:rgba(79,209,145,.18);color:var(--ok)}
+.prSt.annule{background:rgba(255,255,255,.08);color:var(--muted)}
+.prUp{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px}
+.prUp:last-child{border-bottom:none}
+.prUp .d{font-family:'Spline Sans Mono',monospace;font-size:11px;color:var(--muted);width:62px;flex:none}
+.prUp .n{flex:1;font-weight:600}
+.prUp button{background:none;border:1px solid var(--line);border-radius:6px;color:var(--ink);cursor:pointer;font-size:11px;padding:3px 8px}
+.acwr{background:var(--panel2);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.acwrTop{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.acwrTop .lb{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.acwrTop .vl{font-size:22px;font-weight:800;font-family:'Barlow Condensed',sans-serif;line-height:1}
+.acwrTop .tg{margin-left:auto;font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px}
+.acwrScale{position:relative;height:7px;border-radius:4px;background:linear-gradient(90deg,#6fb0ff 0%,#6fb0ff 22%,#4fd191 32%,#4fd191 58%,#ffb454 70%,#ff6a6a 100%)}
+.acwrScale .pin{position:absolute;top:-3px;width:3px;height:13px;background:var(--ink);border-radius:2px;transform:translateX(-50%);box-shadow:0 0 0 2px var(--panel2)}
+.acwrLeg{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:4px;font-weight:600}
+.acwrNote{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.35}
+.sqRow{display:grid;grid-template-columns:1fr 76px 76px 96px 78px;gap:10px;align-items:center;padding:7px 10px;border-bottom:1px solid var(--line);font-size:12px}
+.sqRow:last-child{border-bottom:none}
+.sqRow.hd{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line)}
+.sqRow .nm{font-weight:700}
+.sqRow .nu{font-family:'Spline Sans Mono',monospace;text-align:right}
+.sqBar{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden}
+.sqBar i{display:block;height:100%;border-radius:3px}
+.sqTag{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;text-align:center}
+.tg-bas{background:rgba(111,176,255,.18);color:var(--info)}
+.tg-opt{background:rgba(79,209,145,.18);color:var(--ok)}
+.tg-eleve{background:rgba(255,180,84,.2);color:var(--warn)}
+.tg-risque{background:rgba(255,106,106,.2);color:var(--bad)}
+.tg-nd{background:rgba(255,255,255,.06);color:var(--muted)}
+
+/* ═══ DASHBOARD INDIVIDUALISATION ═══ */
+.dashHead{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.dashFilters{display:flex;gap:6px;flex-wrap:wrap}
+.dfBtn{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:6px 14px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.dfBtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.dashHead .btn.primary{margin-left:auto}
+
+.dashStrip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+@media (max-width:900px){.dashStrip{grid-template-columns:repeat(2,1fr)}}
+.dsCard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden}
+.dsCard .dsK{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.dsCard .dsV{font-size:30px;font-weight:800;font-family:'Barlow Condensed',sans-serif;line-height:1.05;margin-top:4px}
+.dsCard .dsU{font-size:11px;color:var(--muted);margin-top:1px}
+.dsCard .dsIco{position:absolute;top:12px;right:14px;font-size:17px;opacity:.5}
+.dsCard.warn{border-color:rgba(255,180,84,.45)}
+.dsCard.warn .dsV{color:var(--warn)}
+.dsCard.bad{border-color:rgba(255,106,106,.45)}
+.dsCard.bad .dsV{color:var(--bad)}
+
+.dashGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px}
+.pCard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px;cursor:pointer;position:relative;transition:transform .12s,border-color .12s}
+.pCard:hover{transform:translateY(-2px);border-color:var(--accent)}
+.pCard.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.pcTop{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pcAv{width:34px;height:34px;border-radius:10px;background:var(--panel3);flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--muted);overflow:hidden}
+.pcAv img{width:100%;height:100%;object-fit:cover}
+.pcName{font-size:13px;font-weight:700;line-height:1.15;flex:1;min-width:0}
+.pcName small{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-top:1px}
+.pcRing{width:38px;height:38px;flex:none}
+.pcMid{display:flex;align-items:flex-end;gap:2px;height:30px;margin-bottom:8px}
+.pcMid i{flex:1;border-radius:2px 2px 0 0;min-height:2px;background:var(--accent);opacity:.55}
+.pcMid i.last{opacity:1}
+.pcFoot{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted);font-weight:600}
+.pcFoot .sep{margin-left:auto}
+.pcBadge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.3px}
+
+.dashDet{background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;margin-top:18px}
+.ddHead{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.ddAv{width:52px;height:52px;border-radius:13px;background:var(--panel3);flex:none;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--muted)}
+.ddAv img{width:100%;height:100%;object-fit:cover}
+.ddName{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;line-height:1}
+.ddSub{font-size:11px;color:var(--muted);margin-top:2px}
+.ddClose{margin-left:auto;background:none;border:1px solid var(--line);border-radius:8px;color:var(--muted);cursor:pointer;padding:5px 12px;font-size:12px;font-family:inherit}
+.ddCols{display:grid;grid-template-columns:1.35fr 1fr;gap:18px}
+@media (max-width:1000px){.ddCols{grid-template-columns:1fr}}
+.ddBlock{margin-bottom:20px}
+.ddTitle{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ddTitle .hint{font-weight:600;letter-spacing:0;text-transform:none;opacity:.75;margin-left:auto;font-size:10px}
+.ddChart{width:100%;display:block;overflow:visible}
+.ddChart.bars{height:104px}
+.ddAxis{display:flex;margin-top:4px}
+.ddAxis span{flex:1;text-align:center;font-size:9px;color:#8a7fa0;font-weight:600}
+.ddChart.lines{height:92px}
+.ddLegend{display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--muted);font-weight:600;margin-top:8px}
+.ddLegend span{display:flex;align-items:center;gap:5px}
+.ddLegend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+.famBar{display:flex;height:22px;border-radius:6px;overflow:hidden;margin-bottom:9px;background:var(--panel2)}
+.famBar i{display:block;height:100%}
+.famList{display:flex;flex-direction:column;gap:6px}
+.famRow{display:flex;align-items:center;gap:8px;font-size:11px}
+.famRow .dot{width:9px;height:9px;border-radius:3px;flex:none}
+.famRow .nm{flex:1;color:var(--muted);font-weight:600}
+.famRow .vl{font-family:'Spline Sans Mono',monospace;font-weight:700;font-size:11px}
+
+.tl{position:relative;padding-left:20px;max-height:340px;overflow-y:auto}
+.tl:before{content:'';position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--line)}
+.tlItem{position:relative;margin-bottom:11px}
+.tlItem:before{content:'';position:absolute;left:-18px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--panel)}
+.tlItem.hi:before{background:var(--warn)}
+.tlCard{background:var(--panel2);border-radius:10px;padding:9px 12px}
+.tlTop{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.tlDate{font-family:'Spline Sans Mono',monospace;font-size:10px;color:var(--muted);font-weight:700}
+.tlAct{font-size:12px;font-weight:700;flex:1}
+.tlDel{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;opacity:.5}
+.tlDel:hover{opacity:1;color:var(--bad)}
+.tlChips{display:flex;gap:5px;flex-wrap:wrap}
+.tlChip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--panel3);color:var(--muted);font-family:'Spline Sans Mono',monospace}
+.tlChip.rpe{background:rgba(139,123,255,.2);color:var(--accent)}
+.tlNote{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.3;font-style:italic}
+
+.qaOverlay{position:fixed;inset:0;background:rgba(6,2,18,.72);display:none;align-items:center;justify-content:center;z-index:120;padding:20px}
+.qaOverlay.on{display:flex}
+.qaPanel{background:var(--panel);border:1px solid var(--line);border-radius:16px;width:100%;max-width:620px;max-height:90vh;overflow-y:auto}
+.qaHead{display:flex;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line);font-size:14px;font-weight:700}
+.qaHead button{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px}
+.qaBody{padding:16px 18px 18px}
+.qaBody label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);font-weight:600}
+.qaBody input,.qaBody select,.qaBody textarea{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);font-family:inherit;font-size:13px;width:100%}
+.qaBody textarea{min-height:44px;margin-bottom:12px;resize:vertical}
+.qaRow2{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px;align-items:end}
+.qaRow4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}
+@media (max-width:600px){.qaRow4{grid-template-columns:1fr 1fr}}
+.qaFb{background:var(--panel2);border-radius:10px;padding:11px 13px;margin-bottom:12px}
+.qaFbHead{font-size:11px;font-weight:700;margin-bottom:9px;color:var(--muted)}
+.dashEmpty{grid-column:1/-1;padding:34px;text-align:center;color:var(--muted);font-size:13px;background:var(--panel);border:1px dashed var(--line);border-radius:14px}
+.hmWrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:18px}
+.hmHead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.hmTitle{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted)}
+.hmLeg{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted);font-weight:600}
+.hmLeg i{width:13px;height:13px;border-radius:3px;display:inline-block}
+.hmRow{display:grid;grid-template-columns:132px 1fr;gap:10px;align-items:center;margin-bottom:4px}
+.hmName{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hmCells{display:grid;gap:3px}
+.hmCell{height:19px;border-radius:3px;background:var(--panel2)}
+.hmAxis{display:grid;gap:3px;margin-top:5px;padding-left:142px}
+.hmAxis span{font-size:9px;color:var(--muted);text-align:center;font-weight:600}
 #sheetCanvasWrap{width:100%;max-width:960px;overflow:auto}
 #sheetCanvas{position:relative;width:960px;height:540px;background-size:cover;background-position:center;background-color:#2a1a4a;border-radius:8px;border:1px solid var(--line);user-select:none}
 .sheetItem{position:absolute;width:170px;background:rgba(255,255,255,.97);color:#17122b;border-radius:8px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.4);cursor:grab;touch-action:none;font-size:11px}
@@ -468,6 +675,29 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   .macroLogo .ini{font-size:8pt;font-weight:800;color:#fff}
 
   .pFoot{position:absolute;bottom:6mm;left:12mm;right:12mm;display:flex;justify-content:space-between;font-size:6.5pt;color:#9b93a8;border-top:.3mm solid #e8e3ee;padding-top:1.6mm}
+  .pSheet{background:#2a1a4a;color:#fff}
+  .pSheet .shPat{position:absolute;inset:0;background-image:var(--pattern-bg);background-size:150mm 84mm;background-repeat:repeat;opacity:.5}
+  .pSheet .shShade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,8,48,.5),rgba(20,8,48,.78))}
+  .pSheet .shIn{position:absolute;inset:0;padding:8mm 10mm}
+  .pSheet .shTop{display:flex;align-items:center;gap:6mm;margin-bottom:6mm}
+  .pSheet .shChip{background:#2a7fd4;color:#fff;border-radius:20mm;padding:2.4mm 8mm;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:800;font-size:17pt;text-transform:uppercase;letter-spacing:1px}
+  .pSheet .shMeta{background:#fff;color:#2a1a4a;border-radius:2mm;padding:2mm 5mm;font-weight:700;font-size:10pt}
+  .pSheet .shLogos{margin-left:auto;display:flex;align-items:center;gap:4mm}
+  .pSheet .shLogos img{height:15mm}
+  .pSheet .shName{font-family:'Barlow Condensed',Arial,sans-serif;font-weight:800;font-size:17pt;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4mm;color:#fff;text-shadow:0 1mm 2mm rgba(0,0,0,.5)}
+  .shTbl{width:100%;border-collapse:collapse;font-size:7.6pt;margin-bottom:4mm;background:#fff;color:#17122b}
+  .shTbl th{background:#2a7fd4;color:#fff;font-size:6.6pt;font-weight:800;text-transform:uppercase;padding:1.6mm 1.4mm;text-align:center;letter-spacing:.3px;border:.2mm solid #2a7fd4}
+  .shTbl td{border:.2mm solid #dfd9e6;padding:1.8mm 1.6mm;text-align:center;vertical-align:middle}
+  .shTbl tr:nth-child(even) td{background:#f2f0f5}
+  .shTbl .shCat{background:#2a7fd4;color:#fff;font-weight:800;font-size:9pt;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:2px;text-transform:uppercase;width:9mm;padding:2mm 0;white-space:nowrap}
+  .shTbl .shEx{font-weight:800;text-align:left;font-size:8pt}
+  .shTbl .shTxt{text-align:left;font-size:7pt;line-height:1.25}
+  .shTbl img{max-width:22mm;max-height:14mm;object-fit:contain;display:block;margin:0 auto}
+  .shFb{margin-top:auto}
+  .shFbTitle{font-family:'Barlow Condensed',Arial,sans-serif;font-weight:800;font-size:13pt;margin-bottom:2mm;color:#fff;text-transform:uppercase;letter-spacing:1px;text-shadow:0 1mm 2mm rgba(0,0,0,.5)}
+  .shFbTbl{width:100%;border-collapse:collapse;background:#fff;color:#17122b}
+  .shFbTbl th{background:#3d2c56;color:#fff;font-size:6.4pt;font-weight:800;padding:1.6mm 1mm;text-align:center;border:.2mm solid #fff;text-transform:uppercase}
+  .shFbTbl td{border:.2mm solid #cfc7da;height:9mm}
   .pLeg{display:flex;gap:4mm;flex-wrap:wrap;font-size:6.8pt;color:#5a4b74;margin-top:3mm}
   .pLeg span{display:flex;align-items:center;gap:1.2mm;font-weight:600}
   .pLeg i{width:3mm;height:3mm;border-radius:.6mm;display:inline-block;border:.2mm solid rgba(0,0,0,.2);-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -716,6 +946,8 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <button class="on" onclick="indivTab(this,'seance')">Séance du jour</button>
     <button onclick="indivTab(this,'carto')">Cartographie joueurs</button>
     <button onclick="indivTab(this,'histo')">Historique</button>
+    <button onclick="indivTab(this,'charge')">Suivi de charge</button>
+    <button onclick="indivTab(this,'presc')">Prescription</button>
   </div>
 
   <div id="indiv-seance">
@@ -741,6 +973,109 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <button class="btn" style="margin-left:auto" onclick="resetIndivHistory()">Réinitialiser l'historique</button>
     </div>
     <div id="indivHisto"></div>
+  </div>
+
+  <div id="indiv-charge" style="display:none">
+
+    <div class="dashHead">
+      <div class="dashFilters">
+        <button class="dfBtn on" data-f="all" onclick="setDashFilter('all',this)">Tout l'effectif</button>
+        <button class="dfBtn" data-f="alert" onclick="setDashFilter('alert',this)">🔴 À surveiller</button>
+        <button class="dfBtn" data-f="low" onclick="setDashFilter('low',this)">🔵 Sous-chargés</button>
+        <button class="dfBtn" data-f="none" onclick="setDashFilter('none',this)">⚪ Sans données</button>
+      </div>
+      <button class="btn primary" onclick="openQuickAdd()">＋ Saisir une séance</button>
+    </div>
+
+    <div class="dashStrip" id="dashStrip"></div>
+
+    <div class="dashGrid" id="dashGrid"></div>
+
+    <div id="dashDetail" style="display:none"></div>
+
+    <div class="hmWrap" id="hmWrap"></div>
+
+    <div class="qaOverlay" id="qaOverlay" onclick="if(event.target===this)closeQuickAdd()">
+      <div class="qaPanel">
+        <div class="qaHead">
+          <span>Saisir une séance</span>
+          <button onclick="closeQuickAdd()">✕</button>
+        </div>
+        <div class="qaBody">
+          <div class="qaRow2">
+            <label>Joueur<select id="chgPlayer"></select></label>
+            <label>Date<input type="date" id="chgDate"></label>
+          </div>
+          <div class="qaRow2">
+            <label>Secteur<select id="chgSecteur" onchange="fillChgActions()"></select></label>
+            <label>Action<select id="chgAction"></select></label>
+          </div>
+          <div class="qaRow4">
+            <label>Séries<input type="number" id="chgSeries" min="0" placeholder="4"></label>
+            <label>Reps<input type="text" id="chgReps" placeholder="8-10"></label>
+            <label>Charge kg<input type="number" id="chgKg" step="0.5" placeholder="60"></label>
+            <label>Durée min<input type="number" id="chgDuree" min="0" placeholder="30"></label>
+          </div>
+          <div class="qaFb">
+            <div class="qaFbHead">Ressenti post-séance <span class="note">facultatif</span></div>
+            <div class="chgSliders" id="chgSliders"></div>
+          </div>
+          <textarea id="chgComment" placeholder="Commentaire (facultatif)"></textarea>
+          <div class="qaRow2">
+            <label>Réalisé par<input type="text" id="chgRealisePar" placeholder="Pierrick / Julien"></label>
+            <button class="btn primary" onclick="addChargeSession()">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="indiv-presc" style="display:none">
+    <div class="chgTop">
+      <div class="chgCard chgForm">
+        <div class="chgCardHead">🎯 Nouvelle séance prescrite</div>
+        <div class="chgRow2">
+          <label>Joueur<select id="prPlayer"></select></label>
+          <label>Date<input type="date" id="prDate"></label>
+        </div>
+        <div class="chgRow2">
+          <label>Objectif<input type="text" id="prObjectif" placeholder="FORCE-VITESSE"></label>
+          <label>Durée prévue (min)<input type="number" id="prDuree" placeholder="30"></label>
+        </div>
+        <button class="btn primary" onclick="createPrescSession()">Créer et composer</button>
+      </div>
+
+      <div class="chgCard">
+        <div class="chgCardHead">📌 Séances à venir</div>
+        <div id="prUpcoming"></div>
+      </div>
+    </div>
+
+    <div class="chgCard" id="prBuilder" style="display:none;margin-top:14px">
+      <div class="chgCardHead">
+        🧱 <span id="prBuilderTitle"></span>
+        <button class="btn ghost" style="margin-left:auto;font-size:11px" onclick="closePrescBuilder()">Fermer</button>
+        <button class="btn" style="font-size:11px" onclick="printPrescSheet()">🖨️ Fiche séance</button>
+        <button class="btn" style="font-size:11px" onclick="markPrescDone()">✅ Marquer réalisée</button>
+      </div>
+      <div class="prAddRow">
+        <select id="prBloc"><option value="1">Bloc 1</option><option value="2">Bloc 2</option><option value="3">Bloc 3</option><option value="4">Bloc 4</option></select>
+        <input type="text" id="prCategorie" placeholder="Catégorie (Vertical, COD…)" list="prCatList">
+        <datalist id="prCatList"><option>Vertical</option><option>Horizontal</option><option>COD</option><option>Prévention</option><option>Gainage</option></datalist>
+        <select id="prExSel"></select>
+        <input type="text" id="prNomLibre" placeholder="…ou nom libre">
+        <button class="btn" onclick="addPrescItem()">+ Ajouter</button>
+      </div>
+      <div id="prItems"></div>
+    </div>
+
+    <div class="chgCard" style="margin-top:14px">
+      <div class="chgCardHead">
+        📋 Séances prescrites
+        <select id="prFilterPlayer" onchange="renderPrescList()" style="margin-left:auto;max-width:200px"></select>
+      </div>
+      <div id="prList"></div>
+    </div>
   </div>
 </section>
 
@@ -1994,6 +2329,8 @@ async function afterLogin(user){
     await loadExtMatches();
     await loadBoard();
     await loadProgrammes();
+    await loadCharge();
+    await loadPresc();
   }catch(e){
     document.getElementById('loadingScreen').classList.remove('on');
     document.getElementById('loginScreen').style.display='flex';
@@ -2837,7 +3174,523 @@ function indivTab(btn,name){
   document.getElementById('indiv-seance').style.display=name==='seance'?'block':'none';
   document.getElementById('indiv-carto').style.display=name==='carto'?'block':'none';
   document.getElementById('indiv-histo').style.display=name==='histo'?'block':'none';
+  document.getElementById('indiv-charge').style.display=name==='charge'?'block':'none';
+  document.getElementById('indiv-presc').style.display=name==='presc'?'block':'none';
+  if(name==='charge')renderCharge();
+  if(name==='presc')renderPresc();
 }
+
+/* ═══════ PRESCRIPTION DE SÉANCES INDIVIDUELLES ═══════ */
+let PRESC=[], PRESC_ITEMS=[], currentPrescId=null;
+const PR_FIELDS=[['series','Séries'],['reps','Reps'],['tempo','Tempo'],['intensite_rm','%RM / charge'],['vbt','VBT / consigne'],['rpe_cible','RPE cible'],['recup',"Récup"]];
+
+async function loadPresc(){
+  const {data,error}=await supa.from('presc_sessions').select('*').order('date',{ascending:false}).limit(300);
+  if(error){console.error(error);return;}
+  PRESC=data||[];
+}
+function renderPresc(){
+  const sel=document.getElementById('prPlayer');
+  if(!sel.options.length){
+    sel.innerHTML=chgPlayerOptions();
+    document.getElementById('prFilterPlayer').innerHTML='<option value="">Tous les joueurs</option>'+chgPlayerOptions();
+    document.getElementById('prDate').value=new Date().toISOString().slice(0,10);
+    document.getElementById('prExSel').innerHTML='<option value="">— Exercice de la banque —</option>'+
+      EXBANK.map(e=>`<option value="${e.id}">${e.nom}</option>`).join('');
+  }
+  renderPrescList();renderPrescUpcoming();
+}
+function renderPrescUpcoming(){
+  const today=new Date().toISOString().slice(0,10);
+  const up=PRESC.filter(p=>p.statut==='prevu'&&p.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,8);
+  const box=document.getElementById('prUpcoming');
+  if(!up.length){box.innerHTML='<div class="chgEmpty">Aucune séance prévue.</div>';return;}
+  box.innerHTML=up.map(p=>{
+    const pl=IPLAYERS.find(x=>x.id===p.player_id);
+    return `<div class="prUp"><span class="d">${fmtDateFR(p.date)}</span>
+      <span class="n">${pl?pl.name:'?'}<br><span class="cs" style="font-size:10px;opacity:.7">${p.objectif||p.titre}</span></span>
+      <button onclick="openPrescBuilder('${p.id}')">Ouvrir</button></div>`;
+  }).join('');
+}
+function renderPrescList(){
+  const pid=document.getElementById('prFilterPlayer').value;
+  const list=PRESC.filter(p=>!pid||p.player_id===pid).slice(0,40);
+  const box=document.getElementById('prList');
+  if(!list.length){box.innerHTML='<div class="chgEmpty">Aucune séance prescrite.</div>';return;}
+  box.innerHTML=list.map(p=>{
+    const pl=IPLAYERS.find(x=>x.id===p.player_id);
+    return `<div class="prRow">
+      <span class="cd">${fmtDateFR(p.date)}</span>
+      <span><span class="cn">${pl?pl.name:'?'}</span><br><span class="cs">${p.objectif||p.titre}</span></span>
+      <span><span class="prSt ${p.statut}">${p.statut==='prevu'?'Prévu':(p.statut==='fait'?'Réalisé':'Annulé')}</span></span>
+      <span class="cs">${p.duree_prevue_min?p.duree_prevue_min+' min':''}</span>
+      <span><button onclick="openPrescBuilder('${p.id}')">Composer</button></span>
+      <button onclick="deletePresc('${p.id}')" title="Supprimer">✕</button>
+    </div>`;
+  }).join('');
+}
+async function createPrescSession(){
+  const player_id=document.getElementById('prPlayer').value;
+  if(!player_id){alert('Choisis un joueur.');return;}
+  const objectif=document.getElementById('prObjectif').value.trim()||null;
+  const d=document.getElementById('prDuree').value;
+  const row={player_id,objectif,titre:objectif||'Séance individuelle',
+    date:document.getElementById('prDate').value||new Date().toISOString().slice(0,10),
+    duree_prevue_min:d===''?null:Number(d),created_by:CURRENT_USER_LABEL};
+  const {data,error}=await supa.from('presc_sessions').insert(row).select().single();
+  if(error){alert('Erreur : '+error.message);return;}
+  PRESC.unshift(data);
+  document.getElementById('prObjectif').value='';
+  renderPrescList();renderPrescUpcoming();
+  openPrescBuilder(data.id);
+}
+async function deletePresc(id){
+  if(!confirm('Supprimer cette séance prescrite et son contenu ?'))return;
+  const {error}=await supa.from('presc_sessions').delete().eq('id',id);
+  if(error){alert('Erreur : '+error.message);return;}
+  PRESC=PRESC.filter(p=>p.id!==id);
+  if(currentPrescId===id)closePrescBuilder();
+  renderPrescList();renderPrescUpcoming();
+}
+async function openPrescBuilder(id){
+  currentPrescId=id;
+  const p=PRESC.find(x=>x.id===id); if(!p)return;
+  const pl=IPLAYERS.find(x=>x.id===p.player_id);
+  document.getElementById('prBuilderTitle').textContent=`${pl?pl.name:'?'} — ${p.objectif||p.titre} — ${fmtDateFR(p.date)}`;
+  const {data,error}=await supa.from('presc_items').select('*').eq('session_id',id).order('sort_order');
+  if(error){console.error(error);return;}
+  PRESC_ITEMS=data||[];
+  document.getElementById('prBuilder').style.display='block';
+  document.getElementById('prBuilder').scrollIntoView({behavior:'smooth',block:'start'});
+  renderPrescItems();
+}
+function closePrescBuilder(){currentPrescId=null;document.getElementById('prBuilder').style.display='none'}
+function renderPrescItems(){
+  const box=document.getElementById('prItems');
+  if(!PRESC_ITEMS.length){box.innerHTML='<div class="chgEmpty">Aucun exercice. Ajoute-en ci-dessus.</div>';return;}
+  const blocs={};
+  PRESC_ITEMS.forEach(it=>{(blocs[it.bloc]=blocs[it.bloc]||[]).push(it)});
+  box.innerHTML=Object.keys(blocs).sort((a,b)=>a-b).map(b=>{
+    const items=blocs[b];
+    const cats=[...new Set(items.map(i=>i.categorie).filter(Boolean))];
+    return `<div class="prBloc">
+      <div class="prBlocHead">Bloc ${b}${cats.map(c=>`<span class="cat">${c}</span>`).join('')}</div>
+      ${items.map((it,i)=>{
+        const ex=EXBANK.find(e=>e.id===it.exercise_id);
+        const nm=ex?ex.nom:(it.nom_libre||'?');
+        return `<div class="prItem">
+          <div class="prItemTop"><span class="num">${i+1}</span><span class="nm">${nm.replace(/</g,'&lt;')}</span>
+            <button onclick="movePrescItem('${it.id}',-1)" title="Monter">↑</button>
+            <button onclick="movePrescItem('${it.id}',1)" title="Descendre">↓</button>
+            <button onclick="removePrescItem('${it.id}')" title="Retirer">✕</button></div>
+          <div class="prGrid txt">
+            <div class="prF"><label>Consignes (le comment)</label><textarea onchange="updPrescItem('${it.id}','consignes',this.value)">${it.consignes||''}</textarea></div>
+            <div class="prF"><label>Intentions (le pourquoi)</label><textarea onchange="updPrescItem('${it.id}','intentions',this.value)">${it.intentions||''}</textarea></div>
+          </div>
+          <div class="prGrid">
+            ${PR_FIELDS.map(([k,lab])=>`<div class="prF"><label>${lab}</label>
+              <input value="${it[k]!=null?it[k]:''}" onchange="updPrescItem('${it.id}','${k}',this.value)"></div>`).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+async function addPrescItem(){
+  if(!currentPrescId)return;
+  const exId=document.getElementById('prExSel').value;
+  const libre=document.getElementById('prNomLibre').value.trim();
+  if(!exId&&!libre){alert('Choisis un exercice ou saisis un nom libre.');return;}
+  const row={session_id:currentPrescId,exercise_id:exId||null,nom_libre:exId?null:libre,
+    bloc:Number(document.getElementById('prBloc').value),
+    categorie:document.getElementById('prCategorie').value.trim()||null,
+    sort_order:PRESC_ITEMS.length?Math.max(...PRESC_ITEMS.map(i=>i.sort_order))+1:0};
+  const {data,error}=await supa.from('presc_items').insert(row).select().single();
+  if(error){alert('Erreur : '+error.message);return;}
+  PRESC_ITEMS.push(data);
+  document.getElementById('prExSel').value='';
+  document.getElementById('prNomLibre').value='';
+  renderPrescItems();
+}
+async function updPrescItem(id,field,val){
+  const it=PRESC_ITEMS.find(x=>x.id===id); if(!it)return;
+  let v=val.trim()===''?null:val.trim();
+  if(field==='rpe_cible')v=v===null?null:Number(v);
+  it[field]=v;
+  const {error}=await supa.from('presc_items').update({[field]:v}).eq('id',id);
+  if(error)alert('Erreur de sauvegarde : '+error.message);
+}
+async function removePrescItem(id){
+  if(!confirm('Retirer cet exercice ?'))return;
+  const {error}=await supa.from('presc_items').delete().eq('id',id);
+  if(error){alert('Erreur : '+error.message);return;}
+  PRESC_ITEMS=PRESC_ITEMS.filter(i=>i.id!==id);
+  renderPrescItems();
+}
+async function movePrescItem(id,dir){
+  const idx=PRESC_ITEMS.findIndex(i=>i.id===id), sw=idx+dir;
+  if(idx<0||sw<0||sw>=PRESC_ITEMS.length)return;
+  const a=PRESC_ITEMS[idx],b=PRESC_ITEMS[sw];
+  const ao=a.sort_order,bo=b.sort_order;
+  const [{error:e1},{error:e2}]=await Promise.all([
+    supa.from('presc_items').update({sort_order:bo}).eq('id',a.id),
+    supa.from('presc_items').update({sort_order:ao}).eq('id',b.id)]);
+  if(e1||e2){alert('Erreur : '+((e1||e2).message));return;}
+  a.sort_order=bo;b.sort_order=ao;
+  PRESC_ITEMS.sort((x,y)=>x.sort_order-y.sort_order);
+  renderPrescItems();
+}
+async function markPrescDone(){
+  if(!currentPrescId)return;
+  const p=PRESC.find(x=>x.id===currentPrescId); if(!p)return;
+  if(!confirm('Marquer cette séance comme réalisée ? Elle sera reportée dans le suivi de charge.'))return;
+  const {error}=await supa.from('presc_sessions').update({statut:'fait',done_at:new Date().toISOString()}).eq('id',currentPrescId);
+  if(error){alert('Erreur : '+error.message);return;}
+  p.statut='fait';
+  // report automatique dans le suivi de charge : la saisie n'est plus à refaire
+  const act=CHG_ACTIONS.find(a=>a.secteur==='preparation_physique');
+  const row={player_id:p.player_id,action_id:act?act.id:null,date:p.date,
+    duree_min:p.duree_prevue_min||null,presc_session_id:p.id,
+    commentaire:p.objectif?('Séance prescrite : '+p.objectif):null,
+    realise_par:CURRENT_USER_LABEL,created_by:CURRENT_USER_LABEL};
+  const {data,error:e2}=await supa.from('charge_sessions').insert(row).select().single();
+  if(e2){alert('Séance marquée réalisée, mais report en charge impossible : '+e2.message);}
+  else{CHG_SESSIONS.unshift(data);}
+  renderPrescList();renderPrescUpcoming();
+  alert('Séance marquée réalisée et reportée dans le suivi de charge.');
+}
+
+/* ═══════ DASHBOARD INDIVIDUALISATION — SUIVI DE CHARGE ═══════ */
+let CHG_ACTIONS=[], CHG_SESSIONS=[], dashFilter='all', dashSel=null;
+const CHG_SECTEURS={preparation_physique:'Préparation physique',technique:'Technique',video:'Vidéo',dietetique:'Diététique',mental:'Préparation mentale',kine:'Kiné / Médical'};
+const CHG_FB=[['rpe_reel','RPE global'],['rpe_musculaire','RPE musculaire'],['rpe_cardio','RPE cardio'],['vivacite','Vivacité'],['fatigue','Fatigue'],['doms','DOMS']];
+const FAM_COLORS=['#8a6fd6','#4fd191','#6fb0ff','#ffb454','#ff6a6a','#22c1c3','#e1b57a'];
+
+async function loadCharge(){
+  const [{data:a,error:e1},{data:s,error:e2}]=await Promise.all([
+    supa.from('charge_actions').select('*').eq('actif',true).order('nom'),
+    supa.from('charge_sessions').select('*').order('date',{ascending:false}).limit(1500),
+  ]);
+  if(e1)console.error(e1); if(e2)console.error(e2);
+  CHG_ACTIONS=a||[]; CHG_SESSIONS=s||[];
+}
+function sessionLoad(s){
+  const d=s.duree_min||0;
+  const r=s.rpe_reel!=null?s.rpe_reel:(s.rpe_cible!=null?s.rpe_cible:null);
+  return r!=null?d*r:d;
+}
+function loadWindow(pid,days){
+  const end=new Date(); const start=new Date(end); start.setDate(start.getDate()-days);
+  return CHG_SESSIONS.filter(s=>(!pid||s.player_id===pid)&&new Date(s.date)>start&&new Date(s.date)<=end)
+    .reduce((t,s)=>t+sessionLoad(s),0);
+}
+function sessionsOf(pid,days){
+  const lim=new Date(); lim.setDate(lim.getDate()-days);
+  return CHG_SESSIONS.filter(s=>(!pid||s.player_id===pid)&&new Date(s.date)>=lim);
+}
+function acwrOf(pid){
+  const aigu=loadWindow(pid,7), chronique=loadWindow(pid,28)/4;
+  return chronique<=0?{ratio:null,aigu,chronique}:{ratio:aigu/chronique,aigu,chronique};
+}
+function acwrTag(r){
+  if(r==null)return ['nd','Aucune donnée','#6E6880'];
+  if(r<0.8)return ['bas','Sous-charge','#6fb0ff'];
+  if(r<=1.3)return ['opt','Optimal','#4fd191'];
+  if(r<=1.5)return ['eleve','Charge élevée','#ffb454'];
+  return ['risque','Pic à surveiller','#ff6a6a'];
+}
+function weeklyLoads(pid,n){
+  const out=[];
+  for(let i=n-1;i>=0;i--){
+    const end=new Date(); end.setDate(end.getDate()-i*7);
+    const start=new Date(end); start.setDate(start.getDate()-7);
+    out.push(CHG_SESSIONS.filter(s=>(!pid||s.player_id===pid)&&new Date(s.date)>start&&new Date(s.date)<=end)
+      .reduce((t,s)=>t+sessionLoad(s),0));
+  }
+  return out;
+}
+function chgInitials(n){return (n||'').split(/[\s-]+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()}
+function playerPhoto(p){
+  if(!p||!p.photo_path)return null;
+  try{return supa.storage.from('player-photos').getPublicUrl(p.photo_path).data.publicUrl}catch(e){return null}
+}
+function chgPlayerOptions(){return IPLAYERS.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}
+function fillChgActions(){
+  const sect=document.getElementById('chgSecteur').value;
+  const byFam={};
+  CHG_ACTIONS.filter(a=>a.secteur===sect).forEach(a=>{const f=a.famille||'—';(byFam[f]=byFam[f]||[]).push(a)});
+  document.getElementById('chgAction').innerHTML=Object.keys(byFam).sort().map(f=>
+    `<optgroup label="${f}">${byFam[f].map(a=>`<option value="${a.id}">${a.nom}</option>`).join('')}</optgroup>`
+  ).join('')||'<option value="">— aucune action —</option>';
+}
+function renderChgSliders(){
+  document.getElementById('chgSliders').innerHTML=CHG_FB.map(([k,lab])=>
+    `<div class="chgSl"><div class="lab"><span>${lab}</span><span class="val" id="v-${k}">—</span></div>
+     <input type="range" min="0" max="10" step="0.5" value="0" id="sl-${k}"
+       oninput="document.getElementById('v-${k}').textContent=this.value>0?this.value:'—'"></div>`).join('');
+}
+function renderCharge(){
+  const psel=document.getElementById('chgPlayer');
+  if(psel&&!psel.options.length){
+    psel.innerHTML=chgPlayerOptions();
+    document.getElementById('chgSecteur').innerHTML=Object.entries(CHG_SECTEURS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+    document.getElementById('chgDate').value=new Date().toISOString().slice(0,10);
+    renderChgSliders(); fillChgActions();
+  }
+  renderDashStrip(); renderDashGrid(); renderHeatmap();
+  if(dashSel)renderDashDetail(dashSel);
+}
+function renderDashStrip(){
+  const box=document.getElementById('dashStrip'); if(!box)return;
+  const stats=IPLAYERS.map(p=>({p,...acwrOf(p.id)}));
+  const actifs=stats.filter(s=>s.aigu>0||s.chronique>0);
+  const risque=stats.filter(s=>s.ratio!=null&&s.ratio>1.5).length;
+  const eleve=stats.filter(s=>s.ratio!=null&&s.ratio>1.3&&s.ratio<=1.5).length;
+  const s7=sessionsOf(null,7);
+  const totalMin=s7.reduce((t,s)=>t+(s.duree_min||0),0);
+  const hrs=m=>m>=60?(m/60).toFixed(1)+' h':m+' min';
+  const card=(k,v,u,ico,cls)=>`<div class="dsCard ${cls||''}"><div class="dsIco">${ico}</div>
+    <div class="dsK">${k}</div><div class="dsV">${v}</div><div class="dsU">${u}</div></div>`;
+  box.innerHTML=
+    card('Séances 7 jours',s7.length,hrs(totalMin),'📋')+
+    card('Joueurs suivis',actifs.length,`sur ${IPLAYERS.length} de l'effectif`,'👥')+
+    card('Charge élevée',eleve,'ratio 1,3 – 1,5','⚠️',eleve>0?'warn':'')+
+    card('Pics à surveiller',risque,'ratio > 1,5','🔴',risque>0?'bad':'');
+}
+function ringSvg(ratio,size){
+  const [cls,lab,col]=acwrTag(ratio);
+  const r=size/2-4, c=2*Math.PI*r;
+  const pct=ratio==null?0:Math.max(0,Math.min(1,ratio/2));
+  return `<svg class="pcRing" viewBox="0 0 ${size} ${size}" style="width:${size}px;height:${size}px">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="4"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="4"
+      stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct)}" stroke-linecap="round"
+      transform="rotate(-90 ${size/2} ${size/2})"/>
+    <text x="${size/2}" y="${size/2+3.5}" text-anchor="middle" fill="${col}"
+      font-size="${size*0.28}" font-weight="800" font-family="Barlow Condensed,sans-serif">${ratio==null?'–':ratio.toFixed(1)}</text>
+  </svg>`;
+}
+function setDashFilter(f,btn){
+  dashFilter=f;
+  document.querySelectorAll('.dfBtn').forEach(b=>b.classList.toggle('on',b===btn));
+  renderDashGrid();
+}
+function renderDashGrid(){
+  const box=document.getElementById('dashGrid'); if(!box)return;
+  let rows=IPLAYERS.map(p=>{
+    const a=acwrOf(p.id);
+    const last=CHG_SESSIONS.filter(s=>s.player_id===p.id)[0];
+    return {p,...a,last,weeks:weeklyLoads(p.id,8)};
+  });
+  if(dashFilter==='alert')rows=rows.filter(r=>r.ratio!=null&&r.ratio>1.3);
+  else if(dashFilter==='low')rows=rows.filter(r=>r.ratio!=null&&r.ratio<0.8);
+  else if(dashFilter==='none')rows=rows.filter(r=>r.aigu===0&&r.chronique===0);
+  rows.sort((a,b)=>(b.ratio==null?-1:b.ratio)-(a.ratio==null?-1:a.ratio));
+  if(!rows.length){box.innerHTML='<div class="dashEmpty">Aucun joueur dans cette sélection.</div>';return;}
+  const mx=Math.max(...rows.flatMap(r=>r.weeks),1);
+  box.innerHTML=rows.map(r=>{
+    const [cls,lab,col]=acwrTag(r.ratio);
+    const ph=playerPhoto(r.p);
+    const days=r.last?Math.round((new Date()-new Date(r.last.date))/86400000):null;
+    return `<div class="pCard${dashSel===r.p.id?' sel':''}" onclick="openDashDetail('${r.p.id}')">
+      <div class="pcTop">
+        <span class="pcAv">${ph?`<img src="${ph}" alt="">`:chgInitials(r.p.name)}</span>
+        <span class="pcName">${r.p.name}<small>${Math.round(r.aigu)} UA · 7 j</small></span>
+        ${ringSvg(r.ratio,38)}
+      </div>
+      <div class="pcMid">${r.weeks.map((v,i)=>
+        `<i class="${i===r.weeks.length-1?'last':''}" style="height:${Math.max(4,(v/mx)*100)}%;background:${i===r.weeks.length-1?col:'var(--accent)'}"></i>`).join('')}</div>
+      <div class="pcFoot">
+        <span class="pcBadge tg-${cls}">${lab}</span>
+        <span class="sep">${days==null?'jamais':(days===0?"aujourd'hui":'il y a '+days+' j')}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function barChart(vals,labels,col,h){
+  const w=100, mx=Math.max(...vals,1), n=vals.length, gap=w/n, bw=gap*0.62;
+  // libellés rendus en HTML sous le SVG : le preserveAspectRatio="none"
+  // nécessaire aux barres déformerait le texte s'il était dans le SVG
+  return `<svg class="ddChart bars" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    ${[0.25,0.5,0.75,1].map(f=>`<line x1="0" y1="${h*(1-f)}" x2="${w}" y2="${h*(1-f)}" stroke="rgba(255,255,255,.07)" stroke-width="0.3"/>`).join('')}
+    ${vals.map((v,i)=>{
+      const bh=Math.max(0.6,(v/mx)*h);
+      return `<rect x="${i*gap+(gap-bw)/2}" y="${h-bh}" width="${bw}" height="${bh}" rx="1"
+        fill="${i===n-1?col:'var(--accent)'}" opacity="${i===n-1?1:.6}"/>`;
+    }).join('')}
+  </svg>
+  <div class="ddAxis">${labels.map(l=>`<span>${l||''}</span>`).join('')}</div>`;
+}
+function lineChart(series,h){
+  const w=100;
+  const all=series.flatMap(s=>s.pts.map(p=>p.v)).filter(v=>v!=null);
+  if(all.length<2)return '<div class="chgEmpty">Pas assez de ressentis saisis.</div>';
+  const mx=10, n=Math.max(...series.map(s=>s.pts.length),2);
+  const x=i=>(i/(n-1))*w;
+  return `<svg class="ddChart lines" viewBox="0 0 ${w} ${h+8}" preserveAspectRatio="none">
+    ${[0,0.5,1].map(f=>`<line x1="0" y1="${h*f}" x2="${w}" y2="${h*f}" stroke="rgba(255,255,255,.07)" stroke-width="0.3"/>`).join('')}
+    ${series.map(s=>{
+      const pts=s.pts.map((p,i)=>p.v==null?null:`${x(i)},${h-(p.v/mx)*h}`).filter(Boolean);
+      if(pts.length<2)return '';
+      return `<polyline points="${pts.join(' ')}" fill="none" stroke="${s.col}" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/>`;
+    }).join('')}
+  </svg>`;
+}
+function renderHeatmap(){
+  const box=document.getElementById('hmWrap'); if(!box)return;
+  const N=10;
+  const rows=IPLAYERS.map(p=>({p,weeks:weeklyLoads(p.id,N)}))
+    .filter(r=>r.weeks.some(v=>v>0));
+  if(!rows.length){box.style.display='none';return;}
+  box.style.display='block';
+  const mx=Math.max(...rows.flatMap(r=>r.weeks),1);
+  const shade=v=>{
+    if(v<=0)return 'var(--panel2)';
+    const t=v/mx;
+    if(t<0.25)return 'rgba(138,111,214,.28)';
+    if(t<0.5)return 'rgba(138,111,214,.5)';
+    if(t<0.75)return 'rgba(138,111,214,.75)';
+    return '#8a6fd6';
+  };
+  rows.sort((a,b)=>b.weeks[N-1]-a.weeks[N-1]);
+  const labels=Array.from({length:N},(_,i)=>i===N-1?'actuelle':'S-'+(N-1-i));
+  box.innerHTML=`<div class="hmHead">
+      <span class="hmTitle">Charge de l'effectif — ${N} dernières semaines</span>
+      <span class="hmLeg">faible <i style="background:rgba(138,111,214,.28)"></i><i style="background:rgba(138,111,214,.5)"></i><i style="background:rgba(138,111,214,.75)"></i><i style="background:#8a6fd6"></i> forte</span>
+    </div>
+    ${rows.map(r=>`<div class="hmRow"><span class="hmName">${r.p.name}</span>
+      <span class="hmCells" style="grid-template-columns:repeat(${N},1fr)">
+        ${r.weeks.map((v,i)=>`<i class="hmCell" style="background:${shade(v)}" title="${labels[i]} : ${Math.round(v)} UA"></i>`).join('')}
+      </span></div>`).join('')}
+    <div class="hmAxis" style="grid-template-columns:repeat(${N},1fr)">${labels.map(l=>`<span>${l}</span>`).join('')}</div>`;
+}
+function openDashDetail(pid){
+  dashSel=pid; renderDashGrid(); renderDashDetail(pid);
+  document.getElementById('dashDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeDashDetail(){
+  dashSel=null;
+  document.getElementById('dashDetail').style.display='none';
+  renderDashGrid();
+}
+function renderDashDetail(pid){
+  const box=document.getElementById('dashDetail'); if(!box)return;
+  const p=IPLAYERS.find(x=>x.id===pid); if(!p)return;
+  const {ratio,aigu,chronique}=acwrOf(pid);
+  const [cls,lab,col]=acwrTag(ratio);
+  const ph=playerPhoto(p);
+  const weeks=weeklyLoads(pid,12);
+  const wlabels=weeks.map((_,i)=>i%3===0?'S-'+(11-i):'');
+  const byFam={};
+  sessionsOf(pid,90).forEach(s=>{
+    const a=CHG_ACTIONS.find(x=>x.id===s.action_id);
+    const k=a?(a.famille||CHG_SECTEURS[a.secteur]||'Autre'):'Autre';
+    byFam[k]=(byFam[k]||0)+(s.duree_min||0);
+  });
+  const famRows=Object.entries(byFam).sort((a,b)=>b[1]-a[1]);
+  const famTot=famRows.reduce((t,[,v])=>t+v,0)||1;
+  const fbSess=CHG_SESSIONS.filter(s=>s.player_id===pid&&s.rpe_reel!=null).slice(0,12).reverse();
+  const mkS=(k,c)=>({col:c,pts:fbSess.map(s=>({v:s[k]}))});
+  const series=[mkS('rpe_reel','#8a6fd6'),mkS('fatigue','#ffb454'),mkS('doms','#ff6a6a')];
+  const sess=CHG_SESSIONS.filter(s=>s.player_id===pid).slice(0,14);
+  const hrs=m=>m>=60?(m/60).toFixed(1)+' h':m+' min';
+  const t30=sessionsOf(pid,30);
+  box.style.display='block';
+  box.innerHTML=`<div class="dashDet">
+    <div class="ddHead">
+      <span class="ddAv">${ph?`<img src="${ph}" alt="">`:chgInitials(p.name)}</span>
+      <span><span class="ddName">${p.name}</span>
+        <div class="ddSub">${t30.length} séances sur 30 j · ${hrs(t30.reduce((t,s)=>t+(s.duree_min||0),0))} · ratio ${ratio==null?'—':ratio.toFixed(2)} (${lab})</div></span>
+      ${ringSvg(ratio,54)}
+      <button class="ddClose" onclick="closeDashDetail()">Fermer</button>
+    </div>
+    <div class="ddCols">
+      <div>
+        <div class="ddBlock">
+          <div class="ddTitle">Charge hebdomadaire <span class="hint">12 semaines · unités arbitraires</span></div>
+          ${barChart(weeks,wlabels,col,52)}
+          <div class="ddLegend">
+            <span><i style="background:var(--accent)"></i>Semaines précédentes</span>
+            <span><i style="background:${col}"></i>Semaine en cours — ${Math.round(aigu)} UA</span>
+            <span>Moyenne 4 sem. : ${Math.round(chronique)} UA</span>
+          </div>
+        </div>
+        <div class="ddBlock">
+          <div class="ddTitle">Tendance du ressenti <span class="hint">12 dernières séances</span></div>
+          ${lineChart(series,44)}
+          <div class="ddLegend">
+            <span><i style="background:#8a6fd6"></i>RPE global</span>
+            <span><i style="background:#ffb454"></i>Fatigue</span>
+            <span><i style="background:#ff6a6a"></i>DOMS</span>
+          </div>
+        </div>
+        <div class="ddBlock" style="margin-bottom:0">
+          <div class="ddTitle">Répartition du travail <span class="hint">90 jours</span></div>
+          ${famRows.length?`<div class="famBar">${famRows.map(([k,v],i)=>
+            `<i style="width:${(v/famTot)*100}%;background:${FAM_COLORS[i%FAM_COLORS.length]}" title="${k}"></i>`).join('')}</div>
+          <div class="famList">${famRows.map(([k,v],i)=>
+            `<div class="famRow"><span class="dot" style="background:${FAM_COLORS[i%FAM_COLORS.length]}"></span>
+             <span class="nm">${k}</span><span class="vl">${Math.round(v/famTot*100)}%</span></div>`).join('')}</div>`
+          :'<div class="chgEmpty">Aucune séance sur 90 jours.</div>'}
+        </div>
+      </div>
+      <div>
+        <div class="ddTitle">Dernières séances</div>
+        ${sess.length?`<div class="tl">${sess.map(s=>{
+          const a=CHG_ACTIONS.find(x=>x.id===s.action_id);
+          const chips=[];
+          if(s.series||s.reps)chips.push(`<span class="tlChip">${[s.series?s.series+'×':'',s.reps||''].filter(Boolean).join(' ')}</span>`);
+          if(s.charge_kg)chips.push(`<span class="tlChip">${s.charge_kg} kg</span>`);
+          if(s.duree_min)chips.push(`<span class="tlChip">${s.duree_min} min</span>`);
+          if(s.rpe_reel!=null)chips.push(`<span class="tlChip rpe">RPE ${s.rpe_reel}</span>`);
+          const hi=s.rpe_reel!=null&&s.rpe_reel>=8;
+          return `<div class="tlItem${hi?' hi':''}"><div class="tlCard">
+            <div class="tlTop"><span class="tlDate">${fmtDateFR(s.date)}</span>
+              <span class="tlAct">${a?a.nom:'—'}</span>
+              <button class="tlDel" onclick="event.stopPropagation();deleteChargeSession('${s.id}')" title="Supprimer">✕</button></div>
+            <div class="tlChips">${chips.join('')}</div>
+            ${s.commentaire?`<div class="tlNote">${s.commentaire.replace(/</g,'&lt;')}</div>`:''}
+          </div></div>`;
+        }).join('')}</div>`:'<div class="chgEmpty">Aucune séance enregistrée.</div>'}
+      </div>
+    </div>
+  </div>`;
+}
+function openQuickAdd(){
+  if(dashSel)document.getElementById('chgPlayer').value=dashSel;
+  document.getElementById('qaOverlay').classList.add('on');
+}
+function closeQuickAdd(){document.getElementById('qaOverlay').classList.remove('on')}
+async function addChargeSession(){
+  const player_id=document.getElementById('chgPlayer').value;
+  const action_id=document.getElementById('chgAction').value;
+  if(!player_id){alert('Choisis un joueur.');return;}
+  if(!action_id){alert('Choisis une action.');return;}
+  const num=id=>{const v=document.getElementById(id).value;return v===''?null:Number(v)};
+  const row={player_id,action_id,
+    date:document.getElementById('chgDate').value||new Date().toISOString().slice(0,10),
+    series:num('chgSeries'),
+    reps:document.getElementById('chgReps').value.trim()||null,
+    charge_kg:num('chgKg'), duree_min:num('chgDuree'),
+    commentaire:document.getElementById('chgComment').value.trim()||null,
+    realise_par:document.getElementById('chgRealisePar').value.trim()||CURRENT_USER_LABEL||null,
+    created_by:CURRENT_USER_LABEL};
+  CHG_FB.forEach(([k])=>{const v=Number(document.getElementById('sl-'+k).value);row[k]=v>0?v:null});
+  const {data,error}=await supa.from('charge_sessions').insert(row).select().single();
+  if(error){alert('Erreur : '+error.message);return;}
+  CHG_SESSIONS.unshift(data);
+  ['chgSeries','chgReps','chgKg','chgDuree','chgComment'].forEach(id=>document.getElementById(id).value='');
+  CHG_FB.forEach(([k])=>{document.getElementById('sl-'+k).value=0;document.getElementById('v-'+k).textContent='—'});
+  closeQuickAdd(); renderCharge();
+}
+async function deleteChargeSession(id){
+  if(!confirm('Supprimer cette séance ?'))return;
+  const {error}=await supa.from('charge_sessions').delete().eq('id',id);
+  if(error){alert('Erreur : '+error.message);return;}
+  CHG_SESSIONS=CHG_SESSIONS.filter(s=>s.id!==id);
+  renderCharge();
+}
+
 function iZoneOptions(sel){return Object.keys(ZONE_LABELS).map(z=>`<option value="${z}" ${z===sel?'selected':''}>${ZONE_LABELS[z]}</option>`).join('')}
 function iExOptions(zone,contra,st){
   const pool=IBANK[zone]||[];
@@ -3180,6 +4033,60 @@ function macroGpsPage(){
     </div>
     ${pdfFoot()}
   </div>`;
+}
+function prescSheetPage(){
+  const p=PRESC.find(x=>x.id===currentPrescId); if(!p)return'';
+  const pl=IPLAYERS.find(x=>x.id===p.player_id);
+  const a=pdfAssets();
+  const blocs={};
+  PRESC_ITEMS.forEach(it=>{(blocs[it.bloc]=blocs[it.bloc]||[]).push(it)});
+  const tables=Object.keys(blocs).sort((x,y)=>x-y).map(b=>{
+    const items=blocs[b];
+    const cat=items.map(i=>i.categorie).filter(Boolean)[0]||'';
+    return `<table class="shTbl">
+      <tr><th>Bloc ${b}</th><th>Photo</th><th>Exercice</th><th>Consignes</th><th>Intentions</th>
+        <th>Séries<br>Reps</th><th>Tempo</th><th>%RM /<br>charge</th><th>VBT /<br>consigne</th><th>RPE</th><th>R'</th></tr>
+      ${items.map((it,i)=>{
+        const ex=EXBANK.find(e=>e.id===it.exercise_id);
+        const nm=ex?ex.nom:(it.nom_libre||'');
+        const img=ex&&ex.image_path?supa.storage.from('exercise-images').getPublicUrl(ex.image_path).data.publicUrl:null;
+        const sr=[it.series||'',it.reps||''].filter(Boolean).join('<br>');
+        return `<tr>
+          ${i===0?`<td class="shCat" rowspan="${items.length}">${cat}</td>`:''}
+          <td>${img?`<img src="${img}">`:''}</td>
+          <td class="shEx">${nm.replace(/</g,'&lt;')}</td>
+          <td class="shTxt">${(it.consignes||'').replace(/</g,'&lt;')}</td>
+          <td class="shTxt">${(it.intentions||'').replace(/</g,'&lt;')}</td>
+          <td>${sr}</td><td>${it.tempo||''}</td><td>${it.intensite_rm||''}</td>
+          <td>${it.vbt||''}</td><td>${it.rpe_cible!=null?it.rpe_cible:''}</td><td>${it.recup||''}</td>
+        </tr>`;
+      }).join('')}
+    </table>`;
+  }).join('');
+  const fb=['RPE global (0-10)','RPE musculaire (0-10)','RPE cardio (0-10)','Vivacité (0-10)','Fatigue (0-10)','DOMS (0-10)','Commentaire'];
+  return `<div class="pg pSheet">
+    <div class="shPat"></div><div class="shShade"></div>
+    <div class="shIn" style="display:flex;flex-direction:column">
+      <div class="shTop">
+        <span class="shChip">${(p.objectif||p.titre).replace(/</g,'&lt;')}</span>
+        <span class="shMeta">${fmtDateFR(p.date)}</span>
+        ${p.duree_prevue_min?`<span class="shMeta">${p.duree_prevue_min} minutes</span>`:''}
+        <span class="shLogos">${a.n2?`<img src="${a.n2}">`:''}${a.crest?`<img src="${a.crest}">`:''}</span>
+      </div>
+      <div class="shName">${pl?pl.name:''}</div>
+      ${tables}
+      <div class="shFb">
+        <div class="shFbTitle">Suivi post-séance &amp; feedback</div>
+        <table class="shFbTbl"><tr>${fb.map(f=>`<th>${f}</th>`).join('')}</tr><tr>${fb.map(()=>'<td></td>').join('')}</tr></table>
+      </div>
+    </div>
+  </div>`;
+}
+function printPrescSheet(){
+  if(!currentPrescId)return;
+  if(!PRESC_ITEMS.length){alert('Ajoute au moins un exercice avant d\'imprimer la fiche.');return;}
+  document.getElementById('printSheet').innerHTML=prescSheetPage();
+  window.print();
 }
 function genererPDF(){
   document.getElementById('printSheet').innerHTML=
