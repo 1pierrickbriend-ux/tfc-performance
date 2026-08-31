@@ -212,6 +212,10 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .pCard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px;cursor:pointer;position:relative;transition:transform .12s,border-color .12s}
 .pCard:hover{transform:translateY(-2px);border-color:var(--accent)}
 .pCard.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.pCard.indispo{border-color:rgba(111,176,255,.35);background:linear-gradient(160deg,var(--panel),rgba(111,176,255,.05))}
+.pCard.indispo .pcVol i{background:#6fb0ff}
+.pCard.indispo .pcMid i{background:#6fb0ff!important}
+.pcFlag{position:absolute;top:-8px;right:10px;font-size:9px;font-weight:800;background:#6fb0ff;color:#0a1628;padding:2px 8px;border-radius:5px;letter-spacing:.3px}
 .pcTop{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .pcAv{width:34px;height:34px;border-radius:10px;background:var(--panel3);flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--muted);overflow:hidden}
 .pcAv img{width:100%;height:100%;object-fit:cover}
@@ -272,6 +276,7 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .anDots{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
 .anDot{height:16px;border-radius:4px;background:rgba(255,255,255,.07)}
 .anDot.on{background:#6fb0ff}
+.anDot.off{background:repeating-linear-gradient(45deg,rgba(111,176,255,.22) 0 3px,transparent 3px 6px);border:1px solid rgba(111,176,255,.3)}
 .anDot.on.hi{background:#4fd191}
 .anRegScore{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;text-align:right}
 .anGap{font-size:9px;color:var(--muted);font-weight:600;display:block;line-height:1}
@@ -3092,10 +3097,33 @@ function renderPlayers(){
     </div>`;
   }).join('');
 }
-function setPlayerDispo(id,val){
+async function setPlayerDispo(id,val){
   const p=IPLAYERS.find(x=>x.id===id); if(!p)return;
+  const prev=p.dispo;
   p.dispo=val; renderPlayers(); renderIndiv();
-  supa.from('indiv_players').update({dispo:val}).eq('id',id).then(({error})=>{if(error)alert('Erreur de sauvegarde : '+error.message)});
+  const {error}=await supa.from('indiv_players').update({dispo:val}).eq('id',id);
+  if(error){alert('Erreur de sauvegarde : '+error.message);p.dispo=prev;renderPlayers();return;}
+  // Historise la période : sans cela, impossible de savoir plus tard qu'un
+  // joueur était indisponible à une date donnée, donc impossible de
+  // neutraliser équitablement son absence dans les comparaisons.
+  const today=new Date().toISOString().slice(0,10);
+  if(val===false){
+    const open=UNAVAIL.find(u=>u.player_id===id&&!u.date_fin);
+    if(!open){
+      const {data,error:e2}=await supa.from('player_unavail')
+        .insert({player_id:id,statut:'blesse',date_debut:today,created_by:CURRENT_USER_LABEL})
+        .select().single();
+      if(e2)console.error(e2); else UNAVAIL.push(data);
+    }
+  }else{
+    const open=UNAVAIL.filter(u=>u.player_id===id&&!u.date_fin);
+    for(const u of open){
+      const {error:e3}=await supa.from('player_unavail').update({date_fin:today}).eq('id',u.id);
+      if(e3)console.error(e3); else u.date_fin=today;
+    }
+  }
+  if(typeof renderSeances==='function')renderSeances();
+  if(typeof renderAnalyse==='function'&&document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
 }
 function setPlayerAffectation(id,val){
   const p=IPLAYERS.find(x=>x.id===id); if(!p)return;
@@ -3442,52 +3470,79 @@ function donutSvg(pct,size,col,center,sub){
 
 /* ─── 1. Couverture de l'effectif ─── */
 function anCoverage(){
-  const touched=IPLAYERS.filter(p=>sessionsOf(p.id,30).length>0);
-  const pct=IPLAYERS.length?touched.length/IPLAYERS.length:0;
+  // Un joueur indisponible toute la fenêtre n'est pas "oublié" : il est
+  // blessé. On le sort du dénominateur pour ne pas fausser la couverture,
+  // mais on l'affiche à part plutôt que de le masquer.
+  const eligibles=IPLAYERS.filter(p=>unavailDays(p.id,30)<25);
+  const hors=IPLAYERS.filter(p=>unavailDays(p.id,30)>=25);
+  const touched=eligibles.filter(p=>sessionsOf(p.id,30).length>0);
+  const pct=eligibles.length?touched.length/eligibles.length:0;
   const col=pct>=0.8?'#4fd191':(pct>=0.5?'#ffb454':'#ff6a6a');
   document.getElementById('anDonut').innerHTML=
     donutSvg(pct,132,col,Math.round(pct*100)+'%','couverts');
-  const j7=IPLAYERS.filter(p=>sessionsOf(p.id,7).length>0).length;
+  const j7=eligibles.filter(p=>sessionsOf(p.id,7).length>0).length;
+  const manquants=eligibles.length-touched.length;
   document.getElementById('anCovSide').innerHTML=`
     <div class="anStat ok"><span class="v">${touched.length}</span><span class="l">joueurs touchés<br>sur 30 jours</span></div>
     <div class="anStat"><span class="v">${j7}</span><span class="l">touchés cette semaine</span></div>
-    <div class="anStat ${IPLAYERS.length-touched.length>0?'bad':'ok'}"><span class="v">${IPLAYERS.length-touched.length}</span><span class="l">aucun travail individuel<br>depuis 30 jours</span></div>`;
+    <div class="anStat ${manquants>0?'bad':'ok'}"><span class="v">${manquants}</span><span class="l">disponibles sans aucun<br>travail individuel</span></div>
+    ${hors.length?`<div class="anStat"><span class="v" style="color:#6fb0ff">${hors.length}</span><span class="l">indisponibles sur la période<br><span style="opacity:.7">exclus du calcul</span></span></div>`:''}`;
 
-  const forgot=IPLAYERS.map(p=>({p,d:anDaysSince(p.id)}))
+  const forgot=eligibles.map(p=>({p,d:anDaysSince(p.id)}))
     .filter(x=>x.d===null||x.d>=14).sort((a,b)=>(b.d===null?9999:b.d)-(a.d===null?9999:a.d));
   const box=document.getElementById('anForgot');
   if(!forgot.length){
     box.innerHTML='<div class="anForgotT">Personne n\'est laissé de côté</div><div class="anChips"><span class="anChip n">Tout l\'effectif a eu du travail individuel dans les 14 derniers jours</span></div>';
     return;
   }
-  box.innerHTML=`<div class="anForgotT">⚠ Passés entre les mailles — plus de 14 jours sans travail individuel</div>
+  box.innerHTML=`<div class="anForgotT">⚠ Passés entre les mailles — disponibles, mais plus de 14 jours sans travail individuel</div>
     <div class="anChips">${forgot.map(x=>{
       const cls=x.d===null?'n':(x.d>=30?'b':'w');
       return `<span class="anChip ${cls}">${x.p.name} <b>${x.d===null?'jamais':x.d+' j'}</b></span>`;
-    }).join('')}</div>`;
+    }).join('')}</div>
+    ${hors.length?`<div class="anForgotT" style="margin-top:13px">🩹 Indisponibles sur la période — non comptés dans la couverture</div>
+      <div class="anChips">${hors.map(p=>{
+        const nb=sessionsOf(p.id,30).length;
+        return `<span class="anChip n" style="border-color:rgba(111,176,255,.35);color:#6fb0ff">${p.name} <b>${nb?nb+' séances réathlé':'aucune séance'}</b></span>`;
+      }).join('')}</div>`:''}`;
 }
 
 /* ─── 2. Régularité ─── */
 function anRegularity(){
   const N=8;
   const rows=IPLAYERS.map(p=>{
-    const w=weeklyMinutes(p.id,N).map(v=>v>0);
-    const active=w.filter(Boolean).length;
-    // plus longue interruption en semaines consécutives sans séance
+    const mins=weeklyMinutes(p.id,N);
+    // une semaine passée majoritairement indisponible est neutralisée :
+    // ni comptée comme travaillée, ni comme trou
+    const w=mins.map((v,i)=>{
+      const end=new Date(); end.setDate(end.getDate()-(N-1-i)*7);
+      let off=0;
+      for(let k=0;k<7;k++){
+        const d=new Date(end); d.setDate(d.getDate()-k);
+        if(wasUnavailable(p.id,d.toISOString().slice(0,10)))off++;
+      }
+      if(off>=4)return 'off';
+      return v>0;
+    });
+    const eff=w.filter(x=>x!=='off');
+    const active=eff.filter(Boolean).length;
     let gap=0,cur=0;
-    w.forEach(v=>{if(v){cur=0}else{cur++;gap=Math.max(gap,cur)}});
-    return {p,w,active,gap};
-  }).filter(r=>r.active>0||r.gap<N);
-  rows.sort((a,b)=>b.active-a.active);
+    w.forEach(v=>{if(v==='off')return; if(v){cur=0}else{cur++;gap=Math.max(gap,cur)}});
+    return {p,w,active,total:eff.length,gap,off:w.filter(x=>x==='off').length};
+  }).filter(r=>r.total>0);
+  rows.sort((a,b)=>(b.active/b.total)-(a.active/a.total));
   const box=document.getElementById('anRegList');
   if(!rows.length){box.innerHTML='<div class="anEmpty">Aucune donnée.</div>';return;}
   box.innerHTML=rows.map(r=>{
-    const col=r.active>=6?'#4fd191':(r.active>=3?'#6fb0ff':'#ffb454');
+    const q=r.active/r.total;
+    const col=q>=0.75?'#4fd191':(q>=0.4?'#6fb0ff':'#ffb454');
     return `<div class="anRegRow">
-      <span class="anRegName">${r.p.name}</span>
-      <span class="anDots">${r.w.map(v=>`<i class="anDot${v?' on'+(r.active>=6?' hi':''):''}"></i>`).join('')}</span>
-      <span class="anRegScore" style="color:${col}">${r.active}/${N}
-        <span class="anGap">${r.gap>1?'trou '+r.gap+' sem.':'&nbsp;'}</span></span>
+      <span class="anRegName">${r.p.name}${r.off?' <span style="color:#6fb0ff;font-size:9px">🩹</span>':''}</span>
+      <span class="anDots">${r.w.map(v=>
+        v==='off'?'<i class="anDot off" title="indisponible"></i>'
+                 :`<i class="anDot${v?' on'+(q>=0.75?' hi':''):''}"></i>`).join('')}</span>
+      <span class="anRegScore" style="color:${col}">${r.active}/${r.total}
+        <span class="anGap">${r.off?r.off+' sem. indispo':(r.gap>1?'trou '+r.gap+' sem.':'&nbsp;')}</span></span>
     </div>`;
   }).join('');
 }
@@ -3846,16 +3901,37 @@ async function markPrescDone(){
    ressenti : c'est couvert par l'application existante du centre de
    formation, on évite le doublon. */
 let CHG_ACTIONS=[], CHG_SESSIONS=[], dashFilter='all', dashSel=null;
+let UNAVAIL=[];
+/* Un joueur est-il indisponible à une date donnée ? */
+function wasUnavailable(pid,isoDate){
+  return UNAVAIL.some(u=>u.player_id===pid&&u.date_debut<=isoDate&&(!u.date_fin||u.date_fin>=isoDate));
+}
+function isUnavailableNow(pid){
+  const p=IPLAYERS.find(x=>x.id===pid);
+  if(p&&p.dispo===false)return true;
+  return UNAVAIL.some(u=>u.player_id===pid&&!u.date_fin);
+}
+/* Nombre de jours indisponibles sur une fenêtre — sert à neutraliser
+   équitablement les périodes d'absence dans les comparaisons. */
+function unavailDays(pid,days){
+  const end=new Date(), start=new Date(); start.setDate(start.getDate()-days);
+  let n=0;
+  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
+    if(wasUnavailable(pid,d.toISOString().slice(0,10)))n++;
+  }
+  return n;
+}
 const CHG_SECTEURS={preparation_physique:'Préparation physique',technique:'Technique',video:'Vidéo',dietetique:'Diététique',mental:'Préparation mentale',kine:'Kiné / Médical'};
 const FAM_COLORS=['#8a6fd6','#4fd191','#6fb0ff','#ffb454','#ff6a6a','#22c1c3','#e1b57a'];
 
 async function loadCharge(){
-  const [{data:a,error:e1},{data:s,error:e2}]=await Promise.all([
+  const [{data:a,error:e1},{data:s,error:e2},{data:u,error:e3}]=await Promise.all([
     supa.from('charge_actions').select('*').eq('actif',true).order('nom'),
     supa.from('charge_sessions').select('*').order('date',{ascending:false}).limit(1500),
+    supa.from('player_unavail').select('*').order('date_debut',{ascending:false}),
   ]);
-  if(e1)console.error(e1); if(e2)console.error(e2);
-  CHG_ACTIONS=a||[]; CHG_SESSIONS=s||[];
+  if(e1)console.error(e1); if(e2)console.error(e2); if(e3)console.error(e3);
+  CHG_ACTIONS=a||[]; CHG_SESSIONS=s||[]; UNAVAIL=u||[];
 }
 function sessionsOf(pid,days){
   const lim=new Date(); lim.setDate(lim.getDate()-days);
@@ -3940,30 +4016,37 @@ function renderDashGrid(){
     min7:minutesOf(p.id,7), nb7:sessionsOf(p.id,7).length,
     weeks:weeklyMinutes(p.id,8),
     last:CHG_SESSIONS.filter(s=>s.player_id===p.id)[0]}));
-  rows.sort((a,b)=>b.min30-a.min30);
-  rows.forEach((r,i)=>r.rank=i+1);
+  // Deux groupes de comparaison distincts : comparer un joueur en réathlé
+  // à un joueur disponible n'a pas de sens, dans un sens comme dans l'autre.
+  rows.forEach(r=>{r.indispo=isUnavailableNow(r.p.id)});
+  const dispo=rows.filter(r=>!r.indispo).sort((a,b)=>b.min30-a.min30);
+  const indispo=rows.filter(r=>r.indispo).sort((a,b)=>b.min30-a.min30);
+  dispo.forEach((r,i)=>r.rank=i+1);
+  indispo.forEach((r,i)=>r.rank=i+1);
+  rows=[...dispo,...indispo];
   const avec=rows.filter(r=>r.min30>0);
   if(dashFilter==='top')rows=avec.slice(0,Math.max(1,Math.ceil(avec.length/3)));
   else if(dashFilter==='bottom')rows=avec.slice(-Math.max(1,Math.ceil(avec.length/3)));
   else if(dashFilter==='none')rows=rows.filter(r=>r.min30===0);
   if(!rows.length){box.innerHTML='<div class="dashEmpty">Aucun joueur dans cette sélection.</div>';return;}
-  const mx=Math.max(...IPLAYERS.map(p=>minutesOf(p.id,30)),1);
+  const mx=Math.max(...rows.map(r=>r.min30),1);
   const mxw=Math.max(...rows.flatMap(r=>r.weeks),1);
   box.innerHTML=rows.map(r=>{
     const ph=playerPhoto(r.p);
     const days=r.last?Math.round((new Date()-new Date(r.last.date))/86400000):null;
     const pct=Math.round((r.min30/mx)*100);
-    return `<div class="pCard${dashSel===r.p.id?' sel':''}" onclick="openDashDetail('${r.p.id}')">
+    return `<div class="pCard${dashSel===r.p.id?' sel':''}${r.indispo?' indispo':''}" onclick="openDashDetail('${r.p.id}')">
+      ${r.indispo?'<span class="pcFlag">🩹 Indisponible</span>':''}
       <div class="pcTop">
         <span class="pcAv">${ph?`<img src="${ph}" alt="">`:chgInitials(r.p.name)}</span>
         <span class="pcName">${r.p.name}<small>${r.nb30} séances · ${hrs(r.min30)}</small></span>
-        <span class="pcRank${r.rank<=3&&r.min30>0?' top':''}">${r.min30>0?'#'+r.rank:'–'}</span>
+        <span class="pcRank${r.rank<=3&&r.min30>0&&!r.indispo?' top':''}">${r.min30>0?'#'+r.rank:'–'}</span>
       </div>
       <div class="pcVol"><i style="width:${pct}%"></i></div>
       <div class="pcMid">${r.weeks.map((v,i)=>
         `<i class="${i===r.weeks.length-1?'last':''}" style="height:${Math.max(4,(v/mxw)*100)}%"></i>`).join('')}</div>
       <div class="pcFoot">
-        <span>${r.nb7} séance${r.nb7>1?'s':''} · 7 j</span>
+        <span>${r.indispo?'classé entre indisponibles':r.nb7+' séance'+(r.nb7>1?'s':'')+' · 7 j'}</span>
         <span class="sep">${days==null?'jamais':(days===0?"aujourd'hui":'il y a '+days+' j')}</span>
       </div>
     </div>`;
