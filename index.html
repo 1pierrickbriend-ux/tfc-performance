@@ -127,11 +127,6 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .chgRow4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
 .chgFeedback{background:var(--panel2);border-radius:10px;padding:10px 12px;margin-bottom:10px}
 .chgFbHead{font-size:11px;font-weight:700;margin-bottom:8px;color:var(--muted)}
-.chgSliders{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px}
-.chgSl{font-size:10px;color:var(--muted);font-weight:600}
-.chgSl .lab{display:flex;justify-content:space-between;margin-bottom:2px}
-.chgSl .val{font-weight:800;color:var(--ink);font-family:'Spline Sans Mono',monospace}
-.chgSl input[type=range]{width:100%;accent-color:var(--accent);height:14px}
 .chgKpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
 .chgKpi{background:var(--panel2);border-radius:10px;padding:9px 10px;text-align:center}
 .chgKpi .k{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
@@ -193,28 +188,6 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .prUp .d{font-family:'Spline Sans Mono',monospace;font-size:11px;color:var(--muted);width:62px;flex:none}
 .prUp .n{flex:1;font-weight:600}
 .prUp button{background:none;border:1px solid var(--line);border-radius:6px;color:var(--ink);cursor:pointer;font-size:11px;padding:3px 8px}
-.acwr{background:var(--panel2);border-radius:10px;padding:10px 12px;margin-bottom:12px}
-.acwrTop{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
-.acwrTop .lb{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
-.acwrTop .vl{font-size:22px;font-weight:800;font-family:'Barlow Condensed',sans-serif;line-height:1}
-.acwrTop .tg{margin-left:auto;font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px}
-.acwrScale{position:relative;height:7px;border-radius:4px;background:linear-gradient(90deg,#6fb0ff 0%,#6fb0ff 22%,#4fd191 32%,#4fd191 58%,#ffb454 70%,#ff6a6a 100%)}
-.acwrScale .pin{position:absolute;top:-3px;width:3px;height:13px;background:var(--ink);border-radius:2px;transform:translateX(-50%);box-shadow:0 0 0 2px var(--panel2)}
-.acwrLeg{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:4px;font-weight:600}
-.acwrNote{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.35}
-.sqRow{display:grid;grid-template-columns:1fr 76px 76px 96px 78px;gap:10px;align-items:center;padding:7px 10px;border-bottom:1px solid var(--line);font-size:12px}
-.sqRow:last-child{border-bottom:none}
-.sqRow.hd{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line)}
-.sqRow .nm{font-weight:700}
-.sqRow .nu{font-family:'Spline Sans Mono',monospace;text-align:right}
-.sqBar{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden}
-.sqBar i{display:block;height:100%;border-radius:3px}
-.sqTag{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;text-align:center}
-.tg-bas{background:rgba(111,176,255,.18);color:var(--info)}
-.tg-opt{background:rgba(79,209,145,.18);color:var(--ok)}
-.tg-eleve{background:rgba(255,180,84,.2);color:var(--warn)}
-.tg-risque{background:rgba(255,106,106,.2);color:var(--bad)}
-.tg-nd{background:rgba(255,255,255,.06);color:var(--muted)}
 
 /* ═══ DASHBOARD INDIVIDUALISATION ═══ */
 .dashHead{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
@@ -250,6 +223,96 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .pcMid i.last{opacity:1}
 .pcFoot{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted);font-weight:600}
 .pcFoot .sep{margin-left:auto}
+.pcRank{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;color:var(--muted);flex:none;min-width:26px;text-align:right}
+.pcRank.top{color:var(--accent)}
+.pcVol{height:5px;border-radius:3px;background:var(--panel2);overflow:hidden;margin-bottom:9px}
+.pcVol i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.ddCompare{text-align:right;margin-left:auto;padding-right:14px}
+.ddCompare .cmpV{display:block;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;line-height:1}
+.ddCompare .cmpL{font-size:10px;color:var(--muted);font-weight:600}
+
+/* ═══ ANALYSE ═══ */
+.anGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media (max-width:1050px){.anGrid{grid-template-columns:1fr}}
+.anCard{background:linear-gradient(160deg,var(--panel) 0%,var(--panel2) 100%);border:1px solid var(--line);border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+.anCard:before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),transparent)}
+.anCov:before{background:linear-gradient(90deg,#4fd191,transparent)}
+.anReg:before{background:linear-gradient(90deg,#6fb0ff,transparent)}
+.anCycle:before{background:linear-gradient(90deg,#ffb454,transparent)}
+.anBal:before{background:linear-gradient(90deg,#8a6fd6,transparent)}
+.anDone:before{background:linear-gradient(90deg,#e1b57a,transparent)}
+.anCycle,.anDone,.anBal{grid-column:1/-1}
+.anHead{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.anIco{font-size:17px;line-height:1}
+.anHead h3{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin:0}
+.anHint{margin-left:auto;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.anSel{margin-left:auto;background:var(--panel3);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:5px 10px;font-family:inherit;font-size:12px;max-width:190px}
+
+/* couverture */
+.anCovBody{display:flex;align-items:center;gap:22px;margin-bottom:16px}
+.anDonut{flex:none}
+.anCovSide{flex:1;display:flex;flex-direction:column;gap:9px}
+.anStat{display:flex;align-items:baseline;gap:8px}
+.anStat .v{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;line-height:1;min-width:38px}
+.anStat .l{font-size:11px;color:var(--muted);font-weight:600;line-height:1.25}
+.anStat.ok .v{color:#4fd191}.anStat.warn .v{color:#ffb454}.anStat.bad .v{color:#ff6a6a}
+.anForgot{border-top:1px solid var(--line);padding-top:13px}
+.anForgotT{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin-bottom:9px}
+.anChips{display:flex;flex-wrap:wrap;gap:6px}
+.anChip{font-size:11px;font-weight:700;padding:4px 10px;border-radius:14px;display:flex;align-items:center;gap:5px}
+.anChip b{font-family:'Spline Sans Mono',monospace;font-weight:800;opacity:.85}
+.anChip.w{background:rgba(255,180,84,.16);color:#ffb454;border:1px solid rgba(255,180,84,.3)}
+.anChip.b{background:rgba(255,106,106,.16);color:#ff6a6a;border:1px solid rgba(255,106,106,.3)}
+.anChip.n{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--line)}
+
+/* régularité */
+.anRegList{display:flex;flex-direction:column;gap:7px;max-height:296px;overflow-y:auto;padding-right:4px}
+.anRegRow{display:grid;grid-template-columns:118px 1fr 46px;gap:10px;align-items:center}
+.anRegName{font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.anDots{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.anDot{height:16px;border-radius:4px;background:rgba(255,255,255,.07)}
+.anDot.on{background:#6fb0ff}
+.anDot.on.hi{background:#4fd191}
+.anRegScore{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;text-align:right}
+.anGap{font-size:9px;color:var(--muted);font-weight:600;display:block;line-height:1}
+
+/* cycle */
+.anCycleBody{display:flex;align-items:flex-end;gap:14px;min-height:220px;flex-wrap:wrap}
+.anCyCol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:200px;min-width:0}
+.anCyBar{width:88%;border-radius:6px 6px 2px 2px;position:relative;min-height:4px;transition:height .3s}
+.anCyVal{position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800}
+.anCyLab{margin-top:10px;font-size:11.5px;font-weight:700;text-align:center;line-height:1.2}
+.anCyRel{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px}
+.anCyFlag{display:block;font-size:9px;font-weight:800;color:#ff6a6a;margin-top:3px}
+.anCyNote{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.45}
+.anCyNote b{color:var(--ink)}
+
+/* équilibre */
+.anBalBody{display:flex;gap:20px;align-items:center}
+@media (max-width:700px){.anBalBody{flex-direction:column}}
+.anRadar{flex:none}
+.anBal .anTargets{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 22px}
+.anTargets{flex:1;display:flex;flex-direction:column;gap:11px}
+.anTg{font-size:11px}
+.anTgTop{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.anTgTop .dot{width:9px;height:9px;border-radius:3px;flex:none}
+.anTgTop .nm{font-weight:700;flex:1}
+.anTgTop .pc{font-family:'Spline Sans Mono',monospace;font-weight:800}
+.anTgBar{height:7px;background:var(--panel3);border-radius:4px;position:relative;overflow:visible}
+.anTgBar i{display:block;height:100%;border-radius:4px}
+.anTgBar .tgt{position:absolute;top:-3px;width:2px;height:13px;background:var(--ink);border-radius:1px;opacity:.85}
+.anTgLeg{font-size:9.5px;color:var(--muted);margin-top:2px;font-weight:600}
+
+/* prescrit vs réalisé */
+.anDoneBody{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.anDoneRing{flex:none}
+.anDoneList{flex:1;min-width:260px;display:flex;flex-direction:column;gap:8px;max-height:190px;overflow-y:auto}
+.anDoneRow{display:grid;grid-template-columns:128px 1fr 62px;gap:10px;align-items:center;font-size:11.5px}
+.anDoneRow .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.anDoneBar{height:8px;background:var(--panel3);border-radius:4px;overflow:hidden}
+.anDoneBar i{display:block;height:100%;border-radius:4px}
+.anDoneVal{font-family:'Spline Sans Mono',monospace;font-weight:700;text-align:right;font-size:11px}
+.anEmpty{padding:26px;text-align:center;color:var(--muted);font-size:12px}
 .pcBadge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.3px}
 
 .dashDet{background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;margin-top:18px}
@@ -268,7 +331,6 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .ddChart.bars{height:104px}
 .ddAxis{display:flex;margin-top:4px}
 .ddAxis span{flex:1;text-align:center;font-size:9px;color:#8a7fa0;font-weight:600}
-.ddChart.lines{height:92px}
 .ddLegend{display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--muted);font-weight:600;margin-top:8px}
 .ddLegend span{display:flex;align-items:center;gap:5px}
 .ddLegend i{width:9px;height:9px;border-radius:3px;display:inline-block}
@@ -285,7 +347,6 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .tl:before{content:'';position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--line)}
 .tlItem{position:relative;margin-bottom:11px}
 .tlItem:before{content:'';position:absolute;left:-18px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--panel)}
-.tlItem.hi:before{background:var(--warn)}
 .tlCard{background:var(--panel2);border-radius:10px;padding:9px 12px}
 .tlTop{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
 .tlDate{font-family:'Spline Sans Mono',monospace;font-size:10px;color:var(--muted);font-weight:700}
@@ -294,7 +355,6 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .tlDel:hover{opacity:1;color:var(--bad)}
 .tlChips{display:flex;gap:5px;flex-wrap:wrap}
 .tlChip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--panel3);color:var(--muted);font-family:'Spline Sans Mono',monospace}
-.tlChip.rpe{background:rgba(139,123,255,.2);color:var(--accent)}
 .tlNote{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.3;font-style:italic}
 
 .qaOverlay{position:fixed;inset:0;background:rgba(6,2,18,.72);display:none;align-items:center;justify-content:center;z-index:120;padding:20px}
@@ -309,8 +369,6 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .qaRow2{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px;align-items:end}
 .qaRow4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}
 @media (max-width:600px){.qaRow4{grid-template-columns:1fr 1fr}}
-.qaFb{background:var(--panel2);border-radius:10px;padding:11px 13px;margin-bottom:12px}
-.qaFbHead{font-size:11px;font-weight:700;margin-bottom:9px;color:var(--muted)}
 .dashEmpty{grid-column:1/-1;padding:34px;text-align:center;color:var(--muted);font-size:13px;background:var(--panel);border:1px dashed var(--line);border-radius:14px}
 .hmWrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:18px}
 .hmHead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -323,6 +381,16 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .hmCell{height:19px;border-radius:3px;background:var(--panel2)}
 .hmAxis{display:grid;gap:3px;margin-top:5px;padding-left:142px}
 .hmAxis span{font-size:9px;color:var(--muted);text-align:center;font-weight:600}
+.mpBox{display:flex;flex-wrap:wrap;gap:5px;max-height:118px;overflow-y:auto;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px}
+.mpChip{background:var(--panel3);border:1px solid transparent;border-radius:16px;padding:4px 11px;font-size:11.5px;font-weight:600;color:var(--muted);cursor:pointer;user-select:none;white-space:nowrap;font-family:inherit}
+.mpChip:hover{border-color:var(--accent)}
+.mpChip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mpCount{font-weight:700;color:var(--accent);font-size:10px;text-transform:none;letter-spacing:0}
+.mpQuick{display:flex;gap:6px;margin-top:5px}
+.mpQuick button{background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);font-size:10px;font-weight:600;padding:3px 9px;cursor:pointer;font-family:inherit}
+.mpQuick button:hover{color:var(--ink);border-color:var(--accent)}
+.dupBar{display:flex;align-items:center;gap:10px;background:var(--panel2);border-radius:10px;padding:10px 12px;margin-top:14px;flex-wrap:wrap}
+.dupBar .lb{font-size:11px;font-weight:700;color:var(--muted)}
 #sheetCanvasWrap{width:100%;max-width:960px;overflow:auto}
 #sheetCanvas{position:relative;width:960px;height:540px;background-size:cover;background-position:center;background-color:#2a1a4a;border-radius:8px;border:1px solid var(--line);user-select:none}
 .sheetItem{position:absolute;width:170px;background:rgba(255,255,255,.97);color:#17122b;border-radius:8px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.4);cursor:grab;touch-action:none;font-size:11px}
@@ -948,6 +1016,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <button onclick="indivTab(this,'histo')">Historique</button>
     <button onclick="indivTab(this,'charge')">Suivi de charge</button>
     <button onclick="indivTab(this,'presc')">Prescription</button>
+    <button onclick="indivTab(this,'analyse')">Analyse</button>
   </div>
 
   <div id="indiv-seance">
@@ -980,9 +1049,9 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="dashHead">
       <div class="dashFilters">
         <button class="dfBtn on" data-f="all" onclick="setDashFilter('all',this)">Tout l'effectif</button>
-        <button class="dfBtn" data-f="alert" onclick="setDashFilter('alert',this)">🔴 À surveiller</button>
-        <button class="dfBtn" data-f="low" onclick="setDashFilter('low',this)">🔵 Sous-chargés</button>
-        <button class="dfBtn" data-f="none" onclick="setDashFilter('none',this)">⚪ Sans données</button>
+        <button class="dfBtn" data-f="top" onclick="setDashFilter('top',this)">Les plus actifs</button>
+        <button class="dfBtn" data-f="bottom" onclick="setDashFilter('bottom',this)">Les moins actifs</button>
+        <button class="dfBtn" data-f="none" onclick="setDashFilter('none',this)">Sans séance</button>
       </div>
       <button class="btn primary" onclick="openQuickAdd()">＋ Saisir une séance</button>
     </div>
@@ -1003,8 +1072,11 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
         </div>
         <div class="qaBody">
           <div class="qaRow2">
-            <label>Joueur<select id="chgPlayer"></select></label>
-            <label>Date<input type="date" id="chgDate"></label>
+            <label style="grid-column:1/-1">Joueurs <span class="mpCount" id="chgPlayerCount">0 sélectionné</span>
+              <div class="mpBox" id="chgPlayerBox"></div>
+              <div class="mpQuick"><button type="button" onclick="mpAll('chg',true)">Tout</button><button type="button" onclick="mpAll('chg',false)">Aucun</button></div>
+            </label>
+            <label style="grid-column:1/-1">Date<input type="date" id="chgDate"></label>
           </div>
           <div class="qaRow2">
             <label>Secteur<select id="chgSecteur" onchange="fillChgActions()"></select></label>
@@ -1015,10 +1087,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
             <label>Reps<input type="text" id="chgReps" placeholder="8-10"></label>
             <label>Charge kg<input type="number" id="chgKg" step="0.5" placeholder="60"></label>
             <label>Durée min<input type="number" id="chgDuree" min="0" placeholder="30"></label>
-          </div>
-          <div class="qaFb">
-            <div class="qaFbHead">Ressenti post-séance <span class="note">facultatif</span></div>
-            <div class="chgSliders" id="chgSliders"></div>
           </div>
           <textarea id="chgComment" placeholder="Commentaire (facultatif)"></textarea>
           <div class="qaRow2">
@@ -1035,8 +1103,11 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <div class="chgCard chgForm">
         <div class="chgCardHead">🎯 Nouvelle séance prescrite</div>
         <div class="chgRow2">
-          <label>Joueur<select id="prPlayer"></select></label>
-          <label>Date<input type="date" id="prDate"></label>
+          <label style="grid-column:1/-1">Joueurs <span class="mpCount" id="prPlayerCount">0 sélectionné</span>
+            <div class="mpBox" id="prPlayerBox"></div>
+            <div class="mpQuick"><button type="button" onclick="mpAll('pr',true)">Tout</button><button type="button" onclick="mpAll('pr',false)">Aucun</button></div>
+          </label>
+          <label style="grid-column:1/-1">Date<input type="date" id="prDate"></label>
         </div>
         <div class="chgRow2">
           <label>Objectif<input type="text" id="prObjectif" placeholder="FORCE-VITESSE"></label>
@@ -1067,6 +1138,13 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
         <button class="btn" onclick="addPrescItem()">+ Ajouter</button>
       </div>
       <div id="prItems"></div>
+      <div class="dupBar">
+        <span class="lb">📋 Copier cette séance vers d'autres joueurs</span>
+        <span class="mpCount" id="dupPlayerCount">0 sélectionné</span>
+        <div class="mpBox" id="dupPlayerBox" style="flex-basis:100%"></div>
+        <div class="mpQuick"><button type="button" onclick="mpAll('dup',true)">Tout</button><button type="button" onclick="mpAll('dup',false)">Aucun</button></div>
+        <button class="btn" style="margin-left:auto" onclick="duplicatePrescTo()">Copier</button>
+      </div>
     </div>
 
     <div class="chgCard" style="margin-top:14px">
@@ -1075,6 +1153,47 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
         <select id="prFilterPlayer" onchange="renderPrescList()" style="margin-left:auto;max-width:200px"></select>
       </div>
       <div id="prList"></div>
+    </div>
+  </div>
+
+  <div id="indiv-analyse" style="display:none">
+    <div class="anGrid">
+      <section class="anCard anCov">
+        <div class="anHead"><span class="anIco">🎯</span><h3>Couverture de l'effectif</h3>
+          <span class="anHint">30 derniers jours</span></div>
+        <div class="anCovBody">
+          <div class="anDonut" id="anDonut"></div>
+          <div class="anCovSide" id="anCovSide"></div>
+        </div>
+        <div class="anForgot" id="anForgot"></div>
+      </section>
+
+      <section class="anCard anReg">
+        <div class="anHead"><span class="anIco">📆</span><h3>Régularité</h3>
+          <span class="anHint">8 dernières semaines</span></div>
+        <div class="anRegList" id="anRegList"></div>
+      </section>
+
+      <section class="anCard anCycle">
+        <div class="anHead"><span class="anIco">🔄</span><h3>Placement dans le cycle</h3>
+          <span class="anHint">où tombe le travail individuel</span></div>
+        <div class="anCycleBody" id="anCycleBody"></div>
+      </section>
+
+      <section class="anCard anBal">
+        <div class="anHead"><span class="anIco">⚖️</span><h3>Équilibre du contenu</h3>
+          <select id="anBalPlayer" onchange="renderAnalyse()" class="anSel"></select></div>
+        <div class="anBalBody">
+          <div class="anRadar" id="anRadar"></div>
+          <div class="anTargets" id="anTargets"></div>
+        </div>
+      </section>
+
+      <section class="anCard anDone">
+        <div class="anHead"><span class="anIco">✅</span><h3>Prescrit vs réalisé</h3>
+          <span class="anHint">90 derniers jours</span></div>
+        <div class="anDoneBody" id="anDoneBody"></div>
+      </section>
     </div>
   </div>
 </section>
@@ -3176,8 +3295,219 @@ function indivTab(btn,name){
   document.getElementById('indiv-histo').style.display=name==='histo'?'block':'none';
   document.getElementById('indiv-charge').style.display=name==='charge'?'block':'none';
   document.getElementById('indiv-presc').style.display=name==='presc'?'block':'none';
+  document.getElementById('indiv-analyse').style.display=name==='analyse'?'block':'none';
   if(name==='charge')renderCharge();
   if(name==='presc')renderPresc();
+  if(name==='analyse')renderAnalyse();
+}
+
+/* ═══════ ANALYSE — indicateurs propres au préparateur physique ═══════
+   Volontairement centré sur ce que SEULE cette plateforme peut produire :
+   le travail individuel délivré et son croisement avec la périodisation.
+   Rien sur l'état du joueur (ressenti, médical) : couvert ailleurs. */
+const AN_FAM=['Structurel','Neuromusculaire','Bioénergétique','Coordinatif','Contextuel'];
+const AN_FAM_COL={'Structurel':'#8a6fd6','Neuromusculaire':'#ff6a6a','Bioénergétique':'#4fd191','Coordinatif':'#6fb0ff','Contextuel':'#ffb454'};
+let AN_TARGETS={'Structurel':30,'Neuromusculaire':30,'Bioénergétique':20,'Coordinatif':12,'Contextuel':8};
+
+function anDaysSince(pid){
+  const s=CHG_SESSIONS.filter(x=>x.player_id===pid)[0];
+  return s?Math.round((new Date()-new Date(s.date))/864e5):null;
+}
+function donutSvg(pct,size,col,center,sub){
+  const r=size/2-9, c=2*Math.PI*r;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="11"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="11"
+      stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct)}" stroke-linecap="round"
+      transform="rotate(-90 ${size/2} ${size/2})"/>
+    <text x="${size/2}" y="${size/2-1}" text-anchor="middle" fill="${col}" font-size="${size*0.27}"
+      font-weight="800" font-family="Barlow Condensed,sans-serif">${center}</text>
+    <text x="${size/2}" y="${size/2+15}" text-anchor="middle" fill="#8a7fa0" font-size="${size*0.095}"
+      font-weight="700" font-family="Barlow,sans-serif">${sub}</text>
+  </svg>`;
+}
+
+/* ─── 1. Couverture de l'effectif ─── */
+function anCoverage(){
+  const touched=IPLAYERS.filter(p=>sessionsOf(p.id,30).length>0);
+  const pct=IPLAYERS.length?touched.length/IPLAYERS.length:0;
+  const col=pct>=0.8?'#4fd191':(pct>=0.5?'#ffb454':'#ff6a6a');
+  document.getElementById('anDonut').innerHTML=
+    donutSvg(pct,132,col,Math.round(pct*100)+'%','couverts');
+  const j7=IPLAYERS.filter(p=>sessionsOf(p.id,7).length>0).length;
+  document.getElementById('anCovSide').innerHTML=`
+    <div class="anStat ok"><span class="v">${touched.length}</span><span class="l">joueurs touchés<br>sur 30 jours</span></div>
+    <div class="anStat"><span class="v">${j7}</span><span class="l">touchés cette semaine</span></div>
+    <div class="anStat ${IPLAYERS.length-touched.length>0?'bad':'ok'}"><span class="v">${IPLAYERS.length-touched.length}</span><span class="l">aucun travail individuel<br>depuis 30 jours</span></div>`;
+
+  const forgot=IPLAYERS.map(p=>({p,d:anDaysSince(p.id)}))
+    .filter(x=>x.d===null||x.d>=14).sort((a,b)=>(b.d===null?9999:b.d)-(a.d===null?9999:a.d));
+  const box=document.getElementById('anForgot');
+  if(!forgot.length){
+    box.innerHTML='<div class="anForgotT">Personne n\'est laissé de côté</div><div class="anChips"><span class="anChip n">Tout l\'effectif a eu du travail individuel dans les 14 derniers jours</span></div>';
+    return;
+  }
+  box.innerHTML=`<div class="anForgotT">⚠ Passés entre les mailles — plus de 14 jours sans travail individuel</div>
+    <div class="anChips">${forgot.map(x=>{
+      const cls=x.d===null?'n':(x.d>=30?'b':'w');
+      return `<span class="anChip ${cls}">${x.p.name} <b>${x.d===null?'jamais':x.d+' j'}</b></span>`;
+    }).join('')}</div>`;
+}
+
+/* ─── 2. Régularité ─── */
+function anRegularity(){
+  const N=8;
+  const rows=IPLAYERS.map(p=>{
+    const w=weeklyMinutes(p.id,N).map(v=>v>0);
+    const active=w.filter(Boolean).length;
+    // plus longue interruption en semaines consécutives sans séance
+    let gap=0,cur=0;
+    w.forEach(v=>{if(v){cur=0}else{cur++;gap=Math.max(gap,cur)}});
+    return {p,w,active,gap};
+  }).filter(r=>r.active>0||r.gap<N);
+  rows.sort((a,b)=>b.active-a.active);
+  const box=document.getElementById('anRegList');
+  if(!rows.length){box.innerHTML='<div class="anEmpty">Aucune donnée.</div>';return;}
+  box.innerHTML=rows.map(r=>{
+    const col=r.active>=6?'#4fd191':(r.active>=3?'#6fb0ff':'#ffb454');
+    return `<div class="anRegRow">
+      <span class="anRegName">${r.p.name}</span>
+      <span class="anDots">${r.w.map(v=>`<i class="anDot${v?' on'+(r.active>=6?' hi':''):''}"></i>`).join('')}</span>
+      <span class="anRegScore" style="color:${col}">${r.active}/${N}
+        <span class="anGap">${r.gap>1?'trou '+r.gap+' sem.':'&nbsp;'}</span></span>
+    </div>`;
+  }).join('');
+}
+
+/* ─── 3. Placement dans le cycle (indicateur différenciant) ─── */
+function anCycle(){
+  const counts={},mins={};
+  let placed=0,late=0;
+  CHG_SESSIONS.forEach(s=>{
+    const d=new Date(s.date+'T12:00:00');
+    const wk=WEEKS.find(w=>w.days.some(x=>iso(x)===s.date));
+    if(!wk||!WEEK_TYPES[wk.n])return;
+    const idx=wk.days.findIndex(x=>iso(x)===s.date);
+    const key=WEEK_TYPES[wk.n][idx];
+    if(!key)return;
+    counts[key]=(counts[key]||0)+1;
+    mins[key]=(mins[key]||0)+(s.duree_min||0);
+    placed++;
+    if(key==='veille'||key==='match')late++;
+  });
+  const box=document.getElementById('anCycleBody');
+  const keys=Object.keys(TYPES).filter(k=>counts[k]);
+  if(!placed||!keys.length){
+    box.innerHTML='<div class="anEmpty">Aucune séance individuelle rattachée à une semaine planifiée.</div>';
+    document.getElementById('anCycleBody').insertAdjacentHTML('beforeend','');
+    return;
+  }
+  const order=['reprise','force','ge','mixBV','mixVJ','vitesse','veille','match','repos'];
+  keys.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+  const mx=Math.max(...keys.map(k=>counts[k]));
+  box.innerHTML=keys.map(k=>{
+    const T=TYPES[k]||{nom:k,color:'#8a6fd6'};
+    const col=T.stripes?T.stripes[0]:T.color;
+    const risky=(k==='veille'||k==='match');
+    return `<div class="anCyCol">
+      <div class="anCyBar" style="height:${Math.max(4,(counts[k]/mx)*100)}%;background:${col}">
+        <span class="anCyVal" style="color:${col}">${counts[k]}</span></div>
+      <div class="anCyLab">${T.nom}
+        <span class="anCyRel">${Math.round(mins[k]/60*10)/10} h</span>
+        ${risky?'<span class="anCyFlag">à surveiller</span>':''}</div>
+    </div>`;
+  }).join('')
+  +`<div class="anCyNote" style="flex-basis:100%">
+     <b>${placed}</b> séances individuelles replacées dans le cycle.
+     ${late>0
+       ? `<b style="color:#ff6a6a">${late}</b> tombent en veille de match ou jour de match — à vérifier, ce sont les jours où la charge additionnelle est la moins souhaitable.`
+       : `Aucune ne tombe en veille de match ni jour de match : le placement est cohérent avec la périodisation.`}
+   </div>`;
+}
+
+/* ─── 4. Équilibre du contenu ─── */
+function radarSvg(vals,size){
+  const cx=size/2,cy=size/2,r=size/2-32,n=vals.length;
+  const pt=(i,f)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+r*f*Math.cos(a),cy+r*f*Math.sin(a)]};
+  const grid=[0.25,0.5,0.75,1].map(f=>{
+    const p=vals.map((_,i)=>pt(i,f).join(',')).join(' ');
+    return `<polygon points="${p}" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1"/>`;
+  }).join('');
+  const axes=vals.map((_,i)=>{const [x,y]=pt(i,1);return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(255,255,255,.09)"/>`}).join('');
+  const tgt=vals.map((v,i)=>pt(i,v.tf).join(',')).join(' ');
+  const cur=vals.map((v,i)=>pt(i,v.f).join(',')).join(' ');
+  const labs=vals.map((v,i)=>{
+    const [x,y]=pt(i,1.22);
+    return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle"
+      fill="#c9bdf5" font-size="10.5" font-weight="700" font-family="Barlow,sans-serif">${v.short}</text>`;
+  }).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    ${grid}${axes}
+    <polygon points="${tgt}" fill="none" stroke="#e1b57a" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <polygon points="${cur}" fill="rgba(138,111,214,.28)" stroke="#8a6fd6" stroke-width="2"/>
+    ${vals.map((v,i)=>{const [x,y]=pt(i,v.f);return `<circle cx="${x}" cy="${y}" r="3" fill="${AN_FAM_COL[v.name]||'#8a6fd6'}"/>`}).join('')}
+    ${labs}</svg>`;
+}
+function anBalance(){
+  const sel=document.getElementById('anBalPlayer');
+  if(!sel.options.length)sel.innerHTML='<option value="">Tout l\'effectif</option>'+chgPlayerOptions();
+  const pid=sel.value||null;
+  const mins={};
+  sessionsOf(pid,90).forEach(s=>{
+    const a=CHG_ACTIONS.find(x=>x.id===s.action_id);
+    const f=a&&a.famille?a.famille:null;
+    if(f&&AN_FAM.includes(f))mins[f]=(mins[f]||0)+(s.duree_min||0);
+  });
+  const tot=Object.values(mins).reduce((a,b)=>a+b,0);
+  const vals=AN_FAM.map(f=>{
+    const pc=tot?(mins[f]||0)/tot*100:0;
+    return {name:f,short:f.slice(0,5),pc,f:Math.max(0.04,pc/50),tf:AN_TARGETS[f]/50};
+  });
+  document.getElementById('anRadar').innerHTML=tot?radarSvg(vals,268)
+    :'<div class="anEmpty" style="width:268px">Aucune séance<br>sur 90 jours.</div>';
+  document.getElementById('anTargets').innerHTML=vals.map(v=>{
+    const col=AN_FAM_COL[v.name];
+    const ecart=v.pc-AN_TARGETS[v.name];
+    const sign=ecart>=0?'+':'';
+    return `<div class="anTg">
+      <div class="anTgTop"><span class="dot" style="background:${col}"></span>
+        <span class="nm">${v.name}</span>
+        <span class="pc" style="color:${Math.abs(ecart)<=8?'var(--ok)':(Math.abs(ecart)<=15?'var(--warn)':'var(--bad)')}">${Math.round(v.pc)}%</span></div>
+      <div class="anTgBar"><i style="width:${Math.min(100,v.pc*2)}%;background:${col}"></i>
+        <span class="tgt" style="left:${Math.min(100,AN_TARGETS[v.name]*2)}%"></span></div>
+      <div class="anTgLeg">cible ${AN_TARGETS[v.name]}% · écart ${sign}${Math.round(ecart)} pts</div>
+    </div>`;
+  }).join('')+'<div class="anTgLeg" style="margin-top:2px">— — cible &nbsp;|&nbsp; ▬ réalisé</div>';
+}
+
+/* ─── 5. Prescrit vs réalisé ─── */
+function anDone(){
+  const lim=new Date(); lim.setDate(lim.getDate()-90);
+  const list=PRESC.filter(p=>new Date(p.date)>=lim&&p.statut!=='annule');
+  const box=document.getElementById('anDoneBody');
+  if(!list.length){box.innerHTML='<div class="anEmpty">Aucune séance prescrite sur 90 jours.</div>';return;}
+  const done=list.filter(p=>p.statut==='fait').length;
+  const pct=done/list.length;
+  const col=pct>=0.8?'#4fd191':(pct>=0.5?'#ffb454':'#ff6a6a');
+  const byP={};
+  list.forEach(p=>{const k=p.player_id;(byP[k]=byP[k]||{t:0,d:0});byP[k].t++;if(p.statut==='fait')byP[k].d++});
+  const rows=Object.entries(byP).map(([k,v])=>({p:IPLAYERS.find(x=>x.id===k),...v}))
+    .filter(r=>r.p).sort((a,b)=>(b.d/b.t)-(a.d/a.t));
+  box.innerHTML=`<div class="anDoneRing">${donutSvg(pct,148,col,Math.round(pct*100)+'%','réalisé')}</div>
+    <div class="anDoneList">${rows.map(r=>{
+      const q=r.d/r.t, c=q>=0.8?'#4fd191':(q>=0.5?'#ffb454':'#ff6a6a');
+      return `<div class="anDoneRow"><span class="nm">${r.p.name}</span>
+        <span class="anDoneBar"><i style="width:${q*100}%;background:${c}"></i></span>
+        <span class="anDoneVal" style="color:${c}">${r.d}/${r.t}</span></div>`;
+    }).join('')}</div>
+    <div style="flex-basis:100%;font-size:11.5px;color:var(--muted);line-height:1.45;border-top:1px solid var(--line);padding-top:12px">
+      <b style="color:var(--ink)">${done}</b> séances réalisées sur <b style="color:var(--ink)">${list.length}</b> prescrites.
+      ${pct<0.6?'Un taux bas indique plus souvent une prescription trop ambitieuse qu\'un manque d\'implication.':'Le volume prescrit est globalement tenu.'}
+    </div>`;
+}
+
+function renderAnalyse(){
+  anCoverage(); anRegularity(); anCycle(); anBalance(); anDone();
 }
 
 /* ═══════ PRESCRIPTION DE SÉANCES INDIVIDUELLES ═══════ */
@@ -3190,13 +3520,13 @@ async function loadPresc(){
   PRESC=data||[];
 }
 function renderPresc(){
-  const sel=document.getElementById('prPlayer');
-  if(!sel.options.length){
-    sel.innerHTML=chgPlayerOptions();
-    document.getElementById('prFilterPlayer').innerHTML='<option value="">Tous les joueurs</option>'+chgPlayerOptions();
+  const f=document.getElementById('prFilterPlayer');
+  if(f&&!f.options.length){
+    f.innerHTML='<option value="">Tous les joueurs</option>'+chgPlayerOptions();
     document.getElementById('prDate').value=new Date().toISOString().slice(0,10);
     document.getElementById('prExSel').innerHTML='<option value="">— Exercice de la banque —</option>'+
       EXBANK.map(e=>`<option value="${e.id}">${e.nom}</option>`).join('');
+    mpRender('pr');
   }
   renderPrescList();renderPrescUpcoming();
 }
@@ -3230,19 +3560,56 @@ function renderPrescList(){
   }).join('');
 }
 async function createPrescSession(){
-  const player_id=document.getElementById('prPlayer').value;
-  if(!player_id){alert('Choisis un joueur.');return;}
+  const ids=[...MP_SEL.pr];
+  if(!ids.length){alert('Sélectionne au moins un joueur.');return;}
   const objectif=document.getElementById('prObjectif').value.trim()||null;
   const d=document.getElementById('prDuree').value;
-  const row={player_id,objectif,titre:objectif||'Séance individuelle',
+  const base={objectif,titre:objectif||'Séance individuelle',
     date:document.getElementById('prDate').value||new Date().toISOString().slice(0,10),
     duree_prevue_min:d===''?null:Number(d),created_by:CURRENT_USER_LABEL};
-  const {data,error}=await supa.from('presc_sessions').insert(row).select().single();
+  const rows=ids.map(player_id=>({player_id,...base}));
+  const {data,error}=await supa.from('presc_sessions').insert(rows).select();
   if(error){alert('Erreur : '+error.message);return;}
-  PRESC.unshift(data);
+  (data||[]).forEach(d2=>PRESC.unshift(d2));
   document.getElementById('prObjectif').value='';
+  MP_SEL.pr.clear(); mpRender('pr');
   renderPrescList();renderPrescUpcoming();
-  openPrescBuilder(data.id);
+  // On compose la première : le contenu pourra ensuite être copié vers les autres
+  if(data&&data.length)openPrescBuilder(data[0].id);
+  if(ids.length>1)alert(`${ids.length} séances créées. Compose la première, puis utilise « Copier vers d'autres joueurs » pour les remplir d'un coup.`);
+}
+/* Duplique le contenu composé vers d'autres joueurs : évite de recomposer
+   la même séance autant de fois qu'il y a de joueurs concernés. */
+async function duplicatePrescTo(){
+  if(!currentPrescId)return;
+  if(!PRESC_ITEMS.length){alert('Compose d\'abord au moins un exercice.');return;}
+  const src=PRESC.find(x=>x.id===currentPrescId); if(!src)return;
+  const ids=[...MP_SEL.dup||[]];
+  if(!ids.length){alert('Sélectionne les joueurs de destination.');return;}
+  let created=0;
+  for(const pid of ids){
+    // séance déjà prévue le même jour pour ce joueur ? on la remplit au lieu d'en créer une
+    let target=PRESC.find(p=>p.player_id===pid&&p.date===src.date&&p.id!==src.id&&p.statut==='prevu');
+    if(!target){
+      const {data,error}=await supa.from('presc_sessions').insert({
+        player_id:pid,titre:src.titre,objectif:src.objectif,date:src.date,
+        duree_prevue_min:src.duree_prevue_min,created_by:CURRENT_USER_LABEL}).select().single();
+      if(error){alert('Erreur : '+error.message);return;}
+      PRESC.unshift(data); target=data;
+    }else{
+      await supa.from('presc_items').delete().eq('session_id',target.id);
+    }
+    const clones=PRESC_ITEMS.map(it=>({session_id:target.id,exercise_id:it.exercise_id,nom_libre:it.nom_libre,
+      bloc:it.bloc,categorie:it.categorie,consignes:it.consignes,intentions:it.intentions,
+      series:it.series,reps:it.reps,tempo:it.tempo,intensite_rm:it.intensite_rm,vbt:it.vbt,
+      rpe_cible:it.rpe_cible,recup:it.recup,sort_order:it.sort_order}));
+    const {error:e2}=await supa.from('presc_items').insert(clones);
+    if(e2){alert('Erreur : '+e2.message);return;}
+    created++;
+  }
+  MP_SEL.dup.clear(); mpRender('dup');
+  renderPrescList();renderPrescUpcoming();
+  alert(`Contenu copié vers ${created} joueur${created>1?'s':''}.`);
 }
 async function deletePresc(id){
   if(!confirm('Supprimer cette séance prescrite et son contenu ?'))return;
@@ -3260,6 +3627,7 @@ async function openPrescBuilder(id){
   const {data,error}=await supa.from('presc_items').select('*').eq('session_id',id).order('sort_order');
   if(error){console.error(error);return;}
   PRESC_ITEMS=data||[];
+  mpRender('dup');
   document.getElementById('prBuilder').style.display='block';
   document.getElementById('prBuilder').scrollIntoView({behavior:'smooth',block:'start'});
   renderPrescItems();
@@ -3360,10 +3728,12 @@ async function markPrescDone(){
   alert('Séance marquée réalisée et reportée dans le suivi de charge.');
 }
 
-/* ═══════ DASHBOARD INDIVIDUALISATION — SUIVI DE CHARGE ═══════ */
+/* ═══════ DASHBOARD INDIVIDUALISATION — SUIVI DE CHARGE ═══════
+   Volume de travail uniquement (séances + durée). Pas de RPE ni de
+   ressenti : c'est couvert par l'application existante du centre de
+   formation, on évite le doublon. */
 let CHG_ACTIONS=[], CHG_SESSIONS=[], dashFilter='all', dashSel=null;
 const CHG_SECTEURS={preparation_physique:'Préparation physique',technique:'Technique',video:'Vidéo',dietetique:'Diététique',mental:'Préparation mentale',kine:'Kiné / Médical'};
-const CHG_FB=[['rpe_reel','RPE global'],['rpe_musculaire','RPE musculaire'],['rpe_cardio','RPE cardio'],['vivacite','Vivacité'],['fatigue','Fatigue'],['doms','DOMS']];
 const FAM_COLORS=['#8a6fd6','#4fd191','#6fb0ff','#ffb454','#ff6a6a','#22c1c3','#e1b57a'];
 
 async function loadCharge(){
@@ -3374,41 +3744,22 @@ async function loadCharge(){
   if(e1)console.error(e1); if(e2)console.error(e2);
   CHG_ACTIONS=a||[]; CHG_SESSIONS=s||[];
 }
-function sessionLoad(s){
-  const d=s.duree_min||0;
-  const r=s.rpe_reel!=null?s.rpe_reel:(s.rpe_cible!=null?s.rpe_cible:null);
-  return r!=null?d*r:d;
-}
-function loadWindow(pid,days){
-  const end=new Date(); const start=new Date(end); start.setDate(start.getDate()-days);
-  return CHG_SESSIONS.filter(s=>(!pid||s.player_id===pid)&&new Date(s.date)>start&&new Date(s.date)<=end)
-    .reduce((t,s)=>t+sessionLoad(s),0);
-}
 function sessionsOf(pid,days){
   const lim=new Date(); lim.setDate(lim.getDate()-days);
   return CHG_SESSIONS.filter(s=>(!pid||s.player_id===pid)&&new Date(s.date)>=lim);
 }
-function acwrOf(pid){
-  const aigu=loadWindow(pid,7), chronique=loadWindow(pid,28)/4;
-  return chronique<=0?{ratio:null,aigu,chronique}:{ratio:aigu/chronique,aigu,chronique};
-}
-function acwrTag(r){
-  if(r==null)return ['nd','Aucune donnée','#6E6880'];
-  if(r<0.8)return ['bas','Sous-charge','#6fb0ff'];
-  if(r<=1.3)return ['opt','Optimal','#4fd191'];
-  if(r<=1.5)return ['eleve','Charge élevée','#ffb454'];
-  return ['risque','Pic à surveiller','#ff6a6a'];
-}
-function weeklyLoads(pid,n){
+function minutesOf(pid,days){return sessionsOf(pid,days).reduce((t,s)=>t+(s.duree_min||0),0)}
+function weeklyMinutes(pid,n){
   const out=[];
   for(let i=n-1;i>=0;i--){
     const end=new Date(); end.setDate(end.getDate()-i*7);
     const start=new Date(end); start.setDate(start.getDate()-7);
     out.push(CHG_SESSIONS.filter(s=>(!pid||s.player_id===pid)&&new Date(s.date)>start&&new Date(s.date)<=end)
-      .reduce((t,s)=>t+sessionLoad(s),0));
+      .reduce((t,s)=>t+(s.duree_min||0),0));
   }
   return out;
 }
+function hrs(m){return m>=60?(m/60).toFixed(1)+' h':m+' min'}
 function chgInitials(n){return (n||'').split(/[\s-]+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()}
 function playerPhoto(p){
   if(!p||!p.photo_path)return null;
@@ -3423,53 +3774,47 @@ function fillChgActions(){
     `<optgroup label="${f}">${byFam[f].map(a=>`<option value="${a.id}">${a.nom}</option>`).join('')}</optgroup>`
   ).join('')||'<option value="">— aucune action —</option>';
 }
-function renderChgSliders(){
-  document.getElementById('chgSliders').innerHTML=CHG_FB.map(([k,lab])=>
-    `<div class="chgSl"><div class="lab"><span>${lab}</span><span class="val" id="v-${k}">—</span></div>
-     <input type="range" min="0" max="10" step="0.5" value="0" id="sl-${k}"
-       oninput="document.getElementById('v-${k}').textContent=this.value>0?this.value:'—'"></div>`).join('');
+
+/* ─── multi-sélection de joueurs (chips) ─── */
+const MP_SEL={chg:new Set(),pr:new Set(),dup:new Set()};
+function mpRender(ns){
+  const box=document.getElementById(ns+'PlayerBox'); if(!box)return;
+  box.innerHTML=IPLAYERS.map(p=>
+    `<button type="button" class="mpChip${MP_SEL[ns].has(p.id)?' on':''}" onclick="mpToggle('${ns}','${p.id}')">${p.name}</button>`).join('');
+  const n=MP_SEL[ns].size;
+  const c=document.getElementById(ns+'PlayerCount');
+  if(c)c.textContent=n===0?'0 sélectionné':(n+' sélectionné'+(n>1?'s':''));
 }
+function mpToggle(ns,id){MP_SEL[ns].has(id)?MP_SEL[ns].delete(id):MP_SEL[ns].add(id);mpRender(ns)}
+function mpAll(ns,on){MP_SEL[ns].clear();if(on)IPLAYERS.forEach(p=>MP_SEL[ns].add(p.id));mpRender(ns)}
+
 function renderCharge(){
-  const psel=document.getElementById('chgPlayer');
-  if(psel&&!psel.options.length){
-    psel.innerHTML=chgPlayerOptions();
-    document.getElementById('chgSecteur').innerHTML=Object.entries(CHG_SECTEURS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  const sect=document.getElementById('chgSecteur');
+  if(sect&&!sect.options.length){
+    sect.innerHTML=Object.entries(CHG_SECTEURS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
     document.getElementById('chgDate').value=new Date().toISOString().slice(0,10);
-    renderChgSliders(); fillChgActions();
+    fillChgActions(); mpRender('chg');
   }
   renderDashStrip(); renderDashGrid(); renderHeatmap();
   if(dashSel)renderDashDetail(dashSel);
 }
+
+/* ─── bandeau de synthèse ─── */
 function renderDashStrip(){
   const box=document.getElementById('dashStrip'); if(!box)return;
-  const stats=IPLAYERS.map(p=>({p,...acwrOf(p.id)}));
-  const actifs=stats.filter(s=>s.aigu>0||s.chronique>0);
-  const risque=stats.filter(s=>s.ratio!=null&&s.ratio>1.5).length;
-  const eleve=stats.filter(s=>s.ratio!=null&&s.ratio>1.3&&s.ratio<=1.5).length;
-  const s7=sessionsOf(null,7);
-  const totalMin=s7.reduce((t,s)=>t+(s.duree_min||0),0);
-  const hrs=m=>m>=60?(m/60).toFixed(1)+' h':m+' min';
-  const card=(k,v,u,ico,cls)=>`<div class="dsCard ${cls||''}"><div class="dsIco">${ico}</div>
+  const s7=sessionsOf(null,7), s30=sessionsOf(null,30);
+  const actifs=IPLAYERS.filter(p=>sessionsOf(p.id,30).length>0);
+  const moy=actifs.length?Math.round(minutesOf(null,30)/actifs.length):0;
+  const card=(k,v,u,ico)=>`<div class="dsCard"><div class="dsIco">${ico}</div>
     <div class="dsK">${k}</div><div class="dsV">${v}</div><div class="dsU">${u}</div></div>`;
   box.innerHTML=
-    card('Séances 7 jours',s7.length,hrs(totalMin),'📋')+
-    card('Joueurs suivis',actifs.length,`sur ${IPLAYERS.length} de l'effectif`,'👥')+
-    card('Charge élevée',eleve,'ratio 1,3 – 1,5','⚠️',eleve>0?'warn':'')+
-    card('Pics à surveiller',risque,'ratio > 1,5','🔴',risque>0?'bad':'');
+    card('Séances 7 jours',s7.length,hrs(minutesOf(null,7)),'📋')+
+    card('Séances 30 jours',s30.length,hrs(minutesOf(null,30)),'🗓️')+
+    card('Joueurs actifs',actifs.length,`sur ${IPLAYERS.length} de l'effectif`,'👥')+
+    card('Moyenne / joueur',hrs(moy),'sur 30 jours','📊');
 }
-function ringSvg(ratio,size){
-  const [cls,lab,col]=acwrTag(ratio);
-  const r=size/2-4, c=2*Math.PI*r;
-  const pct=ratio==null?0:Math.max(0,Math.min(1,ratio/2));
-  return `<svg class="pcRing" viewBox="0 0 ${size} ${size}" style="width:${size}px;height:${size}px">
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="4"/>
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="4"
-      stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct)}" stroke-linecap="round"
-      transform="rotate(-90 ${size/2} ${size/2})"/>
-    <text x="${size/2}" y="${size/2+3.5}" text-anchor="middle" fill="${col}"
-      font-size="${size*0.28}" font-weight="800" font-family="Barlow Condensed,sans-serif">${ratio==null?'–':ratio.toFixed(1)}</text>
-  </svg>`;
-}
+
+/* ─── cartes joueurs, classées par volume ─── */
 function setDashFilter(f,btn){
   dashFilter=f;
   document.querySelectorAll('.dfBtn').forEach(b=>b.classList.toggle('on',b===btn));
@@ -3477,40 +3822,44 @@ function setDashFilter(f,btn){
 }
 function renderDashGrid(){
   const box=document.getElementById('dashGrid'); if(!box)return;
-  let rows=IPLAYERS.map(p=>{
-    const a=acwrOf(p.id);
-    const last=CHG_SESSIONS.filter(s=>s.player_id===p.id)[0];
-    return {p,...a,last,weeks:weeklyLoads(p.id,8)};
-  });
-  if(dashFilter==='alert')rows=rows.filter(r=>r.ratio!=null&&r.ratio>1.3);
-  else if(dashFilter==='low')rows=rows.filter(r=>r.ratio!=null&&r.ratio<0.8);
-  else if(dashFilter==='none')rows=rows.filter(r=>r.aigu===0&&r.chronique===0);
-  rows.sort((a,b)=>(b.ratio==null?-1:b.ratio)-(a.ratio==null?-1:a.ratio));
+  let rows=IPLAYERS.map(p=>({p,
+    min30:minutesOf(p.id,30), nb30:sessionsOf(p.id,30).length,
+    min7:minutesOf(p.id,7), nb7:sessionsOf(p.id,7).length,
+    weeks:weeklyMinutes(p.id,8),
+    last:CHG_SESSIONS.filter(s=>s.player_id===p.id)[0]}));
+  rows.sort((a,b)=>b.min30-a.min30);
+  rows.forEach((r,i)=>r.rank=i+1);
+  const avec=rows.filter(r=>r.min30>0);
+  if(dashFilter==='top')rows=avec.slice(0,Math.max(1,Math.ceil(avec.length/3)));
+  else if(dashFilter==='bottom')rows=avec.slice(-Math.max(1,Math.ceil(avec.length/3)));
+  else if(dashFilter==='none')rows=rows.filter(r=>r.min30===0);
   if(!rows.length){box.innerHTML='<div class="dashEmpty">Aucun joueur dans cette sélection.</div>';return;}
-  const mx=Math.max(...rows.flatMap(r=>r.weeks),1);
+  const mx=Math.max(...IPLAYERS.map(p=>minutesOf(p.id,30)),1);
+  const mxw=Math.max(...rows.flatMap(r=>r.weeks),1);
   box.innerHTML=rows.map(r=>{
-    const [cls,lab,col]=acwrTag(r.ratio);
     const ph=playerPhoto(r.p);
     const days=r.last?Math.round((new Date()-new Date(r.last.date))/86400000):null;
+    const pct=Math.round((r.min30/mx)*100);
     return `<div class="pCard${dashSel===r.p.id?' sel':''}" onclick="openDashDetail('${r.p.id}')">
       <div class="pcTop">
         <span class="pcAv">${ph?`<img src="${ph}" alt="">`:chgInitials(r.p.name)}</span>
-        <span class="pcName">${r.p.name}<small>${Math.round(r.aigu)} UA · 7 j</small></span>
-        ${ringSvg(r.ratio,38)}
+        <span class="pcName">${r.p.name}<small>${r.nb30} séances · ${hrs(r.min30)}</small></span>
+        <span class="pcRank${r.rank<=3&&r.min30>0?' top':''}">${r.min30>0?'#'+r.rank:'–'}</span>
       </div>
+      <div class="pcVol"><i style="width:${pct}%"></i></div>
       <div class="pcMid">${r.weeks.map((v,i)=>
-        `<i class="${i===r.weeks.length-1?'last':''}" style="height:${Math.max(4,(v/mx)*100)}%;background:${i===r.weeks.length-1?col:'var(--accent)'}"></i>`).join('')}</div>
+        `<i class="${i===r.weeks.length-1?'last':''}" style="height:${Math.max(4,(v/mxw)*100)}%"></i>`).join('')}</div>
       <div class="pcFoot">
-        <span class="pcBadge tg-${cls}">${lab}</span>
+        <span>${r.nb7} séance${r.nb7>1?'s':''} · 7 j</span>
         <span class="sep">${days==null?'jamais':(days===0?"aujourd'hui":'il y a '+days+' j')}</span>
       </div>
     </div>`;
   }).join('');
 }
+
+/* ─── graphique en barres ─── */
 function barChart(vals,labels,col,h){
   const w=100, mx=Math.max(...vals,1), n=vals.length, gap=w/n, bw=gap*0.62;
-  // libellés rendus en HTML sous le SVG : le preserveAspectRatio="none"
-  // nécessaire aux barres déformerait le texte s'il était dans le SVG
   return `<svg class="ddChart bars" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
     ${[0.25,0.5,0.75,1].map(f=>`<line x1="0" y1="${h*(1-f)}" x2="${w}" y2="${h*(1-f)}" stroke="rgba(255,255,255,.07)" stroke-width="0.3"/>`).join('')}
     ${vals.map((v,i)=>{
@@ -3521,49 +3870,8 @@ function barChart(vals,labels,col,h){
   </svg>
   <div class="ddAxis">${labels.map(l=>`<span>${l||''}</span>`).join('')}</div>`;
 }
-function lineChart(series,h){
-  const w=100;
-  const all=series.flatMap(s=>s.pts.map(p=>p.v)).filter(v=>v!=null);
-  if(all.length<2)return '<div class="chgEmpty">Pas assez de ressentis saisis.</div>';
-  const mx=10, n=Math.max(...series.map(s=>s.pts.length),2);
-  const x=i=>(i/(n-1))*w;
-  return `<svg class="ddChart lines" viewBox="0 0 ${w} ${h+8}" preserveAspectRatio="none">
-    ${[0,0.5,1].map(f=>`<line x1="0" y1="${h*f}" x2="${w}" y2="${h*f}" stroke="rgba(255,255,255,.07)" stroke-width="0.3"/>`).join('')}
-    ${series.map(s=>{
-      const pts=s.pts.map((p,i)=>p.v==null?null:`${x(i)},${h-(p.v/mx)*h}`).filter(Boolean);
-      if(pts.length<2)return '';
-      return `<polyline points="${pts.join(' ')}" fill="none" stroke="${s.col}" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/>`;
-    }).join('')}
-  </svg>`;
-}
-function renderHeatmap(){
-  const box=document.getElementById('hmWrap'); if(!box)return;
-  const N=10;
-  const rows=IPLAYERS.map(p=>({p,weeks:weeklyLoads(p.id,N)}))
-    .filter(r=>r.weeks.some(v=>v>0));
-  if(!rows.length){box.style.display='none';return;}
-  box.style.display='block';
-  const mx=Math.max(...rows.flatMap(r=>r.weeks),1);
-  const shade=v=>{
-    if(v<=0)return 'var(--panel2)';
-    const t=v/mx;
-    if(t<0.25)return 'rgba(138,111,214,.28)';
-    if(t<0.5)return 'rgba(138,111,214,.5)';
-    if(t<0.75)return 'rgba(138,111,214,.75)';
-    return '#8a6fd6';
-  };
-  rows.sort((a,b)=>b.weeks[N-1]-a.weeks[N-1]);
-  const labels=Array.from({length:N},(_,i)=>i===N-1?'actuelle':'S-'+(N-1-i));
-  box.innerHTML=`<div class="hmHead">
-      <span class="hmTitle">Charge de l'effectif — ${N} dernières semaines</span>
-      <span class="hmLeg">faible <i style="background:rgba(138,111,214,.28)"></i><i style="background:rgba(138,111,214,.5)"></i><i style="background:rgba(138,111,214,.75)"></i><i style="background:#8a6fd6"></i> forte</span>
-    </div>
-    ${rows.map(r=>`<div class="hmRow"><span class="hmName">${r.p.name}</span>
-      <span class="hmCells" style="grid-template-columns:repeat(${N},1fr)">
-        ${r.weeks.map((v,i)=>`<i class="hmCell" style="background:${shade(v)}" title="${labels[i]} : ${Math.round(v)} UA"></i>`).join('')}
-      </span></div>`).join('')}
-    <div class="hmAxis" style="grid-template-columns:repeat(${N},1fr)">${labels.map(l=>`<span>${l}</span>`).join('')}</div>`;
-}
+
+/* ─── détail joueur ─── */
 function openDashDetail(pid){
   dashSel=pid; renderDashGrid(); renderDashDetail(pid);
   document.getElementById('dashDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -3576,10 +3884,8 @@ function closeDashDetail(){
 function renderDashDetail(pid){
   const box=document.getElementById('dashDetail'); if(!box)return;
   const p=IPLAYERS.find(x=>x.id===pid); if(!p)return;
-  const {ratio,aigu,chronique}=acwrOf(pid);
-  const [cls,lab,col]=acwrTag(ratio);
   const ph=playerPhoto(p);
-  const weeks=weeklyLoads(pid,12);
+  const weeks=weeklyMinutes(pid,12);
   const wlabels=weeks.map((_,i)=>i%3===0?'S-'+(11-i):'');
   const byFam={};
   sessionsOf(pid,90).forEach(s=>{
@@ -3589,39 +3895,31 @@ function renderDashDetail(pid){
   });
   const famRows=Object.entries(byFam).sort((a,b)=>b[1]-a[1]);
   const famTot=famRows.reduce((t,[,v])=>t+v,0)||1;
-  const fbSess=CHG_SESSIONS.filter(s=>s.player_id===pid&&s.rpe_reel!=null).slice(0,12).reverse();
-  const mkS=(k,c)=>({col:c,pts:fbSess.map(s=>({v:s[k]}))});
-  const series=[mkS('rpe_reel','#8a6fd6'),mkS('fatigue','#ffb454'),mkS('doms','#ff6a6a')];
   const sess=CHG_SESSIONS.filter(s=>s.player_id===pid).slice(0,14);
-  const hrs=m=>m>=60?(m/60).toFixed(1)+' h':m+' min';
-  const t30=sessionsOf(pid,30);
+  const nb30=sessionsOf(pid,30).length, m30=minutesOf(pid,30);
+  const rank=IPLAYERS.map(x=>({id:x.id,m:minutesOf(x.id,30)})).sort((a,b)=>b.m-a.m).findIndex(x=>x.id===pid)+1;
+  const moyEffectif=(()=>{const a=IPLAYERS.filter(x=>minutesOf(x.id,30)>0);return a.length?Math.round(minutesOf(null,30)/a.length):0})();
+
   box.style.display='block';
   box.innerHTML=`<div class="dashDet">
     <div class="ddHead">
       <span class="ddAv">${ph?`<img src="${ph}" alt="">`:chgInitials(p.name)}</span>
       <span><span class="ddName">${p.name}</span>
-        <div class="ddSub">${t30.length} séances sur 30 j · ${hrs(t30.reduce((t,s)=>t+(s.duree_min||0),0))} · ratio ${ratio==null?'—':ratio.toFixed(2)} (${lab})</div></span>
-      ${ringSvg(ratio,54)}
+        <div class="ddSub">${nb30} séances sur 30 j · ${hrs(m30)} · ${rank>0?rank+'ᵉ volume de l\'effectif':'—'}</div></span>
+      <span class="ddCompare">
+        <span class="cmpV">${m30>=moyEffectif?'+':''}${moyEffectif?Math.round((m30-moyEffectif)/moyEffectif*100):0}%</span>
+        <span class="cmpL">vs moyenne effectif</span>
+      </span>
       <button class="ddClose" onclick="closeDashDetail()">Fermer</button>
     </div>
     <div class="ddCols">
       <div>
         <div class="ddBlock">
-          <div class="ddTitle">Charge hebdomadaire <span class="hint">12 semaines · unités arbitraires</span></div>
-          ${barChart(weeks,wlabels,col,52)}
+          <div class="ddTitle">Volume hebdomadaire <span class="hint">12 semaines · minutes</span></div>
+          ${barChart(weeks,wlabels,'#4fd191',52)}
           <div class="ddLegend">
             <span><i style="background:var(--accent)"></i>Semaines précédentes</span>
-            <span><i style="background:${col}"></i>Semaine en cours — ${Math.round(aigu)} UA</span>
-            <span>Moyenne 4 sem. : ${Math.round(chronique)} UA</span>
-          </div>
-        </div>
-        <div class="ddBlock">
-          <div class="ddTitle">Tendance du ressenti <span class="hint">12 dernières séances</span></div>
-          ${lineChart(series,44)}
-          <div class="ddLegend">
-            <span><i style="background:#8a6fd6"></i>RPE global</span>
-            <span><i style="background:#ffb454"></i>Fatigue</span>
-            <span><i style="background:#ff6a6a"></i>DOMS</span>
+            <span><i style="background:#4fd191"></i>Semaine en cours — ${hrs(weeks[weeks.length-1])}</span>
           </div>
         </div>
         <div class="ddBlock" style="margin-bottom:0">
@@ -3630,7 +3928,7 @@ function renderDashDetail(pid){
             `<i style="width:${(v/famTot)*100}%;background:${FAM_COLORS[i%FAM_COLORS.length]}" title="${k}"></i>`).join('')}</div>
           <div class="famList">${famRows.map(([k,v],i)=>
             `<div class="famRow"><span class="dot" style="background:${FAM_COLORS[i%FAM_COLORS.length]}"></span>
-             <span class="nm">${k}</span><span class="vl">${Math.round(v/famTot*100)}%</span></div>`).join('')}</div>`
+             <span class="nm">${k}</span><span class="vl">${hrs(v)}</span></div>`).join('')}</div>`
           :'<div class="chgEmpty">Aucune séance sur 90 jours.</div>'}
         </div>
       </div>
@@ -3642,9 +3940,7 @@ function renderDashDetail(pid){
           if(s.series||s.reps)chips.push(`<span class="tlChip">${[s.series?s.series+'×':'',s.reps||''].filter(Boolean).join(' ')}</span>`);
           if(s.charge_kg)chips.push(`<span class="tlChip">${s.charge_kg} kg</span>`);
           if(s.duree_min)chips.push(`<span class="tlChip">${s.duree_min} min</span>`);
-          if(s.rpe_reel!=null)chips.push(`<span class="tlChip rpe">RPE ${s.rpe_reel}</span>`);
-          const hi=s.rpe_reel!=null&&s.rpe_reel>=8;
-          return `<div class="tlItem${hi?' hi':''}"><div class="tlCard">
+          return `<div class="tlItem"><div class="tlCard">
             <div class="tlTop"><span class="tlDate">${fmtDateFR(s.date)}</span>
               <span class="tlAct">${a?a.nom:'—'}</span>
               <button class="tlDel" onclick="event.stopPropagation();deleteChargeSession('${s.id}')" title="Supprimer">✕</button></div>
@@ -3656,18 +3952,50 @@ function renderDashDetail(pid){
     </div>
   </div>`;
 }
+
+/* ─── heatmap de l'effectif ─── */
+function renderHeatmap(){
+  const box=document.getElementById('hmWrap'); if(!box)return;
+  const N=10;
+  const rows=IPLAYERS.map(p=>({p,weeks:weeklyMinutes(p.id,N)})).filter(r=>r.weeks.some(v=>v>0));
+  if(!rows.length){box.style.display='none';return;}
+  box.style.display='block';
+  const mx=Math.max(...rows.flatMap(r=>r.weeks),1);
+  const shade=v=>{
+    if(v<=0)return 'var(--panel2)';
+    const t=v/mx;
+    if(t<0.25)return 'rgba(138,111,214,.28)';
+    if(t<0.5)return 'rgba(138,111,214,.5)';
+    if(t<0.75)return 'rgba(138,111,214,.75)';
+    return '#8a6fd6';
+  };
+  rows.sort((a,b)=>b.weeks.reduce((x,y)=>x+y,0)-a.weeks.reduce((x,y)=>x+y,0));
+  const labels=Array.from({length:N},(_,i)=>i===N-1?'actuelle':'S-'+(N-1-i));
+  box.innerHTML=`<div class="hmHead">
+      <span class="hmTitle">Volume de l'effectif — ${N} dernières semaines</span>
+      <span class="hmLeg">peu <i style="background:rgba(138,111,214,.28)"></i><i style="background:rgba(138,111,214,.5)"></i><i style="background:rgba(138,111,214,.75)"></i><i style="background:#8a6fd6"></i> beaucoup</span>
+    </div>
+    ${rows.map(r=>`<div class="hmRow"><span class="hmName">${r.p.name}</span>
+      <span class="hmCells" style="grid-template-columns:repeat(${N},1fr)">
+        ${r.weeks.map((v,i)=>`<i class="hmCell" style="background:${shade(v)}" title="${labels[i]} : ${v} min"></i>`).join('')}
+      </span></div>`).join('')}
+    <div class="hmAxis" style="grid-template-columns:repeat(${N},1fr)">${labels.map(l=>`<span>${l}</span>`).join('')}</div>`;
+}
+
+/* ─── saisie ─── */
 function openQuickAdd(){
-  if(dashSel)document.getElementById('chgPlayer').value=dashSel;
+  if(dashSel&&MP_SEL.chg.size===0)MP_SEL.chg.add(dashSel);
+  mpRender('chg');
   document.getElementById('qaOverlay').classList.add('on');
 }
 function closeQuickAdd(){document.getElementById('qaOverlay').classList.remove('on')}
 async function addChargeSession(){
-  const player_id=document.getElementById('chgPlayer').value;
+  const ids=[...MP_SEL.chg];
   const action_id=document.getElementById('chgAction').value;
-  if(!player_id){alert('Choisis un joueur.');return;}
+  if(!ids.length){alert('Sélectionne au moins un joueur.');return;}
   if(!action_id){alert('Choisis une action.');return;}
   const num=id=>{const v=document.getElementById(id).value;return v===''?null:Number(v)};
-  const row={player_id,action_id,
+  const base={action_id,
     date:document.getElementById('chgDate').value||new Date().toISOString().slice(0,10),
     series:num('chgSeries'),
     reps:document.getElementById('chgReps').value.trim()||null,
@@ -3675,13 +4003,14 @@ async function addChargeSession(){
     commentaire:document.getElementById('chgComment').value.trim()||null,
     realise_par:document.getElementById('chgRealisePar').value.trim()||CURRENT_USER_LABEL||null,
     created_by:CURRENT_USER_LABEL};
-  CHG_FB.forEach(([k])=>{const v=Number(document.getElementById('sl-'+k).value);row[k]=v>0?v:null});
-  const {data,error}=await supa.from('charge_sessions').insert(row).select().single();
+  const rows=ids.map(player_id=>({player_id,...base}));
+  const {data,error}=await supa.from('charge_sessions').insert(rows).select();
   if(error){alert('Erreur : '+error.message);return;}
-  CHG_SESSIONS.unshift(data);
+  (data||[]).forEach(d=>CHG_SESSIONS.unshift(d));
   ['chgSeries','chgReps','chgKg','chgDuree','chgComment'].forEach(id=>document.getElementById(id).value='');
-  CHG_FB.forEach(([k])=>{document.getElementById('sl-'+k).value=0;document.getElementById('v-'+k).textContent='—'});
+  MP_SEL.chg.clear(); mpRender('chg');
   closeQuickAdd(); renderCharge();
+  if(ids.length>1)alert(`Séance enregistrée pour ${ids.length} joueurs.`);
 }
 async function deleteChargeSession(id){
   if(!confirm('Supprimer cette séance ?'))return;
@@ -4063,7 +4392,6 @@ function prescSheetPage(){
       }).join('')}
     </table>`;
   }).join('');
-  const fb=['RPE global (0-10)','RPE musculaire (0-10)','RPE cardio (0-10)','Vivacité (0-10)','Fatigue (0-10)','DOMS (0-10)','Commentaire'];
   return `<div class="pg pSheet">
     <div class="shPat"></div><div class="shShade"></div>
     <div class="shIn" style="display:flex;flex-direction:column">
@@ -4075,10 +4403,6 @@ function prescSheetPage(){
       </div>
       <div class="shName">${pl?pl.name:''}</div>
       ${tables}
-      <div class="shFb">
-        <div class="shFbTitle">Suivi post-séance &amp; feedback</div>
-        <table class="shFbTbl"><tr>${fb.map(f=>`<th>${f}</th>`).join('')}</tr><tr>${fb.map(()=>'<td></td>').join('')}</tr></table>
-      </div>
     </div>
   </div>`;
 }
