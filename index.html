@@ -313,6 +313,45 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .anDoneBar i{display:block;height:100%;border-radius:4px}
 .anDoneVal{font-family:'Spline Sans Mono',monospace;font-weight:700;text-align:right;font-size:11px}
 .anEmpty{padding:26px;text-align:center;color:var(--muted);font-size:12px}
+
+/* ═══ JOURNAL DES SÉANCES ═══ */
+.jStrip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+@media (max-width:900px){.jStrip{grid-template-columns:repeat(2,1fr)}}
+.jKpi{background:linear-gradient(160deg,var(--panel) 0%,var(--panel2) 100%);border:1px solid var(--line);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden}
+.jKpi:before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.jKpi.c1:before{background:linear-gradient(90deg,#8a6fd6,transparent)}
+.jKpi.c2:before{background:linear-gradient(90deg,#4fd191,transparent)}
+.jKpi.c3:before{background:linear-gradient(90deg,#6fb0ff,transparent)}
+.jKpi.c4:before{background:linear-gradient(90deg,#ffb454,transparent)}
+.jKpi .k{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.jKpi .v{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:800;line-height:1.05;margin-top:3px}
+.jKpi .u{font-size:10.5px;color:var(--muted)}
+.jDay{margin-bottom:20px}
+.jDayHead{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.jDayDate{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.jDayType{font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.4px}
+.jDayLine{flex:1;height:1px;background:var(--line)}
+.jDayCount{font-size:10px;color:var(--muted);font-weight:700}
+.jCards{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:11px}
+.jCard{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px 15px;position:relative;border-left:3px solid var(--accent)}
+.jCard.ind{border-left-color:#4fd191}
+.jCardTop{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.jBadge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.4px;text-transform:uppercase}
+.jBadge.coll{background:rgba(138,111,214,.2);color:var(--accent)}
+.jBadge.ind{background:rgba(79,209,145,.2);color:#4fd191}
+.jCardTitle{font-size:13.5px;font-weight:700;flex:1;line-height:1.2}
+.jCardDel{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;opacity:.5}
+.jCardDel:hover{opacity:1;color:var(--bad)}
+.jMeta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.jMeta span{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--panel3);color:var(--muted);font-family:'Spline Sans Mono',monospace}
+.jFaces{display:flex;align-items:center;gap:-6px}
+.jFace{width:24px;height:24px;border-radius:7px;background:var(--panel3);display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:800;color:var(--muted);border:1.5px solid var(--panel);margin-right:-6px;overflow:hidden;flex:none}
+.jFace img{width:100%;height:100%;object-fit:cover}
+.jFace.more{background:var(--accent);color:#fff;margin-right:0}
+.jPresence{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--muted);font-family:'Spline Sans Mono',monospace}
+.jProg{margin-top:9px;height:5px;background:var(--panel2);border-radius:3px;overflow:hidden}
+.jProg i{display:block;height:100%;background:#4fd191;border-radius:3px}
+.jEmpty{padding:40px;text-align:center;color:var(--muted);font-size:13px;background:var(--panel);border:1px dashed var(--line);border-radius:14px}
 .pcBadge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.3px}
 
 .dashDet{background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;margin-top:18px}
@@ -803,7 +842,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   <button data-t="board">Board</button>
   <button data-t="mois" class="on">Vue d'ensemble</button>
   <button data-t="semaine">Planification semaine</button>
-  <button data-t="programmes">Programmes</button>
+  <button data-t="programmes">Bibliothèque</button>
   <button data-t="seances">Séances</button>
   <button data-t="indiv">Individualisation</button>
   <button data-t="joueurs">Joueurs</button>
@@ -971,37 +1010,20 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 
 <section class="view" id="v-seances">
   <div class="rowHead">
-    <h2>Séances</h2><span class="tag live">Données partagées Supabase</span>
-    <button class="btn primary" style="margin-left:auto" onclick="openCreateSeance()">+ Créer une séance</button>
+    <h2>Séances</h2><span class="tag live">Journal partagé</span>
+    <button class="btn primary" style="margin-left:auto" onclick="openCreateSeance()">+ Séance collective</button>
+    <button class="btn" onclick="indivQuickFromSeances()">+ Séance individuelle</button>
   </div>
+
+  <div class="jStrip" id="jStrip"></div>
+
   <div class="subTabs">
-    <button class="on" onclick="subTab(this,'biblio')">Bibliothèque (historique daté)</button>
-    <button onclick="subTab(this,'banque')">Banque d'exercices</button>
+    <button class="on" onclick="jTab(this,'all')">Tout le journal</button>
+    <button onclick="jTab(this,'coll')">Collectives</button>
+    <button onclick="jTab(this,'indiv')">Individuelles</button>
   </div>
-  <div id="sub-biblio">
-    <div class="filterRow">
-      <input type="date" value="2026-08-01">
-      <select><option>Tous les types</option><option>Force</option><option>Vitesse</option><option>Grands Espaces</option><option>Reprise</option><option>Veille de Match</option></select>
-      <select><option>Collectives + individuelles</option><option>Collectives terrain</option><option>Musculation</option><option>Individuelles / réathlé</option></select>
-    </div>
-    <div id="biblioList"></div>
-  </div>
-  <div id="sub-banque" style="display:none">
-    <div class="filterRow">
-      <select id="banqueFilterCat" onchange="renderSeanceBanque()">
-        <option value="">Toutes catégories</option>
-        <option value="technique">Technique</option>
-        <option value="tactique">Tactique</option>
-        <option value="physique">Physique</option>
-        <option value="echauffement">Échauffement</option>
-        <option value="mental">Mental</option>
-      </select>
-      <input type="search" id="banqueSearch" placeholder="Rechercher un exercice…" oninput="renderSeanceBanque()">
-      <button class="btn" style="margin-left:auto" onclick="goToExerciseBank()">+ Ajouter un exercice</button>
-    </div>
-    <p class="note" style="margin:6px 0">Banque commune, partagée avec l'onglet Programmes.</p>
-    <div class="cardGrid" id="banqueGrid"></div>
-  </div>
+
+  <div id="jList"></div>
 </section>
 
 <section class="view" id="v-indiv">
@@ -2484,12 +2506,6 @@ function goTab(t){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+t));
 }
-function subTab(btn,name){
-  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  document.getElementById('sub-biblio').style.display=name==='biblio'?'block':'none';
-  document.getElementById('sub-banque').style.display=name==='banque'?'block':'none';
-}
 
 /* ═══════ VUE D'ENSEMBLE ═══════ */
 function renderMonth(){
@@ -2777,44 +2793,141 @@ async function loadSeances(){
   SEANCES=(se||[]).map(s=>({...s,presences:(pr||[]).filter(p=>p.seance_id===s.id)}));
 }
 function fmtDateFR(iso){const[y,m,d]=iso.split('-');return d+'/'+m+'/'+y.slice(2)}
+let jFilter='all';
+function jTab(btn,name){
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); jFilter=name; renderSeances();
+}
+function indivQuickFromSeances(){
+  goTab('indiv');
+  setTimeout(()=>{
+    const b=[...document.querySelectorAll('#v-indiv .subTabs button')].find(x=>x.textContent.includes('Suivi de charge'));
+    if(b)b.click();
+    setTimeout(()=>openQuickAdd(),120);
+  },60);
+}
+/* Type de jour issu de la planification, pour colorer chaque journée du journal */
+function jDayType(isoDate){
+  const wk=WEEKS.find(w=>w.days.some(x=>iso(x)===isoDate));
+  if(!wk||!WEEK_TYPES[wk.n])return null;
+  const idx=wk.days.findIndex(x=>iso(x)===isoDate);
+  const key=WEEK_TYPES[wk.n][idx];
+  return key?{key,...(TYPES[key]||{})}:null;
+}
+/* contraste automatique du texte selon la couleur du type de jour */
+function jTextOn(hex){
+  const c=(hex||'').replace('#','');
+  if(c.length<6)return '#fff';
+  const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);
+  return (0.299*r+0.587*g+0.114*b)>150?'#17122b':'#ffffff';
+}
+function jFaces(ids,max){
+  const shown=ids.slice(0,max);
+  const rest=ids.length-shown.length;
+  return `<span class="jFaces">${shown.map(id=>{
+    const p=IPLAYERS.find(x=>x.id===id);
+    const ph=p?playerPhoto(p):null;
+    return `<span class="jFace" title="${p?p.name:''}">${ph?`<img src="${ph}" alt="">`:chgInitials(p?p.name:'?')}</span>`;
+  }).join('')}${rest>0?`<span class="jFace more">+${rest}</span>`:''}</span>`;
+}
 function renderSeances(){
-  const list=document.getElementById('biblioList');
-  if(!SEANCES.length){list.innerHTML='<p class="note">Aucune séance créée pour l\'instant. Utilise « + Créer une séance » ci-dessus.</p>';}
-  else list.innerHTML=SEANCES.map(s=>{
-    const nb=s.presences.length, done=s.presences.filter(p=>p.valide).length;
-    const prog=s.programme_id?PROGRAMMES.find(p=>p.id===s.programme_id):null;
-    const progTag=prog?`<span class="catTag" style="background:rgba(139,123,255,.18);color:var(--accent);font-size:10px">📄 ${prog.titre}</span>`:'';
-    return `<div class="sessRow" onclick="openSeanceDetail('${s.id}')">
-      <span class="sessDate">${fmtDateFR(s.date)}</span>
-      <span style="width:9px;height:9px;border-radius:50%;background:${catColor(s.cat)};flex:none"></span>
-      <h3>${s.nom}</h3>${progTag}<span class="cnt">${done}/${nb} présents</span></div>`;
-  }).join('');
-  renderSeanceBanque();
-}
-function goToExerciseBank(){
-  goTab('programmes');
-  setTimeout(()=>document.getElementById('exNom')?.scrollIntoView({behavior:'smooth',block:'center'}),50);
-}
-function renderSeanceBanque(){
-  const box=document.getElementById('banqueGrid');
+  // Journal unifié : une séance collective et une séance individuelle sont
+  // le même acte, seule l'échelle change. On les affiche ensemble, par jour.
+  const items=[];
+  if(jFilter!=='indiv'){
+    SEANCES.forEach(s=>{
+      const done=s.presences.filter(p=>p.valide).length;
+      items.push({kind:'coll',date:s.date,id:s.id,titre:s.nom,cat:s.cat,
+        players:s.presences.map(p=>p.player_id),done,total:s.presences.length,
+        prog:s.programme_id});
+    });
+  }
+  if(jFilter!=='coll'){
+    // regroupe les lignes individuelles d'une même date + action
+    const g={};
+    CHG_SESSIONS.forEach(s=>{
+      const k=s.date+'|'+(s.action_id||'')+'|'+(s.duree_min||'');
+      (g[k]=g[k]||{date:s.date,action_id:s.action_id,duree:s.duree_min,
+        series:s.series,reps:s.reps,kg:s.charge_kg,ids:[],rows:[]});
+      g[k].ids.push(s.player_id); g[k].rows.push(s.id);
+    });
+    Object.values(g).forEach(v=>{
+      const a=CHG_ACTIONS.find(x=>x.id===v.action_id);
+      items.push({kind:'ind',date:v.date,id:v.rows[0],rows:v.rows,
+        titre:a?a.nom:'Séance individuelle',fam:a?a.famille:null,
+        players:v.ids,duree:v.duree,series:v.series,reps:v.reps,kg:v.kg});
+    });
+  }
+  items.sort((a,b)=>b.date.localeCompare(a.date));
+
+  // bandeau
+  const lim=new Date(); lim.setDate(lim.getDate()-30);
+  const rec=items.filter(x=>new Date(x.date)>=lim);
+  const nColl=rec.filter(x=>x.kind==='coll').length, nInd=rec.filter(x=>x.kind==='ind').length;
+  const joueurs=new Set(); rec.forEach(x=>x.players.forEach(p=>joueurs.add(p)));
+  const mins=rec.filter(x=>x.kind==='ind').reduce((t,x)=>t+(x.duree||0)*x.players.length,0);
+  const strip=document.getElementById('jStrip');
+  if(strip)strip.innerHTML=
+    `<div class="jKpi c1"><div class="k">Séances 30 jours</div><div class="v">${rec.length}</div><div class="u">collectives + individuelles</div></div>
+     <div class="jKpi c2"><div class="k">Collectives</div><div class="v">${nColl}</div><div class="u">avec feuille de présence</div></div>
+     <div class="jKpi c3"><div class="k">Individuelles</div><div class="v">${nInd}</div><div class="u">${hrs(mins)} cumulées</div></div>
+     <div class="jKpi c4"><div class="k">Joueurs concernés</div><div class="v">${joueurs.size}</div><div class="u">sur ${IPLAYERS.length} de l'effectif</div></div>`;
+
+  const box=document.getElementById('jList');
   if(!box)return;
-  const cat=document.getElementById('banqueFilterCat')?.value||'';
-  const q=(document.getElementById('banqueSearch')?.value||'').trim().toLowerCase();
-  let items=EXBANK.filter(e=>{
-    if(cat&&e.categorie!==cat)return false;
-    if(q){
-      const hay=(e.nom+' '+(e.tags||[]).join(' ')).toLowerCase();
-      if(!hay.includes(q))return false;
-    }
-    return true;
-  });
-  if(!items.length){box.innerHTML='<p class="note">Aucun exercice — ajoute-en depuis « + Ajouter un exercice ».</p>';return;}
-  box.innerHTML=items.map(e=>{
-    const img=e.image_path?supa.storage.from('exercise-images').getPublicUrl(e.image_path).data.publicUrl:null;
-    return `<div class="exoCard"><div class="exoImg">${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover">`:'🖼 Pas d\'image'}</div>
-      <div class="exoBody"><span class="catTag" style="background:rgba(139,123,255,.15);color:var(--accent)">${CAT_LABEL[e.categorie]||e.categorie}</span>
-      <h3>${(e.nom||'').replace(/</g,'&lt;')}</h3><div class="meta">${(e.tags&&e.tags.length)?e.tags.join(', '):''}</div></div></div>`;
+  if(!items.length){
+    box.innerHTML='<div class="jEmpty">Aucune séance dans ce filtre. Crée une séance collective ou individuelle depuis les boutons en haut.</div>';
+    return;
+  }
+  const byDay={};
+  items.forEach(x=>{(byDay[x.date]=byDay[x.date]||[]).push(x)});
+  box.innerHTML=Object.keys(byDay).sort((a,b)=>b.localeCompare(a)).slice(0,30).map(d=>{
+    const T=jDayType(d);
+    const col=T?(T.stripes?T.stripes[0]:T.color):null;
+    const list=byDay[d];
+    return `<div class="jDay">
+      <div class="jDayHead">
+        <span class="jDayDate">${fmtDateFR(d)}</span>
+        ${T?`<span class="jDayType" style="background:${col};color:${jTextOn(col)}">${T.nom||T.key}</span>`:''}
+        <span class="jDayLine"></span>
+        <span class="jDayCount">${list.length} séance${list.length>1?'s':''}</span>
+      </div>
+      <div class="jCards">${list.map(x=>{
+        if(x.kind==='coll'){
+          const pct=x.total?x.done/x.total*100:0;
+          const prog=x.prog?PROGRAMMES.find(p=>p.id===x.prog):null;
+          return `<div class="jCard" onclick="openSeanceDetail('${x.id}')" style="cursor:pointer">
+            <div class="jCardTop"><span class="jBadge coll">Collectif</span>
+              <span class="jCardTitle">${x.titre}</span></div>
+            ${prog?`<div class="jMeta"><span>📄 ${prog.titre}</span></div>`:''}
+            <div class="jCardTop" style="margin:0">${jFaces(x.players,6)}
+              <span class="jPresence">${x.done}/${x.total}</span></div>
+            <div class="jProg"><i style="width:${pct}%"></i></div>
+          </div>`;
+        }
+        const chips=[];
+        if(x.series||x.reps)chips.push(`<span>${[x.series?x.series+'×':'',x.reps||''].filter(Boolean).join(' ')}</span>`);
+        if(x.kg)chips.push(`<span>${x.kg} kg</span>`);
+        if(x.duree)chips.push(`<span>${x.duree} min</span>`);
+        if(x.fam)chips.push(`<span>${x.fam}</span>`);
+        return `<div class="jCard ind">
+          <div class="jCardTop"><span class="jBadge ind">Individuel</span>
+            <span class="jCardTitle">${x.titre}</span>
+            <button class="jCardDel" onclick="event.stopPropagation();deleteChargeGroup(${JSON.stringify(x.rows).replace(/"/g,'&quot;')})" title="Supprimer">✕</button></div>
+          ${chips.length?`<div class="jMeta">${chips.join('')}</div>`:''}
+          <div class="jCardTop" style="margin:0">${jFaces(x.players,6)}
+            <span class="jPresence">${x.players.length} joueur${x.players.length>1?'s':''}</span></div>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
   }).join('');
+}
+async function deleteChargeGroup(ids){
+  if(!confirm(`Supprimer cette séance pour ${ids.length} joueur${ids.length>1?'s':''} ?`))return;
+  const {error}=await supa.from('charge_sessions').delete().in('id',ids);
+  if(error){alert('Erreur : '+error.message);return;}
+  CHG_SESSIONS=CHG_SESSIONS.filter(s=>!ids.includes(s.id));
+  renderSeances(); if(typeof renderCharge==='function')renderCharge();
 }
 
 let seanceCheckSel=new Set();
