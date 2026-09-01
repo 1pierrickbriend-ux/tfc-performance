@@ -366,6 +366,14 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .jProg{margin-top:9px;height:5px;background:var(--panel2);border-radius:3px;overflow:hidden}
 .jProg i{display:block;height:100%;background:#4fd191;border-radius:3px}
 .jEmpty{padding:40px;text-align:center;color:var(--muted);font-size:13px;background:var(--panel);border:1px dashed var(--line);border-radius:14px}
+.jSelBar{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--accent);border-radius:12px;padding:10px 16px;margin-bottom:16px;font-size:12px;font-weight:700}
+.jSelBar .btn{padding:5px 12px;font-size:12px}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.jTick{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none;background:var(--panel2)}
+.jTick.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.jCard.picked{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.modalFoot{display:flex;gap:10px;align-items:center;margin-top:16px}
+.modalFoot .modalClose{margin-left:auto}
 .pcBadge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.3px}
 
 .dashDet{background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;margin-top:18px}
@@ -1032,6 +1040,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <h2>Séances</h2><span class="tag live">Journal partagé</span>
     <button class="btn primary" style="margin-left:auto" onclick="openCreateSeance()">+ Séance collective</button>
     <button class="btn" onclick="indivQuickFromSeances()">+ Sollicitation individualisée</button>
+    <button class="btn ghost" id="jSelBtn" onclick="toggleJSel()">☑︎ Sélectionner</button>
   </div>
 
   <div class="jStrip" id="jStrip"></div>
@@ -1042,6 +1051,11 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <button onclick="jTab(this,'indiv')">Individualisé</button>
   </div>
 
+  <div class="jSelBar" id="jSelBar" style="display:none">
+    <span id="jSelCount">0 sélectionnée</span>
+    <button class="btn ghost" onclick="toggleJSel()">Annuler</button>
+    <button class="btn danger" onclick="deleteJSelection()">🗑 Supprimer la sélection</button>
+  </div>
   <div id="jList"></div>
 </section>
 
@@ -1404,7 +1418,10 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <h3 id="seanceModalTitle">Créer une séance</h3>
     <div class="sub" id="seanceModalSub"></div>
     <div id="seanceModalBody"></div>
-    <button class="btn modalClose" onclick="closeSeanceModal()">Fermer</button>
+    <div class="modalFoot">
+      <button class="btn danger" id="seanceDelBtn" style="display:none" onclick="deleteCurrentSeance()">🗑 Supprimer cette séance</button>
+      <button class="btn modalClose" onclick="closeSeanceModal()">Fermer</button>
+    </div>
   </div>
 </div>
 
@@ -2892,6 +2909,14 @@ function renderSeances(){
      <div class="jKpi c3"><div class="k">Individualisé</div><div class="v">${nInd}</div><div class="u">${hrs(mins)} de volume cumulé</div></div>
      <div class="jKpi c4"><div class="k">Effectif sollicité</div><div class="v">${joueurs.size}</div><div class="u">sur ${IPLAYERS.length} joueurs</div></div>`;
 
+  const bar=document.getElementById('jSelBar');
+  if(bar){
+    bar.style.display=jSelMode?'flex':'none';
+    const c=document.getElementById('jSelCount');
+    if(c)c.textContent=jSel.size+' sélectionnée'+(jSel.size>1?'s':'');
+  }
+  const bsel=document.getElementById('jSelBtn');
+  if(bsel)bsel.textContent=jSelMode?'✕ Quitter la sélection':'☑︎ Sélectionner';
   const box=document.getElementById('jList');
   if(!box)return;
   if(!items.length){
@@ -2915,9 +2940,13 @@ function renderSeances(){
         if(x.kind==='coll'){
           const pct=x.total?x.done/x.total*100:0;
           const prog=x.prog?PROGRAMMES.find(p=>p.id===x.prog):null;
-          return `<div class="jCard" onclick="openSeanceDetail('${x.id}')" style="cursor:pointer">
-            <div class="jCardTop"><span class="jBadge coll">Collectif</span>
-              <span class="jCardTitle">${x.titre}</span></div>
+          const k='coll|'+x.id;
+          return `<div class="jCard${jSel.has(k)?' picked':''}" onclick="${jSelMode?`jPick('coll','${x.id}',event)`:`openSeanceDetail('${x.id}')`}" style="cursor:pointer">
+            <div class="jCardTop">
+              ${jSelMode?`<span class="jTick${jSel.has(k)?' on':''}">${jSel.has(k)?'✓':''}</span>`:''}
+              <span class="jBadge coll">Collectif</span>
+              <span class="jCardTitle">${x.titre}</span>
+              ${jSelMode?'':`<button class="jCardDel" onclick="event.stopPropagation();deleteSeance('${x.id}','${x.titre.replace(/'/g,"\\'")}')" title="Supprimer">✕</button>`}</div>
             ${prog?`<div class="jMeta"><span>📄 ${prog.titre}</span></div>`:''}
             <div class="jCardTop" style="margin:0">${jFaces(x.players,6)}
               <span class="jPresence">${x.done}/${x.total}</span></div>
@@ -2929,10 +2958,13 @@ function renderSeances(){
         if(x.kg)chips.push(`<span>${x.kg} kg</span>`);
         if(x.duree)chips.push(`<span>${x.duree} min</span>`);
         if(x.fam)chips.push(`<span>${x.fam}</span>`);
-        return `<div class="jCard ind">
-          <div class="jCardTop"><span class="jBadge ind">Individualisé</span>
+        const ki='ind|'+x.rows.join(',');
+        return `<div class="jCard ind${jSel.has(ki)?' picked':''}" ${jSelMode?`onclick="jPick('ind','${x.rows.join(',')}',event)" style="cursor:pointer"`:''}>
+          <div class="jCardTop">
+            ${jSelMode?`<span class="jTick${jSel.has(ki)?' on':''}">${jSel.has(ki)?'✓':''}</span>`:''}
+            <span class="jBadge ind">Individualisé</span>
             <span class="jCardTitle">${x.titre}</span>
-            <button class="jCardDel" onclick="event.stopPropagation();deleteChargeGroup(${JSON.stringify(x.rows).replace(/"/g,'&quot;')})" title="Supprimer">✕</button></div>
+            ${jSelMode?'':`<button class="jCardDel" onclick="event.stopPropagation();deleteChargeGroup(${JSON.stringify(x.rows).replace(/"/g,'&quot;')})" title="Supprimer">✕</button>`}</div>
           ${chips.length?`<div class="jMeta">${chips.join('')}</div>`:''}
           <div class="jCardTop" style="margin:0">${jFaces(x.players,6)}
             <span class="jPresence">${x.players.length} joueur${x.players.length>1?'s':''}</span></div>
@@ -2940,6 +2972,49 @@ function renderSeances(){
       }).join('')}</div>
     </div>`;
   }).join('');
+}
+async function deleteSeance(id,nom){
+  if(!confirm(`Supprimer définitivement la séance « ${nom} » ?\n\nSa feuille de présence sera supprimée avec elle.`))return;
+  // les présences d'abord : on ne dépend pas d'un ON DELETE CASCADE
+  const {error:e1}=await supa.from('seance_presences').delete().eq('seance_id',id);
+  if(e1){alert('Erreur : '+e1.message);return;}
+  const {error:e2}=await supa.from('seances').delete().eq('id',id);
+  if(e2){alert('Erreur : '+e2.message);return;}
+  SEANCES=SEANCES.filter(s=>s.id!==id);
+  closeSeanceModal();
+  renderSeances();
+}
+/* Mode sélection : permet de nettoyer d'un coup les séances de test */
+let jSelMode=false, jSel=new Set();
+function toggleJSel(){
+  jSelMode=!jSelMode; jSel.clear(); renderSeances();
+}
+function jPick(kind,id,ev){
+  ev.stopPropagation();
+  const k=kind+'|'+id;
+  jSel.has(k)?jSel.delete(k):jSel.add(k);
+  renderSeances();
+}
+async function deleteJSelection(){
+  if(!jSel.size)return;
+  if(!confirm(`Supprimer définitivement ${jSel.size} séance${jSel.size>1?'s':''} ?`))return;
+  const colls=[...jSel].filter(k=>k.startsWith('coll|')).map(k=>k.slice(5));
+  const inds =[...jSel].filter(k=>k.startsWith('ind|')).map(k=>k.slice(4));
+  for(const id of colls){
+    await supa.from('seance_presences').delete().eq('seance_id',id);
+    const {error}=await supa.from('seances').delete().eq('id',id);
+    if(error){alert('Erreur : '+error.message);return;}
+    SEANCES=SEANCES.filter(s=>s.id!==id);
+  }
+  if(inds.length){
+    const rows=inds.flatMap(k=>k.split(','));
+    const {error}=await supa.from('charge_sessions').delete().in('id',rows);
+    if(error){alert('Erreur : '+error.message);return;}
+    CHG_SESSIONS=CHG_SESSIONS.filter(s=>!rows.includes(s.id));
+  }
+  jSel.clear(); jSelMode=false;
+  renderSeances();
+  if(typeof renderCharge==='function')renderCharge();
 }
 async function deleteChargeGroup(ids){
   if(!confirm(`Supprimer cette sollicitation pour ${ids.length} joueur${ids.length>1?'s':''} ?`))return;
@@ -2951,6 +3026,8 @@ async function deleteChargeGroup(ids){
 
 let seanceCheckSel=new Set();
 function openCreateSeance(){
+  currentSeanceId=null;
+  const _db=document.getElementById('seanceDelBtn'); if(_db)_db.style.display='none';
   const actifs=IPLAYERS.filter(p=>p.actif!==false);
   seanceCheckSel=new Set(actifs.map(p=>p.id));
   document.getElementById('seanceModalTitle').textContent='Créer une séance';
@@ -3012,7 +3089,16 @@ async function openSeanceDetail(id){
   renderSeanceDetail(s);
   document.getElementById('seanceModal').classList.add('on');
 }
+let currentSeanceId=null;
+function deleteCurrentSeance(){
+  if(!currentSeanceId)return;
+  const s=SEANCES.find(x=>x.id===currentSeanceId);
+  deleteSeance(currentSeanceId, s?s.nom:'cette séance');
+}
 function renderSeanceDetail(s){
+  currentSeanceId=s.id;
+  const db=document.getElementById('seanceDelBtn');
+  if(db)db.style.display='inline-block';
   const done=s.presences.filter(p=>p.valide).length;
   const prog=s.programme_id?PROGRAMMES.find(p=>p.id===s.programme_id):null;
   const progBlock=prog?`
@@ -3042,6 +3128,39 @@ async function togglePresence(seanceId,playerId){
   if(error)alert('Erreur de sauvegarde : '+error.message);
 }
 function closeSeanceModal(){document.getElementById('seanceModal').classList.remove('on')}
+
+/* ── Échappatoire globale ──────────────────────────────────────────
+   Toute vue ouverte doit pouvoir être fermée sans chercher un bouton :
+   Échap ferme le panneau le plus haut, un clic hors du panneau ferme
+   les fenêtres modales. */
+function closeTopLayer(){
+  const modal=document.getElementById('modal');
+  const seanceModal=document.getElementById('seanceModal');
+  const qa=document.getElementById('qaOverlay');
+  if(qa&&qa.classList.contains('on')){closeQuickAdd();return true;}
+  if(seanceModal&&seanceModal.classList.contains('on')){closeSeanceModal();return true;}
+  if(modal&&modal.classList.contains('on')){closeModal();return true;}
+  const sb=document.getElementById('sheetBuilderSection');
+  if(sb&&sb.style.display==='block'){closeSheetBuilder();return true;}
+  const pb=document.getElementById('prBuilder');
+  if(pb&&pb.style.display==='block'){closePrescBuilder();return true;}
+  const pd=document.getElementById('progDetailSection');
+  if(pd&&pd.style.display==='block'){closeProgrammeDetail();return true;}
+  const dd=document.getElementById('dashDetail');
+  if(dd&&dd.style.display==='block'){closeDashDetail();return true;}
+  if(typeof jSelMode!=='undefined'&&jSelMode){toggleJSel();return true;}
+  return false;
+}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  const t=e.target;
+  if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)){t.blur();return;}
+  closeTopLayer();
+});
+['modal','seanceModal'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('click',e=>{if(e.target===el)closeTopLayer();});
+});
 
 /* ═══════ LÉGENDE ═══════ */
 function renderTypes(){
