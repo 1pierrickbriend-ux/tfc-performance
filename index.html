@@ -270,7 +270,7 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .anChip.n{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--line)}
 
 /* régularité */
-.anRegList{display:flex;flex-direction:column;gap:7px;max-height:296px;overflow-y:auto;padding-right:4px}
+.anRegList{display:flex;flex-direction:column;gap:9px;max-height:none;padding-right:4px}
 .anRegRow{display:grid;grid-template-columns:118px 1fr 46px;gap:10px;align-items:center}
 .anRegName{font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .anDots{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
@@ -1017,15 +1017,15 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   <div class="rowHead">
     <h2>Séances</h2><span class="tag live">Journal partagé</span>
     <button class="btn primary" style="margin-left:auto" onclick="openCreateSeance()">+ Séance collective</button>
-    <button class="btn" onclick="indivQuickFromSeances()">+ Séance individuelle</button>
+    <button class="btn" onclick="indivQuickFromSeances()">+ Sollicitation individualisée</button>
   </div>
 
   <div class="jStrip" id="jStrip"></div>
 
   <div class="subTabs">
     <button class="on" onclick="jTab(this,'all')">Tout le journal</button>
-    <button onclick="jTab(this,'coll')">Collectives</button>
-    <button onclick="jTab(this,'indiv')">Individuelles</button>
+    <button onclick="jTab(this,'coll')">Collectif</button>
+    <button onclick="jTab(this,'indiv')">Individualisé</button>
   </div>
 
   <div id="jList"></div>
@@ -1041,7 +1041,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <button class="on" onclick="indivTab(this,'seance')">Séance du jour</button>
     <button onclick="indivTab(this,'carto')">Cartographie joueurs</button>
     <button onclick="indivTab(this,'histo')">Historique</button>
-    <button onclick="indivTab(this,'charge')">Suivi de charge</button>
+    <button onclick="indivTab(this,'charge')">Charge externe</button>
     <button onclick="indivTab(this,'presc')">Prescription</button>
     <button onclick="indivTab(this,'analyse')">Analyse</button>
   </div>
@@ -1076,11 +1076,11 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="dashHead">
       <div class="dashFilters">
         <button class="dfBtn on" data-f="all" onclick="setDashFilter('all',this)">Tout l'effectif</button>
-        <button class="dfBtn" data-f="top" onclick="setDashFilter('top',this)">Les plus actifs</button>
-        <button class="dfBtn" data-f="bottom" onclick="setDashFilter('bottom',this)">Les moins actifs</button>
-        <button class="dfBtn" data-f="none" onclick="setDashFilter('none',this)">Sans séance</button>
+        <button class="dfBtn" data-f="top" onclick="setDashFilter('top',this)">Sollicitation élevée</button>
+        <button class="dfBtn" data-f="bottom" onclick="setDashFilter('bottom',this)">Sollicitation faible</button>
+        <button class="dfBtn" data-f="none" onclick="setDashFilter('none',this)">Non sollicités</button>
       </div>
-      <button class="btn primary" onclick="openQuickAdd()">＋ Saisir une séance</button>
+      <button class="btn primary" onclick="openQuickAdd()">＋ Enregistrer une sollicitation</button>
     </div>
 
     <div class="dashStrip" id="dashStrip"></div>
@@ -1094,7 +1094,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="qaOverlay" id="qaOverlay" onclick="if(event.target===this)closeQuickAdd()">
       <div class="qaPanel">
         <div class="qaHead">
-          <span>Saisir une séance</span>
+          <span>Enregistrer une sollicitation individualisée</span>
           <button onclick="closeQuickAdd()">✕</button>
         </div>
         <div class="qaBody">
@@ -1113,7 +1113,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
             <label>Séries<input type="number" id="chgSeries" min="0" placeholder="4"></label>
             <label>Reps<input type="text" id="chgReps" placeholder="8-10"></label>
             <label>Charge kg<input type="number" id="chgKg" step="0.5" placeholder="60"></label>
-            <label>Durée min<input type="number" id="chgDuree" min="0" placeholder="30"></label>
+            <label>Volume (min)<input type="number" id="chgDuree" min="0" placeholder="30"></label>
           </div>
           <textarea id="chgComment" placeholder="Commentaire (facultatif)"></textarea>
           <div class="qaRow2">
@@ -1128,7 +1128,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   <div id="indiv-presc" style="display:none">
     <div class="chgTop">
       <div class="chgCard chgForm">
-        <div class="chgCardHead">🎯 Nouvelle séance prescrite</div>
+        <div class="chgCardHead">🎯 Nouvelle prescription individualisée</div>
         <div class="chgRow2">
           <label style="grid-column:1/-1">Joueurs <span class="mpCount" id="prPlayerCount">0 sélectionné</span>
             <div class="mpBox" id="prPlayerBox"></div>
@@ -1137,14 +1137,14 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
           <label style="grid-column:1/-1">Date<input type="date" id="prDate"></label>
         </div>
         <div class="chgRow2">
-          <label>Objectif<input type="text" id="prObjectif" placeholder="FORCE-VITESSE"></label>
-          <label>Durée prévue (min)<input type="number" id="prDuree" placeholder="30"></label>
+          <label>Qualité dominante<input type="text" id="prObjectif" placeholder="FORCE-VITESSE"></label>
+          <label>Volume prévu (min)<input type="number" id="prDuree" placeholder="30"></label>
         </div>
         <button class="btn primary" onclick="createPrescSession()">Créer et composer</button>
       </div>
 
       <div class="chgCard">
-        <div class="chgCardHead">📌 Séances à venir</div>
+        <div class="chgCardHead">📌 Prescriptions à venir</div>
         <div id="prUpcoming"></div>
       </div>
     </div>
@@ -1158,7 +1158,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       </div>
       <div class="prAddRow">
         <select id="prBloc"><option value="1">Bloc 1</option><option value="2">Bloc 2</option><option value="3">Bloc 3</option><option value="4">Bloc 4</option></select>
-        <input type="text" id="prCategorie" placeholder="Catégorie (Vertical, COD…)" list="prCatList">
+        <input type="text" id="prCategorie" placeholder="Plan de sollicitation (Vertical, COD…)" list="prCatList">
         <datalist id="prCatList"><option>Vertical</option><option>Horizontal</option><option>COD</option><option>Prévention</option><option>Gainage</option></datalist>
         <select id="prExSel"></select>
         <input type="text" id="prNomLibre" placeholder="…ou nom libre">
@@ -1166,7 +1166,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       </div>
       <div id="prItems"></div>
       <div class="dupBar">
-        <span class="lb">📋 Copier cette séance vers d'autres joueurs</span>
+        <span class="lb">📋 Dupliquer cette prescription vers d'autres joueurs</span>
         <span class="mpCount" id="dupPlayerCount">0 sélectionné</span>
         <div class="mpBox" id="dupPlayerBox" style="flex-basis:100%"></div>
         <div class="mpQuick"><button type="button" onclick="mpAll('dup',true)">Tout</button><button type="button" onclick="mpAll('dup',false)">Aucun</button></div>
@@ -1176,7 +1176,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 
     <div class="chgCard" style="margin-top:14px">
       <div class="chgCardHead">
-        📋 Séances prescrites
+        📋 Historique des prescriptions
         <select id="prFilterPlayer" onchange="renderPrescList()" style="margin-left:auto;max-width:200px"></select>
       </div>
       <div id="prList"></div>
@@ -1186,7 +1186,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   <div id="indiv-analyse" style="display:none">
     <div class="anGrid">
       <section class="anCard anCov">
-        <div class="anHead"><span class="anIco">🎯</span><h3>Couverture de l'effectif</h3>
+        <div class="anHead"><span class="anIco">🎯</span><h3>Taux d'exposition de l'effectif</h3>
           <span class="anHint">30 derniers jours</span></div>
         <div class="anCovBody">
           <div class="anDonut" id="anDonut"></div>
@@ -1196,19 +1196,19 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       </section>
 
       <section class="anCard anReg">
-        <div class="anHead"><span class="anIco">📆</span><h3>Régularité</h3>
-          <span class="anHint">8 dernières semaines</span></div>
+        <div class="anHead"><span class="anIco">📆</span><h3>Continuité d'exposition</h3>
+          <span class="anHint">8 derniers microcycles</span></div>
         <div class="anRegList" id="anRegList"></div>
       </section>
 
       <section class="anCard anCycle">
-        <div class="anHead"><span class="anIco">🔄</span><h3>Placement dans le cycle</h3>
-          <span class="anHint">où tombe le travail individuel</span></div>
+        <div class="anHead"><span class="anIco">🔄</span><h3>Distribution dans le microcycle</h3>
+          <span class="anHint">positionnement des contenus individualisés</span></div>
         <div class="anCycleBody" id="anCycleBody"></div>
       </section>
 
       <section class="anCard anBal">
-        <div class="anHead"><span class="anIco">⚖️</span><h3>Équilibre du contenu</h3>
+        <div class="anHead"><span class="anIco">⚖️</span><h3>Distribution des qualités</h3>
           <select id="anBalPlayer" onchange="renderAnalyse()" class="anSel"></select></div>
         <div class="anBalBody">
           <div class="anRadar" id="anRadar"></div>
@@ -1217,7 +1217,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       </section>
 
       <section class="anCard anDone">
-        <div class="anHead"><span class="anIco">✅</span><h3>Prescrit vs réalisé</h3>
+        <div class="anHead"><span class="anIco">✅</span><h3>Observance du programme</h3>
           <span class="anHint">90 derniers jours</span></div>
         <div class="anDoneBody" id="anDoneBody"></div>
       </section>
@@ -2806,7 +2806,7 @@ function jTab(btn,name){
 function indivQuickFromSeances(){
   goTab('indiv');
   setTimeout(()=>{
-    const b=[...document.querySelectorAll('#v-indiv .subTabs button')].find(x=>x.textContent.includes('Suivi de charge'));
+    const b=[...document.querySelectorAll('#v-indiv .subTabs button')].find(x=>x.textContent.includes('Charge externe'));
     if(b)b.click();
     setTimeout(()=>openQuickAdd(),120);
   },60);
@@ -2859,7 +2859,7 @@ function renderSeances(){
     Object.values(g).forEach(v=>{
       const a=CHG_ACTIONS.find(x=>x.id===v.action_id);
       items.push({kind:'ind',date:v.date,id:v.rows[0],rows:v.rows,
-        titre:a?a.nom:'Séance individuelle',fam:a?a.famille:null,
+        titre:a?a.nom:'Sollicitation individualisée',fam:a?a.famille:null,
         players:v.ids,duree:v.duree,series:v.series,reps:v.reps,kg:v.kg});
     });
   }
@@ -2873,15 +2873,15 @@ function renderSeances(){
   const mins=rec.filter(x=>x.kind==='ind').reduce((t,x)=>t+(x.duree||0)*x.players.length,0);
   const strip=document.getElementById('jStrip');
   if(strip)strip.innerHTML=
-    `<div class="jKpi c1"><div class="k">Séances 30 jours</div><div class="v">${rec.length}</div><div class="u">collectives + individuelles</div></div>
-     <div class="jKpi c2"><div class="k">Collectives</div><div class="v">${nColl}</div><div class="u">avec feuille de présence</div></div>
-     <div class="jKpi c3"><div class="k">Individuelles</div><div class="v">${nInd}</div><div class="u">${hrs(mins)} cumulées</div></div>
-     <div class="jKpi c4"><div class="k">Joueurs concernés</div><div class="v">${joueurs.size}</div><div class="u">sur ${IPLAYERS.length} de l'effectif</div></div>`;
+    `<div class="jKpi c1"><div class="k">Séances — 30 jours</div><div class="v">${rec.length}</div><div class="u">collectif + individualisé</div></div>
+     <div class="jKpi c2"><div class="k">Collectif</div><div class="v">${nColl}</div><div class="u">avec feuille de présence</div></div>
+     <div class="jKpi c3"><div class="k">Individualisé</div><div class="v">${nInd}</div><div class="u">${hrs(mins)} de volume cumulé</div></div>
+     <div class="jKpi c4"><div class="k">Effectif sollicité</div><div class="v">${joueurs.size}</div><div class="u">sur ${IPLAYERS.length} joueurs</div></div>`;
 
   const box=document.getElementById('jList');
   if(!box)return;
   if(!items.length){
-    box.innerHTML='<div class="jEmpty">Aucune séance dans ce filtre. Crée une séance collective ou individuelle depuis les boutons en haut.</div>';
+    box.innerHTML='<div class="jEmpty">Aucune séance sur ce filtre. Enregistre une séance collective ou une sollicitation individualisée depuis les boutons ci-dessus.</div>';
     return;
   }
   const byDay={};
@@ -2916,7 +2916,7 @@ function renderSeances(){
         if(x.duree)chips.push(`<span>${x.duree} min</span>`);
         if(x.fam)chips.push(`<span>${x.fam}</span>`);
         return `<div class="jCard ind">
-          <div class="jCardTop"><span class="jBadge ind">Individuel</span>
+          <div class="jCardTop"><span class="jBadge ind">Individualisé</span>
             <span class="jCardTitle">${x.titre}</span>
             <button class="jCardDel" onclick="event.stopPropagation();deleteChargeGroup(${JSON.stringify(x.rows).replace(/"/g,'&quot;')})" title="Supprimer">✕</button></div>
           ${chips.length?`<div class="jMeta">${chips.join('')}</div>`:''}
@@ -2928,7 +2928,7 @@ function renderSeances(){
   }).join('');
 }
 async function deleteChargeGroup(ids){
-  if(!confirm(`Supprimer cette séance pour ${ids.length} joueur${ids.length>1?'s':''} ?`))return;
+  if(!confirm(`Supprimer cette sollicitation pour ${ids.length} joueur${ids.length>1?'s':''} ?`))return;
   const {error}=await supa.from('charge_sessions').delete().in('id',ids);
   if(error){alert('Erreur : '+error.message);return;}
   CHG_SESSIONS=CHG_SESSIONS.filter(s=>!ids.includes(s.id));
@@ -3468,7 +3468,7 @@ function donutSvg(pct,size,col,center,sub){
   </svg>`;
 }
 
-/* ─── 1. Couverture de l'effectif ─── */
+/* ─── 1. Taux d'exposition de l'effectif ─── */
 function anCoverage(){
   // Un joueur indisponible toute la fenêtre n'est pas "oublié" : il est
   // blessé. On le sort du dénominateur pour ne pas fausser la couverture,
@@ -3483,27 +3483,27 @@ function anCoverage(){
   const j7=eligibles.filter(p=>sessionsOf(p.id,7).length>0).length;
   const manquants=eligibles.length-touched.length;
   document.getElementById('anCovSide').innerHTML=`
-    <div class="anStat ok"><span class="v">${touched.length}</span><span class="l">joueurs touchés<br>sur 30 jours</span></div>
-    <div class="anStat"><span class="v">${j7}</span><span class="l">touchés cette semaine</span></div>
-    <div class="anStat ${manquants>0?'bad':'ok'}"><span class="v">${manquants}</span><span class="l">disponibles sans aucun<br>travail individuel</span></div>
-    ${hors.length?`<div class="anStat"><span class="v" style="color:#6fb0ff">${hors.length}</span><span class="l">indisponibles sur la période<br><span style="opacity:.7">exclus du calcul</span></span></div>`:''}`;
+    <div class="anStat ok"><span class="v">${touched.length}</span><span class="l">joueurs exposés<br>sur 30 jours</span></div>
+    <div class="anStat"><span class="v">${j7}</span><span class="l">exposés sur le microcycle</span></div>
+    <div class="anStat ${manquants>0?'bad':'ok'}"><span class="v">${manquants}</span><span class="l">disponibles sans aucune<br>sollicitation individualisée</span></div>
+    ${hors.length?`<div class="anStat"><span class="v" style="color:#6fb0ff">${hors.length}</span><span class="l">indisponibles sur la période<br><span style="opacity:.7">hors dénominateur</span></span></div>`:''}`;
 
   const forgot=eligibles.map(p=>({p,d:anDaysSince(p.id)}))
     .filter(x=>x.d===null||x.d>=14).sort((a,b)=>(b.d===null?9999:b.d)-(a.d===null?9999:a.d));
   const box=document.getElementById('anForgot');
   if(!forgot.length){
-    box.innerHTML='<div class="anForgotT">Personne n\'est laissé de côté</div><div class="anChips"><span class="anChip n">Tout l\'effectif a eu du travail individuel dans les 14 derniers jours</span></div>';
+    box.innerHTML='<div class="anForgotT">Exposition complète de l\'effectif disponible</div><div class="anChips"><span class="anChip n">Aucune rupture d\'exposition sur les 14 derniers jours</span></div>';
     return;
   }
-  box.innerHTML=`<div class="anForgotT">⚠ Passés entre les mailles — disponibles, mais plus de 14 jours sans travail individuel</div>
+  box.innerHTML=`<div class="anForgotT">⚠ Rupture d'exposition — joueurs disponibles sans sollicitation individualisée depuis plus de 14 jours</div>
     <div class="anChips">${forgot.map(x=>{
       const cls=x.d===null?'n':(x.d>=30?'b':'w');
       return `<span class="anChip ${cls}">${x.p.name} <b>${x.d===null?'jamais':x.d+' j'}</b></span>`;
     }).join('')}</div>
-    ${hors.length?`<div class="anForgotT" style="margin-top:13px">🩹 Indisponibles sur la période — non comptés dans la couverture</div>
+    ${hors.length?`<div class="anForgotT" style="margin-top:13px">🩹 Indisponibles sur la période — exclus du taux d'exposition</div>
       <div class="anChips">${hors.map(p=>{
         const nb=sessionsOf(p.id,30).length;
-        return `<span class="anChip n" style="border-color:rgba(111,176,255,.35);color:#6fb0ff">${p.name} <b>${nb?nb+' séances réathlé':'aucune séance'}</b></span>`;
+        return `<span class="anChip n" style="border-color:rgba(111,176,255,.35);color:#6fb0ff">${p.name} <b>${nb?nb+' sollicitations réathlé':'aucune sollicitation'}</b></span>`;
       }).join('')}</div>`:''}`;
 }
 
@@ -3542,12 +3542,12 @@ function anRegularity(){
         v==='off'?'<i class="anDot off" title="indisponible"></i>'
                  :`<i class="anDot${v?' on'+(q>=0.75?' hi':''):''}"></i>`).join('')}</span>
       <span class="anRegScore" style="color:${col}">${r.active}/${r.total}
-        <span class="anGap">${r.off?r.off+' sem. indispo':(r.gap>1?'trou '+r.gap+' sem.':'&nbsp;')}</span></span>
+        <span class="anGap">${r.off?r.off+' indispo.':(r.gap>1?'rupture ×'+r.gap:'&nbsp;')}</span></span>
     </div>`;
   }).join('');
 }
 
-/* ─── 3. Placement dans le cycle (indicateur différenciant) ─── */
+/* ─── 3. Distribution dans le microcycle (indicateur différenciant) ─── */
 function anCycle(){
   const counts={},mins={};
   let placed=0,late=0;
@@ -3566,7 +3566,7 @@ function anCycle(){
   const box=document.getElementById('anCycleBody');
   const keys=Object.keys(TYPES).filter(k=>counts[k]);
   if(!placed||!keys.length){
-    box.innerHTML='<div class="anEmpty">Aucune séance individuelle rattachée à une semaine planifiée.</div>';
+    box.innerHTML='<div class="anEmpty">Aucune sollicitation individualisée rattachée à un microcycle planifié.</div>';
     document.getElementById('anCycleBody').insertAdjacentHTML('beforeend','');
     return;
   }
@@ -3582,18 +3582,18 @@ function anCycle(){
         <span class="anCyVal" style="color:${col}">${counts[k]}</span></div>
       <div class="anCyLab">${T.nom}
         <span class="anCyRel">${Math.round(mins[k]/60*10)/10} h</span>
-        ${risky?'<span class="anCyFlag">à surveiller</span>':''}</div>
+        ${risky?'<span class="anCyFlag">affûtage</span>':''}</div>
     </div>`;
   }).join('')
   +`<div class="anCyNote" style="flex-basis:100%">
-     <b>${placed}</b> séances individuelles replacées dans le cycle.
+     <b>${placed}</b> sollicitations individualisées replacées dans le microcycle.
      ${late>0
-       ? `<b style="color:#ff6a6a">${late}</b> tombent en veille de match ou jour de match — à vérifier, ce sont les jours où la charge additionnelle est la moins souhaitable.`
-       : `Aucune ne tombe en veille de match ni jour de match : le placement est cohérent avec la périodisation.`}
+       ? `<b style="color:#ff6a6a">${late}</b> se situent en J-1 ou JDM, soit en phase d'affûtage et d'expression de la performance : toute charge additionnelle y est à justifier.`
+       : `Aucune ne se situe en J-1 ni JDM : le positionnement respecte la logique d'affûtage du microcycle.`}
    </div>`;
 }
 
-/* ─── 4. Équilibre du contenu ─── */
+/* ─── 4. Distribution des qualités ─── */
 function radarSvg(vals,size){
   const cx=size/2,cy=size/2,r=size/2-32,n=vals.length;
   const pt=(i,f)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+r*f*Math.cos(a),cy+r*f*Math.sin(a)]};
@@ -3632,7 +3632,7 @@ function anBalance(){
     return {name:f,short:f.slice(0,5),pc,f:Math.max(0.04,pc/50),tf:AN_TARGETS[f]/50};
   });
   document.getElementById('anRadar').innerHTML=tot?radarSvg(vals,268)
-    :'<div class="anEmpty" style="width:268px">Aucune séance<br>sur 90 jours.</div>';
+    :'<div class="anEmpty" style="width:268px">Aucune sollicitation<br>sur 90 jours.</div>';
   document.getElementById('anTargets').innerHTML=vals.map(v=>{
     const col=AN_FAM_COL[v.name];
     const ecart=v.pc-AN_TARGETS[v.name];
@@ -3645,10 +3645,10 @@ function anBalance(){
         <span class="tgt" style="left:${Math.min(100,AN_TARGETS[v.name]*2)}%"></span></div>
       <div class="anTgLeg">cible ${AN_TARGETS[v.name]}% · écart ${sign}${Math.round(ecart)} pts</div>
     </div>`;
-  }).join('')+'<div class="anTgLeg" style="margin-top:2px">— — cible &nbsp;|&nbsp; ▬ réalisé</div>';
+  }).join('')+'<div class="anTgLeg" style="margin-top:2px">— — distribution cible &nbsp;|&nbsp; ▬ distribution observée</div>';
 }
 
-/* ─── 5. Prescrit vs réalisé ─── */
+/* ─── 5. Observance du programme ─── */
 function anDone(){
   const lim=new Date(); lim.setDate(lim.getDate()-90);
   const list=PRESC.filter(p=>new Date(p.date)>=lim&&p.statut!=='annule');
@@ -3669,8 +3669,8 @@ function anDone(){
         <span class="anDoneVal" style="color:${c}">${r.d}/${r.t}</span></div>`;
     }).join('')}</div>
     <div style="flex-basis:100%;font-size:11.5px;color:var(--muted);line-height:1.45;border-top:1px solid var(--line);padding-top:12px">
-      <b style="color:var(--ink)">${done}</b> séances réalisées sur <b style="color:var(--ink)">${list.length}</b> prescrites.
-      ${pct<0.6?'Un taux bas indique plus souvent une prescription trop ambitieuse qu\'un manque d\'implication.':'Le volume prescrit est globalement tenu.'}
+      Observance : <b style="color:var(--ink)">${done}</b> séances réalisées sur <b style="color:var(--ink)">${list.length}</b> prescrites.
+      ${pct<0.6?'Une observance basse traduit plus souvent une prescription surdimensionnée qu\'un défaut d\'implication : recalibrer le volume avant de conclure.':'Prescription globalement tenue : le volume programmé est soutenable.'}
     </div>`;
 }
 
@@ -3702,7 +3702,7 @@ function renderPrescUpcoming(){
   const today=new Date().toISOString().slice(0,10);
   const up=PRESC.filter(p=>p.statut==='prevu'&&p.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,8);
   const box=document.getElementById('prUpcoming');
-  if(!up.length){box.innerHTML='<div class="chgEmpty">Aucune séance prévue.</div>';return;}
+  if(!up.length){box.innerHTML='<div class="chgEmpty">Aucune prescription programmée.</div>';return;}
   box.innerHTML=up.map(p=>{
     const pl=IPLAYERS.find(x=>x.id===p.player_id);
     return `<div class="prUp"><span class="d">${fmtDateFR(p.date)}</span>
@@ -3714,7 +3714,7 @@ function renderPrescList(){
   const pid=document.getElementById('prFilterPlayer').value;
   const list=PRESC.filter(p=>!pid||p.player_id===pid).slice(0,40);
   const box=document.getElementById('prList');
-  if(!list.length){box.innerHTML='<div class="chgEmpty">Aucune séance prescrite.</div>';return;}
+  if(!list.length){box.innerHTML='<div class="chgEmpty">Aucune prescription enregistrée.</div>';return;}
   box.innerHTML=list.map(p=>{
     const pl=IPLAYERS.find(x=>x.id===p.player_id);
     return `<div class="prRow">
@@ -3997,10 +3997,10 @@ function renderDashStrip(){
   const card=(k,v,u,ico)=>`<div class="dsCard"><div class="dsIco">${ico}</div>
     <div class="dsK">${k}</div><div class="dsV">${v}</div><div class="dsU">${u}</div></div>`;
   box.innerHTML=
-    card('Séances 7 jours',s7.length,hrs(minutesOf(null,7)),'📋')+
-    card('Séances 30 jours',s30.length,hrs(minutesOf(null,30)),'🗓️')+
-    card('Joueurs actifs',actifs.length,`sur ${IPLAYERS.length} de l'effectif`,'👥')+
-    card('Moyenne / joueur',hrs(moy),'sur 30 jours','📊');
+    card('Volume — 7 jours',hrs(minutesOf(null,7)),s7.length+' sollicitations','⏱️')+
+    card('Volume — 30 jours',hrs(minutesOf(null,30)),s30.length+' sollicitations','🗓️')+
+    card('Effectif sollicité',actifs.length,`sur ${IPLAYERS.length} joueurs`,'👥')+
+    card('Volume moyen / joueur',hrs(moy),'sur 30 jours','📊');
 }
 
 /* ─── cartes joueurs, classées par volume ─── */
@@ -4039,14 +4039,14 @@ function renderDashGrid(){
       ${r.indispo?'<span class="pcFlag">🩹 Indisponible</span>':''}
       <div class="pcTop">
         <span class="pcAv">${ph?`<img src="${ph}" alt="">`:chgInitials(r.p.name)}</span>
-        <span class="pcName">${r.p.name}<small>${r.nb30} séances · ${hrs(r.min30)}</small></span>
+        <span class="pcName">${r.p.name}<small>${hrs(r.min30)} · ${r.nb30} sollicitations</small></span>
         <span class="pcRank${r.rank<=3&&r.min30>0&&!r.indispo?' top':''}">${r.min30>0?'#'+r.rank:'–'}</span>
       </div>
       <div class="pcVol"><i style="width:${pct}%"></i></div>
       <div class="pcMid">${r.weeks.map((v,i)=>
         `<i class="${i===r.weeks.length-1?'last':''}" style="height:${Math.max(4,(v/mxw)*100)}%"></i>`).join('')}</div>
       <div class="pcFoot">
-        <span>${r.indispo?'classé entre indisponibles':r.nb7+' séance'+(r.nb7>1?'s':'')+' · 7 j'}</span>
+        <span>${r.indispo?'rang parmi les indisponibles':hrs(r.min7)+' · 7 j'}</span>
         <span class="sep">${days==null?'jamais':(days===0?"aujourd'hui":'il y a '+days+' j')}</span>
       </div>
     </div>`;
@@ -4101,35 +4101,35 @@ function renderDashDetail(pid){
     <div class="ddHead">
       <span class="ddAv">${ph?`<img src="${ph}" alt="">`:chgInitials(p.name)}</span>
       <span><span class="ddName">${p.name}</span>
-        <div class="ddSub">${nb30} séances sur 30 j · ${hrs(m30)} · ${rank>0?rank+'ᵉ volume de l\'effectif':'—'}</div></span>
+        <div class="ddSub">${hrs(m30)} sur 30 j · ${nb30} sollicitations · ${rank>0?rank+'ᵉ volume de l\'effectif':'—'}</div></span>
       <span class="ddCompare">
         <span class="cmpV">${m30>=moyEffectif?'+':''}${moyEffectif?Math.round((m30-moyEffectif)/moyEffectif*100):0}%</span>
-        <span class="cmpL">vs moyenne effectif</span>
+        <span class="cmpL">écart au volume moyen</span>
       </span>
       <button class="ddClose" onclick="closeDashDetail()">Fermer</button>
     </div>
     <div class="ddCols">
       <div>
         <div class="ddBlock">
-          <div class="ddTitle">Volume hebdomadaire <span class="hint">12 semaines · minutes</span></div>
+          <div class="ddTitle">Volume par microcycle <span class="hint">12 derniers microcycles</span></div>
           ${barChart(weeks,wlabels,'#4fd191',52)}
           <div class="ddLegend">
-            <span><i style="background:var(--accent)"></i>Semaines précédentes</span>
-            <span><i style="background:#4fd191"></i>Semaine en cours — ${hrs(weeks[weeks.length-1])}</span>
+            <span><i style="background:var(--accent)"></i>Microcycles précédents</span>
+            <span><i style="background:#4fd191"></i>Microcycle en cours — ${hrs(weeks[weeks.length-1])}</span>
           </div>
         </div>
         <div class="ddBlock" style="margin-bottom:0">
-          <div class="ddTitle">Répartition du travail <span class="hint">90 jours</span></div>
+          <div class="ddTitle">Distribution des qualités <span class="hint">90 jours · familles de sollicitation</span></div>
           ${famRows.length?`<div class="famBar">${famRows.map(([k,v],i)=>
             `<i style="width:${(v/famTot)*100}%;background:${FAM_COLORS[i%FAM_COLORS.length]}" title="${k}"></i>`).join('')}</div>
           <div class="famList">${famRows.map(([k,v],i)=>
             `<div class="famRow"><span class="dot" style="background:${FAM_COLORS[i%FAM_COLORS.length]}"></span>
              <span class="nm">${k}</span><span class="vl">${hrs(v)}</span></div>`).join('')}</div>`
-          :'<div class="chgEmpty">Aucune séance sur 90 jours.</div>'}
+          :'<div class="chgEmpty">Aucune sollicitation sur 90 jours.</div>'}
         </div>
       </div>
       <div>
-        <div class="ddTitle">Dernières séances</div>
+        <div class="ddTitle">Historique des sollicitations</div>
         ${sess.length?`<div class="tl">${sess.map(s=>{
           const a=CHG_ACTIONS.find(x=>x.id===s.action_id);
           const chips=[];
@@ -4166,9 +4166,9 @@ function renderHeatmap(){
     return '#8a6fd6';
   };
   rows.sort((a,b)=>b.weeks.reduce((x,y)=>x+y,0)-a.weeks.reduce((x,y)=>x+y,0));
-  const labels=Array.from({length:N},(_,i)=>i===N-1?'actuelle':'S-'+(N-1-i));
+  const labels=Array.from({length:N},(_,i)=>i===N-1?'en cours':'M-'+(N-1-i));
   box.innerHTML=`<div class="hmHead">
-      <span class="hmTitle">Volume de l'effectif — ${N} dernières semaines</span>
+      <span class="hmTitle">Volume de l'effectif — ${N} derniers microcycles</span>
       <span class="hmLeg">peu <i style="background:rgba(138,111,214,.28)"></i><i style="background:rgba(138,111,214,.5)"></i><i style="background:rgba(138,111,214,.75)"></i><i style="background:#8a6fd6"></i> beaucoup</span>
     </div>
     ${rows.map(r=>`<div class="hmRow"><span class="hmName">${r.p.name}</span>
@@ -4206,7 +4206,7 @@ async function addChargeSession(){
   ['chgSeries','chgReps','chgKg','chgDuree','chgComment'].forEach(id=>document.getElementById(id).value='');
   MP_SEL.chg.clear(); mpRender('chg');
   closeQuickAdd(); renderCharge();
-  if(ids.length>1)alert(`Séance enregistrée pour ${ids.length} joueurs.`);
+  if(ids.length>1)alert(`Sollicitation enregistrée pour ${ids.length} joueurs.`);
 }
 async function deleteChargeSession(id){
   if(!confirm('Supprimer cette séance ?'))return;
