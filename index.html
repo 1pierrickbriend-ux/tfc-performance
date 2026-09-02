@@ -3936,38 +3936,75 @@ function impPreview(){
 async function impApply(){
   if(!IMP||!IMP.built){alert('Charge d\'abord le fichier.');return;}
   const res=IMP.built;
-  if(!res.length){alert('Aucun joueur reconnu.');return;}
+  if(!res.length){alert('Aucun joueur reconnu dans ton effectif.');return;}
   const doZones=document.getElementById('impZones').checked;
   if(!confirm(`Importer les tests de ${res.length} joueurs ?`+(doZones?'\n\nLeurs zones d\'individualisation seront mises à jour.':'')))return;
+
   const rep=document.getElementById('impReport');
-  rep.insertAdjacentHTML('afterbegin','<div class="chgEmpty" id="impBusy">Import en cours…</div>');
-  let nv=0,nz=0,err=null;
-  for(const r of res){
-    const vrows=r.vals.map(v=>({player_id:r.player.id,date_test:v.date,categorie:v.cat,
-      test:v.test,cote:v.cote,valeur_num:v.v,unite:v.u}));
+  const busy=document.createElement('div');
+  busy.className='impOk'; busy.id='impBusy'; busy.textContent='Import en cours…';
+  rep.prepend(busy);
+  const step=t=>{busy.textContent=t};
+
+  try{
+    // ── 1) Valeurs brutes : un seul appel groupé ──
+    const vrows=[];
+    res.forEach(r=>r.vals.forEach(v=>vrows.push({
+      player_id:r.player.id,date_test:v.date,categorie:v.cat,
+      test:v.test,cote:v.cote,valeur_num:v.v,unite:v.u})));
     if(vrows.length){
-      const {error}=await supa.from('player_tests').upsert(vrows,{onConflict:'player_id,date_test,categorie,test,cote'});
-      if(error){err=error;break;}
-      nv+=vrows.length;
-    }
-    if(doZones){
-      for(const [z,s] of Object.entries(r.zones)){
-        await supa.from('indiv_player_zones').delete().eq('player_id',r.player.id).eq('zone',z);
-        const {error}=await supa.from('indiv_player_zones')
-          .insert({player_id:r.player.id,zone:z,severite:s,detail:r.detail[z]||null});
-        if(error){err=error;break;}
-        nz++;
+      step(`Enregistrement de ${vrows.length} valeurs…`);
+      // suppression ciblée puis insertion : évite toute dépendance à une
+      // contrainte d'unicité sur une colonne pouvant être nulle
+      const dates=[...new Set(vrows.map(v=>v.date_test))];
+      const ids=[...new Set(vrows.map(v=>v.player_id))];
+      const {error:ed}=await supa.from('player_tests').delete()
+        .in('player_id',ids).in('date_test',dates);
+      if(ed)throw ed;
+      for(let k=0;k<vrows.length;k+=400){
+        const {error}=await supa.from('player_tests').insert(vrows.slice(k,k+400));
+        if(error)throw error;
+        step(`Enregistrement des valeurs… ${Math.min(k+400,vrows.length)}/${vrows.length}`);
       }
-      if(err)break;
     }
+
+    // ── 2) Zones : deux appels au total, plus un par joueur ──
+    let nz=0;
+    if(doZones){
+      step('Mise à jour des zones…');
+      const zrows=[];
+      res.forEach(r=>Object.entries(r.zones).forEach(([z,s])=>zrows.push({
+        player_id:r.player.id,zone:z,severite:s,detail:r.detail[z]||null})));
+      if(zrows.length){
+        const ids=[...new Set(zrows.map(z=>z.player_id))];
+        const zones=[...new Set(zrows.map(z=>z.zone))];
+        const {error:ed2}=await supa.from('indiv_player_zones').delete()
+          .in('player_id',ids).in('zone',zones);
+        if(ed2)throw ed2;
+        for(let k=0;k<zrows.length;k+=400){
+          const {error}=await supa.from('indiv_player_zones').insert(zrows.slice(k,k+400));
+          if(error)throw error;
+        }
+        nz=zrows.length;
+      }
+    }
+
+    step('Rechargement…');
+    await loadIndiv(); await loadTests();
+    renderIndiv(); renderTests();
+    busy.remove();
+    rep.insertAdjacentHTML('afterbegin',
+      `<div class="impOk"><b>Import terminé.</b> ${vrows.length} valeurs enregistrées${doZones?`, ${nz} zones mises à jour`:''}. Les exercices individuels sont réadaptés en conséquence.</div>`);
+  }catch(err){
+    busy.remove();
+    const msg=String(err.message||err);
+    // message explicite quand le script SQL n'a pas encore été exécuté
+    const manque=/does not exist|relation .* does not exist|schema cache/i.test(msg);
+    rep.insertAdjacentHTML('afterbegin',
+      `<div class="impWarn"><b>Import interrompu.</b><br>${msg}${manque?
+      "<br><br>La table <b>player_tests</b> semble absente : exécute d'abord le script <b>schema_tests.sql</b> dans Supabase, puis relance l'import.":''}</div>`);
+    console.error(err);
   }
-  document.getElementById('impBusy')?.remove();
-  if(err){alert('Import interrompu : '+err.message);return;}
-  await loadIndiv();
-  await loadTests();
-  renderIndiv();renderTests();
-  rep.insertAdjacentHTML('afterbegin',
-    `<div class="impOk"><b>Import terminé.</b> ${nv} valeurs enregistrées${doZones?`, ${nz} zones mises à jour`:''}. Les exercices individuels sont réadaptés en conséquence.</div>`);
 }
 
 async function loadTests(){
