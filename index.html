@@ -408,6 +408,9 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .impTbl .zc{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:800;margin-right:3px}
 .impWarn{background:rgba(255,180,84,.12);border-left:3px solid var(--warn);border-radius:8px;padding:10px 13px;font-size:11.5px;line-height:1.45;margin-top:12px}
 .impOk{background:rgba(79,209,145,.12);border-left:3px solid var(--ok);border-radius:8px;padding:10px 13px;font-size:12px;margin-top:12px}
+.impConfirm{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--accent);border-radius:12px;padding:14px 16px;margin-bottom:14px;flex-wrap:wrap}
+.impConfirm .icTxt{flex:1;font-size:12.5px;line-height:1.5;min-width:220px}
+.impConfirm .icTxt span{color:var(--muted);font-size:11.5px}
 .tstRow{display:grid;grid-template-columns:96px 1fr 92px 92px 74px;gap:10px;align-items:center;padding:7px 8px;border-bottom:1px solid var(--line);font-size:11.5px}
 .tstRow.hd{font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700}
 .tstRow .dt{font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:var(--muted)}
@@ -3946,43 +3949,57 @@ function impPreview(){
     <div class="impWarn" style="margin-top:14px">Rien n'est encore écrit. Vérifie ce tableau puis clique sur <b>Importer</b>.</div>`;
 }
 
-async function impApply(){
-  if(!IMP||!IMP.built){alert('Charge d\'abord le fichier.');return;}
+/* Confirmation intégrée à la page : les navigateurs peuvent supprimer
+   confirm() après plusieurs dialogues, ce qui rendait le bouton muet. */
+function impApply(){
+  const rep=document.getElementById('impReport');
+  if(!IMP||!IMP.built){
+    rep.insertAdjacentHTML('afterbegin','<div class="impWarn">Charge d\'abord le fichier Excel.</div>');return;
+  }
   const res=IMP.built;
-  if(!res.length){alert('Aucun joueur reconnu dans ton effectif.');return;}
+  if(!res.length){
+    rep.insertAdjacentHTML('afterbegin','<div class="impWarn"><b>Aucun joueur reconnu dans ton effectif.</b><br>Les noms du fichier ne correspondent à aucun joueur de ta plateforme. Vérifie l\'onglet Joueurs.</div>');return;
+  }
+  document.getElementById('impConfirm')?.remove();
   const doZones=document.getElementById('impZones').checked;
-  if(!confirm(`Importer les tests de ${res.length} joueurs ?`+(doZones?'\n\nLeurs zones d\'individualisation seront mises à jour.':'')))return;
+  const box=document.createElement('div');
+  box.id='impConfirm'; box.className='impConfirm';
+  box.innerHTML=`<div class="icTxt"><b>Confirmer l'import de ${res.length} joueurs ?</b><br>
+      <span>${res.reduce((t,r)=>t+r.vals.length,0)} valeurs seront enregistrées${doZones?`, ${res.reduce((t,r)=>t+Object.keys(r.zones).length,0)} zones d'individualisation mises à jour`:''}.</span></div>
+    <button class="btn ghost" onclick="document.getElementById('impConfirm').remove()">Annuler</button>
+    <button class="btn primary" onclick="impRun()">Confirmer l'import</button>`;
+  rep.prepend(box);
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+}
 
+async function impRun(){
+  document.getElementById('impConfirm')?.remove();
+  const res=IMP.built;
+  const doZones=document.getElementById('impZones').checked;
   const rep=document.getElementById('impReport');
   const busy=document.createElement('div');
   busy.className='impOk'; busy.id='impBusy'; busy.textContent='Import en cours…';
   rep.prepend(busy);
   const step=t=>{busy.textContent=t};
-
+  let nv=0,nz=0;
   try{
-    // ── 1) Valeurs brutes : un seul appel groupé ──
     const vrows=[];
     res.forEach(r=>r.vals.forEach(v=>vrows.push({
       player_id:r.player.id,date_test:v.date,categorie:v.cat,
       test:v.test,cote:v.cote,valeur_num:v.v,unite:v.u})));
     if(vrows.length){
       step(`Enregistrement de ${vrows.length} valeurs…`);
-      // suppression ciblée puis insertion : évite toute dépendance à une
-      // contrainte d'unicité sur une colonne pouvant être nulle
       const dates=[...new Set(vrows.map(v=>v.date_test))];
       const ids=[...new Set(vrows.map(v=>v.player_id))];
-      const {error:ed}=await supa.from('player_tests').delete()
-        .in('player_id',ids).in('date_test',dates);
+      const {error:ed}=await supa.from('player_tests').delete().in('player_id',ids).in('date_test',dates);
       if(ed)throw ed;
       for(let k=0;k<vrows.length;k+=400){
         const {error}=await supa.from('player_tests').insert(vrows.slice(k,k+400));
         if(error)throw error;
         step(`Enregistrement des valeurs… ${Math.min(k+400,vrows.length)}/${vrows.length}`);
       }
+      nv=vrows.length;
     }
-
-    // ── 2) Zones : deux appels au total, plus un par joueur ──
-    let nz=0;
     if(doZones){
       step('Mise à jour des zones…');
       const zrows=[];
@@ -3991,8 +4008,7 @@ async function impApply(){
       if(zrows.length){
         const ids=[...new Set(zrows.map(z=>z.player_id))];
         const zones=[...new Set(zrows.map(z=>z.zone))];
-        const {error:ed2}=await supa.from('indiv_player_zones').delete()
-          .in('player_id',ids).in('zone',zones);
+        const {error:ed2}=await supa.from('indiv_player_zones').delete().in('player_id',ids).in('zone',zones);
         if(ed2)throw ed2;
         for(let k=0;k<zrows.length;k+=400){
           const {error}=await supa.from('indiv_player_zones').insert(zrows.slice(k,k+400));
@@ -4001,17 +4017,15 @@ async function impApply(){
         nz=zrows.length;
       }
     }
-
     step('Rechargement…');
     await loadIndiv(); await loadTests();
     renderIndiv(); renderTests();
     busy.remove();
     rep.insertAdjacentHTML('afterbegin',
-      `<div class="impOk"><b>Import terminé.</b> ${vrows.length} valeurs enregistrées${doZones?`, ${nz} zones mises à jour`:''}. Les exercices individuels sont réadaptés en conséquence.</div>`);
+      `<div class="impOk"><b>Import terminé.</b> ${nv} valeurs enregistrées${doZones?`, ${nz} zones mises à jour`:''}. Les exercices individuels sont réadaptés en conséquence.</div>`);
   }catch(err){
     busy.remove();
     const msg=String(err.message||err);
-    // message explicite quand le script SQL n'a pas encore été exécuté
     const manque=/does not exist|relation .* does not exist|schema cache/i.test(msg);
     rep.insertAdjacentHTML('afterbegin',
       `<div class="impWarn"><b>Import interrompu.</b><br>${msg}${manque?
