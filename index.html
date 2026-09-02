@@ -8,6 +8,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&family=Spline+Sans+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+// Second point de chargement : si le premier CDN est bloqué (réseau du club,
+// bloqueur de publicité, extension), l'import serait muet sans ce relais.
+if(typeof XLSX==='undefined'){
+  document.write('<script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 :root{
@@ -3760,9 +3767,15 @@ function sevAsym(p,doul){
 }
 
 async function impRead(file){
-  if(!file)return;
   const rep=document.getElementById('impReport');
-  rep.innerHTML='<div class="chgEmpty">Lecture du fichier…</div>';
+  if(!file){rep.innerHTML='<div class="impWarn">Aucun fichier sélectionné.</div>';return;}
+  rep.innerHTML=`<div class="impOk">Fichier reçu : <b>${file.name}</b> (${Math.round(file.size/1024)} Ko) — lecture en cours…</div>`;
+  if(typeof XLSX==='undefined'){
+    rep.innerHTML='<div class="impWarn"><b>La librairie de lecture Excel n\'a pas pu être chargée.</b><br>'
+      +'Elle provient d\'un service externe : un bloqueur de publicité, une extension de navigateur ou le réseau du club peut l\'empêcher.<br><br>'
+      +'À essayer : recharge la page avec <b>Cmd+Shift+R</b>, désactive les extensions sur ce site, ou ouvre la plateforme depuis un autre réseau.</div>';
+    return;
+  }
   try{
     const buf=await file.arrayBuffer();
     const wb=XLSX.read(buf,{type:'array',cellDates:true});
@@ -4013,6 +4026,13 @@ async function loadTests(){
   TESTS=data||[];
 }
 function renderTests(){
+  const drop=document.getElementById('impDrop');
+  if(drop&&typeof XLSX==='undefined'){
+    drop.insertAdjacentHTML('beforeend',
+      '<div class="impWarn" id="impNoLib" style="margin-top:12px;text-align:left">La librairie de lecture Excel n\'est pas disponible : l\'import ne pourra pas fonctionner. Recharge la page avec Cmd+Shift+R, ou vérifie qu\'aucune extension ne bloque les scripts externes.</div>');
+  }else{
+    document.getElementById('impNoLib')?.remove();
+  }
   const sel=document.getElementById('tstPlayer');
   if(sel&&!sel.options.length)sel.innerHTML=chgPlayerOptions();
   renderTestHistory();
