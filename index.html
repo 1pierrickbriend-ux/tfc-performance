@@ -3912,12 +3912,41 @@ function impBuild(){
     if(r.date<since)return;
     const p=matchPlayer(r.nom);
     if(!p){unmatched.add(r.nom);return;}
-    const e=byP[p.id]=byP[p.id]||{player:p,force:null,mobilite:null,energetique:null};
-    if(!e[r.cat]||r.date>e[r.cat].date)e[r.cat]=r;
+    const e=byP[p.id]=byP[p.id]||{player:p,force:null,mobilite:null,energetique:null,all:[]};
+    e.all.push(r);                                   // toutes les campagnes : c'est ce qui permet l'évolution
+    if(!e[r.cat]||r.date>e[r.cat].date)e[r.cat]=r;   // la plus récente sert au calcul des zones
   });
   const res=[];
   Object.values(byP).forEach(e=>{
     const zones={},detail={},vals=[];
+    // Valeurs brutes de toutes les campagnes de la fenêtre : sans cela,
+    // une seule date serait enregistrée et aucune évolution ne pourrait
+    // être calculée entre deux tests.
+    e.all.forEach(r=>{
+      if(r.cat==='force'&&r.map){
+        Object.keys({ADD:1,ABD:1,IJ:1,Quad:1}).forEach(k=>{
+          const [cd,cg]=r.map[k]||[];
+          if(cd==null||cd<0)return;
+          const D=tnum(r.row[cd]),G=tnum(r.row[cg]);
+          if(D!=null)vals.push({cat:'force',test:k,cote:'D',v:D,u:'N',date:r.date});
+          if(G!=null)vals.push({cat:'force',test:k,cote:'G',v:G,u:'N',date:r.date});
+        });
+      }else if(r.cat==='mobilite'&&r.hdr){
+        const at=lbl=>{const i=r.hdr.findIndex(x=>x&&String(x).trim().toUpperCase().startsWith(lbl));return i<0?null:r.row[i];};
+        [['THOMAS DROIT','THOMAS','D','°'],['THOMAS G','THOMAS','G','°'],
+         ['WALL TEST DROIT','WALL TEST','D','cm'],['WALL TEST G','WALL TEST','G','cm']]
+        .forEach(([lbl,test,cote,u])=>{
+          const v=tnum(at(lbl));
+          if(v!=null)vals.push({cat:'mobilite',test,cote,v,u,date:r.date});
+        });
+      }else if(r.cat==='energetique'&&r.hdr){
+        r.hdr.forEach((lbl,i)=>{
+          if(!lbl||i<4)return;
+          const v=tnum(r.row[i]);
+          if(v!=null)vals.push({cat:'energetique',test:String(lbl).trim(),cote:null,v,u:null,date:r.date});
+        });
+      }
+    });
     // FORCE
     if(e.force){
       const {row,map}=e.force;
@@ -3927,8 +3956,6 @@ function impBuild(){
         const D=tnum(row[cd]),G=tnum(row[cg]),dou=row[cdo];
         const pct=asymPct(D,G), s=sevAsym(pct,dou);
         if(s){zones[z]=s;detail[z]=`D ${D??'—'} / G ${G??'—'}`+(pct!=null?` · asym ${pct.toFixed(0)}%`:'');}
-        if(D!=null)vals.push({cat:'force',test:k,cote:'D',v:D,u:'N',date:e.force.date});
-        if(G!=null)vals.push({cat:'force',test:k,cote:'G',v:G,u:'N',date:e.force.date});
       });
     }
     // MOBILITÉ
@@ -3940,8 +3967,6 @@ function impBuild(){
         const w=Math.min(...[TD,TG].filter(x=>x!=null));
         zones.M_THOMAS=w>=0?'V':(w>=-15?'J':(w>=-25?'O':'R'));
         detail.M_THOMAS=`Thomas D ${TD??'—'}° / G ${TG??'—'}°`;
-        if(TD!=null)vals.push({cat:'mobilite',test:'THOMAS',cote:'D',v:TD,u:'°',date:e.mobilite.date});
-        if(TG!=null)vals.push({cat:'mobilite',test:'THOMAS',cote:'G',v:TG,u:'°',date:e.mobilite.date});
       }
       const fa=worstSev([tcode(at('FADIR DROIT')),tcode(at('FADIR G'))]);
       if(fa){zones.M_HANCHE_ART=fa;detail.M_HANCHE_ART=`FADIR ${at('FADIR DROIT')??'—'} / ${at('FADIR G')??'—'}`;}
@@ -3963,21 +3988,10 @@ function impBuild(){
         const w=Math.min(...[WD,WG].filter(x=>x!=null));
         zones.M_CHEVILLE=w>=10?'V':(w>=8?'J':(w>=6?'O':'R'));
         detail.M_CHEVILLE=`Wall D ${WD??'—'} / G ${WG??'—'} cm`;
-        if(WD!=null)vals.push({cat:'mobilite',test:'WALL TEST',cote:'D',v:WD,u:'cm',date:e.mobilite.date});
-        if(WG!=null)vals.push({cat:'mobilite',test:'WALL TEST',cote:'G',v:WG,u:'cm',date:e.mobilite.date});
       }
       const gen=worstSev([tcode(at('ROTULIEN DROIT')),tcode(at('ROTULIEN G')),
                           tcode(at('MOB PATELLAIRE DROIT')),tcode(at('MOB PATELLAIRE G'))]);
       if(gen){zones.M_GENOU=gen;detail.M_GENOU='rotulien / patellaire';}
-    }
-    // ÉNERGÉTIQUE (valeurs conservées, pas de zone associée)
-    if(e.energetique){
-      const {row,hdr}=e.energetique;
-      hdr.forEach((lbl,i)=>{
-        if(!lbl||i<4)return;
-        const v=tnum(row[i]);
-        if(v!=null)vals.push({cat:'energetique',test:String(lbl).trim(),cote:null,v,u:null,date:e.energetique.date});
-      });
     }
     res.push({player:e.player,zones,detail,vals,
       dates:{force:e.force?.date,mobilite:e.mobilite?.date,energetique:e.energetique?.date}});
