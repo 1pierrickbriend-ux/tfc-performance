@@ -374,6 +374,8 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .jCard.picked{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .modalFoot{display:flex;gap:10px;align-items:center;margin-top:16px}
 .modalFoot .modalClose{margin-left:auto}
+.prRow.picked{background:rgba(139,123,255,.1);border-radius:8px}
+.qaHint{background:rgba(255,180,84,.12);border-left:3px solid var(--warn);border-radius:8px;padding:9px 12px;font-size:11.5px;color:var(--ink);line-height:1.45;margin-bottom:14px}
 .pcBadge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.3px}
 
 .dashDet{background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:18px 20px;margin-top:18px}
@@ -1122,10 +1124,11 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="qaOverlay" id="qaOverlay" onclick="if(event.target===this)closeQuickAdd()">
       <div class="qaPanel">
         <div class="qaHead">
-          <span>Enregistrer une sollicitation individualisée</span>
+          <span id="qaTitle">Enregistrer une sollicitation individualisée</span>
           <button onclick="closeQuickAdd()">✕</button>
         </div>
         <div class="qaBody">
+          <div id="qaHint" class="qaHint" style="display:none">Renseigne le <b>volume réellement effectué</b> et l'action correspondante : sans volume, la séance n'apparaîtrait pas dans les analyses.</div>
           <div class="qaRow2">
             <label style="grid-column:1/-1">Joueurs <span class="mpCount" id="chgPlayerCount">0 sélectionné</span>
               <div class="mpBox" id="chgPlayerBox"></div>
@@ -1206,6 +1209,12 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <div class="chgCardHead">
         📋 Historique des prescriptions
         <select id="prFilterPlayer" onchange="renderPrescList()" style="margin-left:auto;max-width:200px"></select>
+        <button class="btn ghost" id="prSelBtn" style="font-size:11px" onclick="togglePSel()">☑︎ Sélectionner</button>
+      </div>
+      <div class="jSelBar" id="prSelBar" style="display:none">
+        <span id="prSelCount">0 sélectionnée</span>
+        <button class="btn ghost" onclick="togglePSel()">Annuler</button>
+        <button class="btn danger" onclick="deletePSelection()">🗑 Supprimer la sélection</button>
       </div>
       <div id="prList"></div>
     </div>
@@ -3149,6 +3158,7 @@ function closeTopLayer(){
   const dd=document.getElementById('dashDetail');
   if(dd&&dd.style.display==='block'){closeDashDetail();return true;}
   if(typeof jSelMode!=='undefined'&&jSelMode){toggleJSel();return true;}
+  if(typeof pSelMode!=='undefined'&&pSelMode){togglePSel();return true;}
   return false;
 }
 document.addEventListener('keydown',e=>{
@@ -3866,15 +3876,24 @@ function renderPrescList(){
   const list=PRESC.filter(p=>!pid||p.player_id===pid).slice(0,40);
   const box=document.getElementById('prList');
   if(!list.length){box.innerHTML='<div class="chgEmpty">Aucune prescription enregistrée.</div>';return;}
+  const bar=document.getElementById('prSelBar');
+  if(bar){
+    bar.style.display=pSelMode?'flex':'none';
+    const c=document.getElementById('prSelCount');
+    if(c)c.textContent=pSel.size+' sélectionnée'+(pSel.size>1?'s':'');
+  }
+  const sb=document.getElementById('prSelBtn');
+  if(sb)sb.textContent=pSelMode?'✕ Quitter':'☑︎ Sélectionner';
   box.innerHTML=list.map(p=>{
     const pl=IPLAYERS.find(x=>x.id===p.player_id);
-    return `<div class="prRow">
-      <span class="cd">${fmtDateFR(p.date)}</span>
+    return `<div class="prRow${pSel.has(p.id)?' picked':''}" ${pSelMode?`onclick="pPick('${p.id}',event)" style="cursor:pointer"`:''}>
+      <span class="cd">${pSelMode?`<span class="jTick${pSel.has(p.id)?' on':''}">${pSel.has(p.id)?'✓':''}</span> `:''}${fmtDateFR(p.date)}</span>
       <span><span class="cn">${pl?pl.name:'?'}</span><br><span class="cs">${p.objectif||p.titre}</span></span>
       <span><span class="prSt ${p.statut}">${p.statut==='prevu'?'Prévu':(p.statut==='fait'?'Réalisé':'Annulé')}</span></span>
       <span class="cs">${p.duree_prevue_min?p.duree_prevue_min+' min':''}</span>
-      <span><button onclick="openPrescBuilder('${p.id}')">Composer</button></span>
-      <button onclick="deletePresc('${p.id}')" title="Supprimer">✕</button>
+      <span>${pSelMode?'':`<button onclick="event.stopPropagation();openPrescBuilder('${p.id}')">Composer</button>
+        <button onclick="event.stopPropagation();cancelPresc('${p.id}')" title="${p.statut==='annule'?'Réactiver':'Annuler'}">${p.statut==='annule'?'↺':'⊘'}</button>`}</span>
+      ${pSelMode?'<span></span>':`<button onclick="event.stopPropagation();deletePresc('${p.id}')" title="Supprimer">✕</button>`}
     </div>`;
   }).join('');
 }
@@ -3938,6 +3957,34 @@ async function duplicatePrescTo(){
   MP_SEL.dup.clear(); mpRender('dup');
   renderPrescList();renderPrescUpcoming();
   alert(`Contenu copié vers ${created} joueur${created>1?'s':''}.`);
+}
+let pSelMode=false, pSel=new Set();
+function togglePSel(){pSelMode=!pSelMode;pSel.clear();renderPrescList()}
+function pPick(id,ev){ev.stopPropagation();pSel.has(id)?pSel.delete(id):pSel.add(id);renderPrescList()}
+async function deletePSelection(){
+  if(!pSel.size)return;
+  if(!confirm(`Supprimer définitivement ${pSel.size} prescription${pSel.size>1?'s':''} et leur contenu ?`))return;
+  const ids=[...pSel];
+  const {error}=await supa.from('presc_sessions').delete().in('id',ids);
+  if(error){alert('Erreur : '+error.message);return;}
+  PRESC=PRESC.filter(p=>!ids.includes(p.id));
+  if(ids.includes(currentPrescId))closePrescBuilder();
+  pSel.clear(); pSelMode=false;
+  renderPrescList();renderPrescUpcoming();
+  if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
+}
+/* Annuler sans supprimer : la trace reste, mais la prescription sort
+   du calcul d'observance. */
+async function cancelPresc(id){
+  const p=PRESC.find(x=>x.id===id); if(!p)return;
+  const back=p.statut==='annule';
+  if(!confirm(back?'Réactiver cette prescription ?':'Annuler cette prescription ?\n\nElle reste visible mais sort du calcul d\'observance.'))return;
+  const st=back?'prevu':'annule';
+  const {error}=await supa.from('presc_sessions').update({statut:st}).eq('id',id);
+  if(error){alert('Erreur : '+error.message);return;}
+  p.statut=st;
+  renderPrescList();renderPrescUpcoming();
+  if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
 }
 async function deletePresc(id){
   if(!confirm('Supprimer cette séance prescrite et son contenu ?'))return;
@@ -4075,26 +4122,31 @@ async function movePrescItem(id,dir){
   PRESC_ITEMS.sort((x,y)=>x.sort_order-y.sort_order);
   renderPrescItems();
 }
+let pendingPresc=null;   // prescription en cours de validation
 async function markPrescDone(){
   if(!currentPrescId)return;
   const p=PRESC.find(x=>x.id===currentPrescId); if(!p)return;
-  if(!confirm('Marquer cette séance comme réalisée ? Elle sera reportée dans le suivi de charge.'))return;
-  const {error}=await supa.from('presc_sessions').update({statut:'fait',done_at:new Date().toISOString()}).eq('id',currentPrescId);
-  if(error){alert('Erreur : '+error.message);return;}
-  p.statut='fait';
-  // report automatique dans le suivi de charge : la saisie n'est plus à refaire
-  const act=CHG_ACTIONS.find(a=>a.secteur==='preparation_physique');
-  const row={player_id:p.player_id,action_id:act?act.id:null,date:p.date,
-    duree_min:p.duree_prevue_min||null,presc_session_id:p.id,
-    commentaire:p.objectif?('Séance prescrite : '+p.objectif):null,
-    realise_par:CURRENT_USER_LABEL,created_by:CURRENT_USER_LABEL};
-  const {data,error:e2}=await supa.from('charge_sessions').insert(row).select().single();
-  if(e2){alert('Séance marquée réalisée, mais report en charge impossible : '+e2.message);}
-  else{CHG_SESSIONS.unshift(data);}
-  renderPrescList();renderPrescUpcoming();
-  alert('Séance marquée réalisée et reportée dans le suivi de charge.');
+  // On passe par la fenêtre de saisie pour garantir un volume et une action
+  // corrects : sans volume la séance compterait pour zéro dans toutes les
+  // analyses, et une action choisie au hasard fausserait la distribution.
+  pendingPresc={id:p.id,player_id:p.player_id,date:p.date,
+                duree:p.duree_prevue_min,objectif:p.objectif||p.titre};
+  MP_SEL.chg.clear(); MP_SEL.chg.add(p.player_id);
+  mpRender('chg');
+  document.getElementById('chgDate').value=p.date;
+  document.getElementById('chgDuree').value=p.duree_prevue_min||'';
+  document.getElementById('chgComment').value='Séance prescrite : '+(p.objectif||p.titre);
+  // pré-sélectionne l'action dont le nom se rapproche le plus de la qualité visée
+  const q=(p.objectif||'').toLowerCase();
+  const best=CHG_ACTIONS.find(a=>q&&a.nom.toLowerCase().split(/[\s-]+/).some(w=>w.length>3&&q.includes(w)));
+  if(best){
+    document.getElementById('chgSecteur').value=best.secteur; fillChgActions();
+    document.getElementById('chgAction').value=best.id;
+  }
+  document.getElementById('qaTitle').textContent='Valider la séance réalisée';
+  document.getElementById('qaHint').style.display='block';
+  document.getElementById('qaOverlay').classList.add('on');
 }
-
 /* ═══════ DASHBOARD INDIVIDUALISATION — SUIVI DE CHARGE ═══════
    Volume de travail uniquement (séances + durée). Pas de RPE ni de
    ressenti : c'est couvert par l'application existante du centre de
@@ -4383,7 +4435,12 @@ function openQuickAdd(){
   mpRender('chg');
   document.getElementById('qaOverlay').classList.add('on');
 }
-function closeQuickAdd(){document.getElementById('qaOverlay').classList.remove('on')}
+function closeQuickAdd(){
+  document.getElementById('qaOverlay').classList.remove('on');
+  pendingPresc=null;
+  const t=document.getElementById('qaTitle'); if(t)t.textContent='Enregistrer une sollicitation individualisée';
+  const hn=document.getElementById('qaHint'); if(hn)hn.style.display='none';
+}
 async function addChargeSession(){
   const ids=[...MP_SEL.chg];
   const action_id=document.getElementById('chgAction').value;
@@ -4399,12 +4456,26 @@ async function addChargeSession(){
     realise_par:document.getElementById('chgRealisePar').value.trim()||CURRENT_USER_LABEL||null,
     created_by:CURRENT_USER_LABEL};
   const rows=ids.map(player_id=>({player_id,...base}));
+  if(pendingPresc)rows.forEach(r=>{r.presc_session_id=pendingPresc.id});
   const {data,error}=await supa.from('charge_sessions').insert(rows).select();
   if(error){alert('Erreur : '+error.message);return;}
   (data||[]).forEach(d=>CHG_SESSIONS.unshift(d));
+  if(pendingPresc){
+    const {error:ep}=await supa.from('presc_sessions')
+      .update({statut:'fait',done_at:new Date().toISOString()}).eq('id',pendingPresc.id);
+    if(ep)alert('Séance enregistrée, mais statut non mis à jour : '+ep.message);
+    else{
+      const p=PRESC.find(x=>x.id===pendingPresc.id);
+      if(p)p.statut='fait';
+    }
+    pendingPresc=null;
+    if(typeof renderPrescList==='function'){renderPrescList();renderPrescUpcoming();}
+  }
   ['chgSeries','chgReps','chgKg','chgDuree','chgComment'].forEach(id=>document.getElementById(id).value='');
   MP_SEL.chg.clear(); mpRender('chg');
   closeQuickAdd(); renderCharge();
+  if(typeof renderSeances==='function')renderSeances();
+  if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
   if(ids.length>1)alert(`Sollicitation enregistrée pour ${ids.length} joueurs.`);
 }
 async function deleteChargeSession(id){
