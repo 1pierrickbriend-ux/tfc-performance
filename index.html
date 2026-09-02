@@ -1683,6 +1683,44 @@ function fillPlayerNoteSel(){
       .map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
 }
 
+/* Synchronisation temps réel des données partagées entre Pierrick et Julien.
+   Sans cela, une séance créée par l'un reste invisible pour l'autre jusqu'au
+   rechargement de la page — ce qui vide de son sens le partage. */
+function setupSharedRealtime(){
+  const sync=(arr,payload,after)=>{
+    if(payload.eventType==='INSERT')arr.unshift(payload.new);
+    else if(payload.eventType==='UPDATE'){const i=arr.findIndex(x=>x.id===payload.new.id);if(i>-1)arr[i]=payload.new;}
+    else if(payload.eventType==='DELETE'){const i=arr.findIndex(x=>x.id===payload.old.id);if(i>-1)arr.splice(i,1);}
+    if(after)after();
+  };
+  const refreshJournal=()=>{
+    if(typeof renderSeances==='function')renderSeances();
+    if(typeof renderCharge==='function')renderCharge();
+    if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
+  };
+  supa.channel('charge-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'charge_sessions'},
+        p=>sync(CHG_SESSIONS,p,refreshJournal)).subscribe();
+  supa.channel('presc-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'presc_sessions'},p=>sync(PRESC,p,()=>{
+      if(document.getElementById('indiv-presc')?.style.display==='block'){renderPrescList();renderPrescUpcoming();}
+      if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
+    })).subscribe();
+  supa.channel('programmes-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'programmes'},p=>sync(PROGRAMMES,p,()=>{
+      if(typeof renderProgList==='function')renderProgList();
+    })).subscribe();
+  supa.channel('exbank-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'exercise_bank'},p=>sync(EXBANK,p,()=>{
+      if(typeof renderExerciseBank==='function')renderExerciseBank();
+    })).subscribe();
+  // Les séances collectives portent leurs présences dans un tableau imbriqué :
+  // un rechargement ciblé est plus sûr qu'une fusion manuelle.
+  supa.channel('seances-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'seances'},async()=>{
+      await loadSeances(); refreshJournal();
+    }).subscribe();
+}
 function setupBoardRealtime(){
   supa.channel('board-items-changes')
     .on('postgres_changes',{event:'*',schema:'public',table:'board_items'},payload=>{
@@ -2507,20 +2545,37 @@ async function doLogout(){await supa.auth.signOut();location.reload();}
 async function afterLogin(user){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('loadingScreen').classList.add('on');
-  try{
-    await loadAll();
-    await loadIndiv();
-    await loadSeances();
-    await loadGauges();
-    await loadExtMatches();
-    await loadBoard();
-    await loadProgrammes();
-    await loadCharge();
-    await loadPresc();
-  }catch(e){
+  // Chargements en parallèle : 9 allers-retours séquentiels rendaient
+  // l'ouverture inutilement lente. Chaque bloc est isolé pour qu'une
+  // table manquante n'empêche pas le reste de se charger.
+  const steps=[
+    ['données de planification',loadAll],
+    ['individualisation',loadIndiv],
+    ['séances',loadSeances],
+    ['jauges',loadGauges],
+    ['calendriers externes',loadExtMatches],
+    ['board',loadBoard],
+    ['bibliothèque',loadProgrammes],
+    ['charge externe',loadCharge],
+    ['prescriptions',loadPresc],
+  ];
+  const failed=[];
+  await Promise.all(steps.map(async ([nom,fn])=>{
+    try{ await fn(); }catch(e){ console.error(nom,e); failed.push(nom); }
+  }));
+  if(failed.length===steps.length){
     document.getElementById('loadingScreen').classList.remove('on');
     document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('loginErr').textContent=
+      "Connexion réussie mais aucune donnée n'a pu être chargée. Vérifie ta connexion ou les droits d'accès à la base.";
     return;
+  }
+  if(failed.length){
+    // On n'enferme plus l'utilisateur sur l'écran de connexion sans explication :
+    // l'application s'ouvre, et le problème est nommé.
+    setTimeout(()=>alert(
+      "Certaines données n'ont pas pu être chargées :\n\n· "+failed.join("\n· ")+
+      "\n\nLes scripts SQL correspondants n'ont peut-être pas encore été exécutés dans Supabase. Le reste de la plateforme fonctionne normalement."),400);
   }
   document.getElementById('loadingScreen').classList.remove('on');
   if(Object.keys(TYPES).length===0){
@@ -2534,7 +2589,7 @@ async function afterLogin(user){
   const JOURS_L=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
   document.getElementById('headerDate').textContent=`N2 Poule A — Saison 2026/27 · ${JOURS_L[TODAY.getDay()]} ${TODAY.getDate()} ${MOIS[TODAY.getMonth()]} ${TODAY.getFullYear()}`;
   try{
-    fillWeekSel();renderWeek();renderMonth();renderSeances();renderPlayers();renderTypes();renderLogos();renderIndiv();initLogoZone();fillAgendaWeekSel();fillPlayerNoteSel();renderBoard();renderProgrammes();setupBoardRealtime();
+    fillWeekSel();renderWeek();renderMonth();renderSeances();renderPlayers();renderTypes();renderLogos();renderIndiv();initLogoZone();fillAgendaWeekSel();fillPlayerNoteSel();renderBoard();renderProgrammes();setupBoardRealtime();setupSharedRealtime();
   }catch(e){
     document.getElementById('app').innerHTML='<div style="padding:40px;color:#ff6b6b;font-family:monospace">Erreur d\'affichage : '+e.message+'<br><br>Envoie ce message tel quel pour que je corrige.</div>';
     console.error(e);
@@ -2825,7 +2880,6 @@ function genCycle(){
   if(curWeek>=t0&&curWeek<t0+n)renderGps();
 }
 
-function catColor(c){return TYPES[c]?.color||'#8a6fd6'}
 
 /* ═══════ SÉANCES RÉELLES + PRÉSENCE (Supabase) ═══════ */
 let SEANCES=[]; // [{id,date,cat,nom,presences:[{player_id,valide}]}]
