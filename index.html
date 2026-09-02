@@ -4081,10 +4081,17 @@ async function impRun(){
     }
     step('Rechargement…');
     await loadIndiv(); await loadTests();
-    renderIndiv(); renderTests();
     busy.remove();
     rep.insertAdjacentHTML('afterbegin',
       `<div class="impOk"><b>Import terminé.</b> ${nv} valeurs enregistrées${doZones?`, ${nz} zones mises à jour`:''}. Les exercices individuels sont réadaptés en conséquence.</div>`);
+    // Le réaffichage est isolé : un défaut d'affichage ne doit pas être
+    // annoncé comme un échec d'import alors que les données sont écrites.
+    try{ renderIndiv(); renderTests(); }
+    catch(e){
+      console.error(e);
+      rep.insertAdjacentHTML('afterbegin',
+        `<div class="impWarn">Les données sont bien enregistrées, mais l'affichage n'a pas pu se rafraîchir (${e.message}). Recharge la page pour les voir.</div>`);
+    }
   }catch(err){
     busy.remove();
     const msg=String(err.message||err);
@@ -4177,7 +4184,10 @@ function renderEvoCards(){
     if(evoFilter==='prog'&&!(trend>2))return;
     if(evoFilter==='reg'&&!(trend<-2))return;
 
-    const zones=(IZONES[p.id]||[]).filter(z=>z.severite&&z.severite!=='V')
+    // IZONES est indexé par zone, avec la sévérité dans .sev
+    const zones=Object.entries(IZONES[p.id]||{})
+      .filter(([,v])=>v&&v.sev&&v.sev!=='V')
+      .map(([zone,v])=>({zone,severite:v.sev}))
       .sort((a,b)=>({R:0,O:1,J:2})[a.severite]-({R:0,O:1,J:2})[b.severite]).slice(0,4);
     const ph=playerPhoto(p);
     const cls=trend==null?'':(trend>2?'up':(trend<-2?'down':''));
