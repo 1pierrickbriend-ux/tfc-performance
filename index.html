@@ -412,55 +412,44 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .impConfirm .icTxt{flex:1;font-size:12.5px;line-height:1.5;min-width:220px}
 .impConfirm .icTxt span{color:var(--muted);font-size:11.5px}
 
-/* ═══ CARTES JOUEUR — format écusson, charte TFC ═══ */
-.evoHead{display:flex;align-items:center;gap:14px;margin:22px 0 16px;flex-wrap:wrap}
-.evoHead h3{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin:0;color:#2a1a4a}
-.evoFilters{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
-.evoGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:20px}
-
-.fut{position:relative;aspect-ratio:268/318;border-radius:14px 14px 46% 46%/14px 14px 22% 22%;
-  overflow:hidden;padding:2px;background:linear-gradient(160deg,#e1b57a 0%,#8a6fd6 38%,#3d2c56 100%);
-  box-shadow:0 10px 30px rgba(24,10,54,.4)}
-.futIn{position:relative;height:100%;border-radius:12px 12px 46% 46%/12px 12px 22% 22%;overflow:hidden;
-  background:linear-gradient(168deg,#4a3070 0%,#2c1a52 42%,#1a0f33 100%);display:flex;flex-direction:column}
-.futIn:before{content:'';position:absolute;inset:0;background-image:var(--pattern-bg);
-  background-size:240px 135px;opacity:.16}
-.futIn:after{content:'';position:absolute;left:-20%;top:-30%;width:140%;height:70%;
-  background:radial-gradient(ellipse at center,rgba(225,181,122,.3),transparent 62%)}
-
-.futTop{position:relative;display:flex;align-items:flex-start;gap:8px;padding:12px 14px 0}
-.futRate{text-align:center;flex:none;width:56px}
-.futRate .n{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;line-height:.88;color:#f5e3c4}
-.futRate .n.up{color:#7bf0b0} .futRate .n.down{color:#ff8f8f}
-.futRate .u{font-size:8px;font-weight:800;letter-spacing:1.2px;color:rgba(245,227,196,.75);text-transform:uppercase}
-.futRate .sep{height:1px;background:rgba(245,227,196,.35);margin:4px 6px}
-.futRate .qt{font-size:7.5px;font-weight:800;letter-spacing:.6px;color:rgba(245,227,196,.85);text-transform:uppercase;line-height:1.25}
-.futPhoto{margin-left:auto;width:84px;height:98px;flex:none;position:relative;
-  filter:drop-shadow(0 5px 12px rgba(0,0,0,.5))}
-.futPhoto img{width:100%;height:100%;object-fit:cover;object-position:top center;
-  border-radius:9px;border:1.5px solid rgba(225,181,122,.4)}
-.futPhoto .ini{width:100%;height:100%;border-radius:9px;display:flex;align-items:center;justify-content:center;
-  font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:rgba(245,227,196,.4);
-  background:rgba(255,255,255,.06);border:1.5px solid rgba(225,181,122,.3)}
-
-.futName{position:relative;text-align:center;margin:6px 12px 0;padding-bottom:6px;
-  border-bottom:1.5px solid rgba(225,181,122,.45)}
-.futName .nm{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:800;
-  text-transform:uppercase;letter-spacing:.8px;color:#fff;line-height:1.05}
-.futName .dt{font-size:7.5px;font-family:'Spline Sans Mono',monospace;color:rgba(245,227,196,.6);margin-top:2px}
-
-.futStats{position:relative;flex:1;display:grid;grid-template-columns:1fr 1px 1fr;gap:0 10px;
-  padding:10px 13px 4px;align-content:center}
-.futDiv{background:linear-gradient(180deg,transparent,rgba(225,181,122,.4),transparent)}
-.futSt{display:flex;align-items:baseline;gap:6px;padding:3.5px 0}
-.futSt .v{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;color:#fff;min-width:34px}
-.futSt .k{font-size:8.5px;font-weight:800;letter-spacing:.5px;color:rgba(245,227,196,.8);text-transform:uppercase;flex:1}
-.futSt .d{font-size:9px;font-weight:900;font-family:'Barlow Condensed',sans-serif}
-.futSt .d.up{color:#7bf0b0} .futSt .d.down{color:#ff8f8f} .futSt .d.flat{color:rgba(255,255,255,.35)}
-
-.futFoot{position:relative;padding:2px 13px 10px;display:flex;flex-wrap:wrap;gap:3px;justify-content:center}
-.futTag{font-size:7.5px;font-weight:800;padding:1.5px 6px;border-radius:8px;letter-spacing:.3px}
-.futEmpty{grid-column:1/-1;padding:34px;text-align:center;color:var(--muted);font-size:13px;
+/* ═══ COMPARATIF ENTRE CAMPAGNES DE TESTS ═══ */
+.cmpHead{display:flex;align-items:center;gap:14px;margin:22px 0 14px;flex-wrap:wrap}
+.cmpHead h3{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.8px;margin:0;color:#2a1a4a}
+.cmpTools{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;align-items:center}
+.cmpTools select,.cmpTools input{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:6px 10px;color:var(--ink);font-family:inherit;font-size:12px}
+.cmpWrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 4px}
+.cmpPlayer{padding:14px 16px 18px;border-bottom:1px solid var(--line)}
+.cmpPlayer:last-child{border-bottom:none}
+.cmpPName{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;padding:0 10px}
+.cmpPName .nm{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.5px}
+.cmpPName .sm{font-size:11px;color:var(--muted);font-weight:600}
+.cmpRows{display:flex;flex-direction:column;gap:14px;padding:0 10px}
+.cmpRow{display:grid;grid-template-columns:1fr;gap:3px}
+.cmpRowTop{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--ink)}
+.cmpRowTop .lft{color:#8a6fd6}
+.cmpRowTop .mid{color:var(--muted);font-weight:700}
+.cmpRowTop .rgt{color:#e1b57a}
+.cmpTrack{position:relative;height:16px;border-radius:8px;background:rgba(255,255,255,.08)}
+.cmpTrack .axis{position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+  background:rgba(255,255,255,.35);transform:translateX(-50%)}
+.cmpTrack .m1{position:absolute;top:2px;width:3px;height:12px;border-radius:2px;
+  background:rgba(255,255,255,.32);transform:translateX(-50%)}
+.cmpTrack .m2{position:absolute;top:-4px;width:4px;height:24px;border-radius:2px;
+  transform:translateX(-50%)}
+.cmpRowBot{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);
+  font-family:'Spline Sans Mono',monospace;margin-top:1px}
+.cmpRowBot .asymNow{font-weight:800}
+.cmpSingle{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px}
+.cmpSingle .lb{font-size:11.5px;font-weight:700}
+.cmpSingle .vals{display:flex;align-items:baseline;gap:8px;font-family:'Spline Sans Mono',monospace;font-size:11px}
+.cmpSingle .vals b{font-size:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;color:var(--ink)}
+.cmpNoLat{border-top:1px dashed var(--line);margin-top:2px;padding-top:12px}
+.cmpNoLatT{font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);
+  font-weight:700;margin-bottom:8px}
+.cmpEmpty{padding:36px;text-align:center;color:var(--muted);font-size:13px}
   background:var(--panel);border:1px dashed var(--line);border-radius:14px}
 
 .tstRow{display:grid;grid-template-columns:96px 1fr 92px 92px 74px;gap:10px;align-items:center;padding:7px 8px;border-bottom:1px solid var(--line);font-size:11.5px}
@@ -1333,15 +1322,25 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <div id="impReport"></div>
     </div>
 
-    <div class="evoHead">
-      <h3>Évolution individuelle</h3>
-      <div class="evoFilters">
-        <button class="dfBtn on" onclick="setEvoFilter('all',this)">Tout l'effectif</button>
-        <button class="dfBtn" onclick="setEvoFilter('prog',this)">En progression</button>
-        <button class="dfBtn" onclick="setEvoFilter('reg',this)">En régression</button>
+    <div class="cmpHead">
+      <h3>Comparatif entre campagnes</h3>
+      <div class="cmpTools">
+        <select id="cmpCat" onchange="renderCompare()">
+          <option value="">Toutes les mesures</option>
+          <option value="force">Force</option>
+          <option value="mobilite">Mobilité</option>
+          <option value="energetique">Énergétique</option>
+        </select>
+        <select id="cmpPl" onchange="renderCompare()"></select>
+        <select id="cmpSort" onchange="renderCompare()">
+          <option value="nom">Trier par nom</option>
+          <option value="prog">Meilleure progression</option>
+          <option value="reg">Plus forte régression</option>
+          <option value="asym">Asymétrie la plus élevée</option>
+        </select>
       </div>
     </div>
-    <div class="evoGrid" id="evoGrid"></div>
+    <div class="cmpWrap"><div class="cmpScroll"><div id="cmpBody"></div></div></div>
 
     <div class="anCard" style="margin-top:18px">
       <div class="anHead"><span class="anIco">📈</span><h3>Détail chiffré</h3>
@@ -4135,7 +4134,6 @@ const EVO_DIR={
 };
 const EVO_LABEL={'ADD':'Adducteurs','ABD':'Abducteurs','IJ':'Ischios','Quad':'Quadriceps',
   'THOMAS':'Thomas','WALL TEST':'Cheville'};
-let evoFilter='all';
 
 function evoSeries(pid,cat,test){
   const rows=TESTS.filter(t=>t.player_id===pid&&t.categorie===cat&&t.test===test&&t.valeur_num!=null);
@@ -4158,79 +4156,129 @@ function evoDelta(serie,dir){
   const cls=dir===0?'flat':(Math.abs(pct)<2?'flat':((pct>0)===(dir>0)?'up':'down'));
   return {pct,cls,a,b};
 }
-function setEvoFilter(f,btn){
-  evoFilter=f;
-  document.querySelectorAll('.evoFilters .dfBtn').forEach(b=>b.classList.toggle('on',b===btn));
-  renderEvoCards();
+/* Comparatif entre les deux dernières campagnes de chaque mesure.
+   Les dates sont propres à chaque test (la force et la mobilité ne sont
+   pas testées le même jour), donc la comparaison se fait mesure par mesure
+   et non sur une date globale. */
+const CMP_TESTS=[
+  {cat:'force',      key:'ADD',       lbl:'Adducteurs',   unit:'N',  dir:1, lat:true},
+  {cat:'force',      key:'ABD',       lbl:'Abducteurs',   unit:'N',  dir:1, lat:true},
+  {cat:'force',      key:'IJ',        lbl:'Ischios',      unit:'N',  dir:1, lat:true},
+  {cat:'force',      key:'Quad',      lbl:'Quadriceps',   unit:'N',  dir:1, lat:true},
+  {cat:'mobilite',   key:'THOMAS',    lbl:'Thomas',       unit:'°',  dir:1, lat:true},
+  {cat:'mobilite',   key:'WALL TEST', lbl:'Cheville',     unit:'cm', dir:1, lat:true},
+];
+function cmpPct(a,b){ return (a==null||b==null||!a)?null:(b-a)/Math.abs(a)*100; }
+function cmpFmt(v,d){ return v==null?'—':(d?v.toFixed(1):Math.round(v)); }
+function cmpAsymColor(a){
+  if(a==null)return 'var(--muted)';
+  return a>=15?'#ff6a6a':(a>=10?'#ffb454':'#4fd191');
 }
-function renderEvoCards(){
-  const box=document.getElementById('evoGrid'); if(!box)return;
-  const COL={R:'#ff6a6a',O:'#ffb454',J:'#f2d23a',V:'#4fd191'};
-  const cards=[];
-  IPLAYERS.forEach(p=>{
-    const mine=TESTS.filter(t=>t.player_id===p.id);
-    if(!mine.length)return;
-    const dates=[...new Set(mine.map(t=>t.date_test))].sort();
+function cmpCell(pct,dir,unitTxt){
+  if(pct==null)return '<span class="cmpD flat">—</span>';
+  const cls=dir===0?'flat':(Math.abs(pct)<2?'flat':((pct>0)===(dir>0)?'up':'down'));
+  return `<span class="cmpD ${cls}">${pct>0?'+':''}${pct.toFixed(1)}${unitTxt||' %'}</span>`;
+}
+/* Deux dernières campagnes d'une mesure donnée, avec D / G / asymétrie */
+function cmpPair(pid,cat,key){
+  const rows=TESTS.filter(t=>t.player_id===pid&&t.categorie===cat&&t.test===key&&t.valeur_num!=null);
+  if(!rows.length)return null;
+  const byDate={};
+  rows.forEach(t=>{(byDate[t.date_test]=byDate[t.date_test]||[]).push(t)});
+  const dates=Object.keys(byDate).sort();
+  const build=d=>{
+    const v=byDate[d];
+    const D=v.find(x=>x.cote==='D')?.valeur_num ?? null;
+    const G=v.find(x=>x.cote==='G')?.valeur_num ?? null;
+    const N=v.find(x=>!x.cote)?.valeur_num ?? null;
+    const moy=(D!=null&&G!=null)?(D+G)/2:(D??G??N);
+    const mx=(D!=null&&G!=null)?Math.max(Math.abs(D),Math.abs(G)):null;
+    const asym=mx?Math.abs(D-G)/mx*100:null;
+    return {date:d,D,G,N,moy,asym};
+  };
+  return {t1:dates.length>1?build(dates[dates.length-2]):null,t2:build(dates[dates.length-1]),n:dates.length};
+}
+function renderCompare(){
+  const box=document.getElementById('cmpBody'); if(!box)return;
+  const cmpPlSel=document.getElementById('cmpPl');
+  if(cmpPlSel&&!cmpPlSel.options.length)
+    cmpPlSel.innerHTML='<option value="">Tout l\'effectif</option>'+chgPlayerOptions();
+  const onlyCat=document.getElementById('cmpCat')?.value||'';
+  const onlyP=cmpPlSel?cmpPlSel.value:'';
+  const sort=document.getElementById('cmpSort')?.value||'nom';
 
-    const stat=(lbl,cat,key,dir,dec)=>{
-      const s=evoSeries(p.id,cat,key);
-      if(!s.length)return null;
-      const last=s[s.length-1];
-      if(last.moy==null)return null;
-      const d=evoDelta(s,dir);
-      return {lbl,val:dec?last.moy.toFixed(1):Math.round(last.moy),d};
-    };
-    const left=[stat('ADD','force','ADD',1),stat('ABD','force','ABD',1),
-                stat('IJ','force','IJ',1),stat('QUA','force','Quad',1)].filter(Boolean);
-    const eTests=[...new Set(mine.filter(t=>t.categorie==='energetique').map(t=>t.test))];
-    const right=[];
-    eTests.slice(0,2).forEach(k=>{
-      const lbl=k.toUpperCase().includes('VAM')?'VMA':(k.includes('30/15')?'IFT':k.slice(0,6).toUpperCase());
-      const s=stat(lbl,'energetique',k,EVO_DIR[k]??1,true); if(s)right.push(s);
-    });
-    const th=stat('THO','mobilite','THOMAS',1); if(th)right.push(th);
-    const wa=stat('CHE','mobilite','WALL TEST',1); if(wa)right.push(wa);
+  // mesures énergétiques réellement présentes
+  const eKeys=[...new Set(TESTS.filter(t=>t.categorie==='energetique').map(t=>t.test))]
+    .map(k=>({cat:'energetique',key:k,lbl:k,unit:'',dir:EVO_DIR[k]??1,lat:false,dec:true}));
+  const defs=[...CMP_TESTS,...eKeys].filter(d=>!onlyCat||d.cat===onlyCat);
 
-    // Indicateur de tête : variation moyenne de force entre les deux dernières
-    // campagnes. C'est une mesure réelle, pas une note composite inventée.
-    const deltas=['ADD','ABD','IJ','Quad'].map(k=>evoDelta(evoSeries(p.id,'force',k),1)).filter(Boolean);
-    const trend=deltas.length?deltas.reduce((t,d)=>t+d.pct,0)/deltas.length:null;
-    if(evoFilter==='prog'&&!(trend>2))return;
-    if(evoFilter==='reg'&&!(trend<-2))return;
+  let players=IPLAYERS.filter(p=>TESTS.some(t=>t.player_id===p.id));
+  if(onlyP)players=players.filter(p=>p.id===onlyP);
+  const enrich=players.map(p=>{
+    const rows=defs.map(d=>({d,pair:cmpPair(p.id,d.cat,d.key)})).filter(x=>x.pair);
+    const prog=rows.map(x=>x.pair.t1?cmpPct(x.pair.t1.moy,x.pair.t2.moy)*(x.d.dir||0):null)
+                   .filter(v=>v!=null);
+    const asym=rows.map(x=>x.pair.t2.asym).filter(v=>v!=null);
+    return {p,rows,
+      prog:prog.length?prog.reduce((a,b)=>a+b,0)/prog.length:null,
+      asym:asym.length?Math.max(...asym):null};
+  }).filter(x=>x.rows.length);
+  if(sort==='prog')enrich.sort((a,b)=>(b.prog??-999)-(a.prog??-999));
+  else if(sort==='reg')enrich.sort((a,b)=>(a.prog??999)-(b.prog??999));
+  else if(sort==='asym')enrich.sort((a,b)=>(b.asym??-1)-(a.asym??-1));
+  else enrich.sort((a,b)=>a.p.name.localeCompare(b.p.name));
 
-    // IZONES est indexé par zone, avec la sévérité dans .sev
-    const zones=Object.entries(IZONES[p.id]||{})
-      .filter(([,v])=>v&&v.sev&&v.sev!=='V')
-      .map(([zone,v])=>({zone,severite:v.sev}))
-      .sort((a,b)=>({R:0,O:1,J:2})[a.severite]-({R:0,O:1,J:2})[b.severite]).slice(0,4);
-    const ph=playerPhoto(p);
-    const cls=trend==null?'':(trend>2?'up':(trend<-2?'down':''));
-    const st=s=>`<div class="futSt"><span class="v">${s.val}</span><span class="k">${s.lbl}</span>
-      <span class="d ${s.d?s.d.cls:'flat'}">${s.d?((s.d.pct>0?'+':'')+s.d.pct.toFixed(0)+'%'):'—'}</span></div>`;
+  if(!enrich.length){
+    box.innerHTML='<div class="cmpEmpty">Aucun test enregistré. Importe le fichier du centre ci-dessus.</div>';
+    return;
+  }
 
-    cards.push(`<div class="fut"><div class="futIn">
-      <div class="futTop">
-        <div class="futRate">
-          <div class="n ${cls}">${trend==null?'–':(trend>0?'+':'')+trend.toFixed(0)}</div>
-          <div class="u">${trend==null?'1er test':'% force'}</div>
-          <div class="sep"></div>
-          <div class="qt">${dates.length} test${dates.length>1?'s':''}</div>
-        </div>
-        <div class="futPhoto">${ph?`<img src="${ph}" alt="">`:`<span class="ini">${chgInitials(p.name)}</span>`}</div>
+  // Réglette bilatérale : la position du curseur montre le côté dominant,
+  // sa couleur l'asymétrie actuelle. Le repère pâle rappelle la campagne
+  // précédente pour voir si l'écart se corrige ou s'aggrave.
+  const bias=(D,G)=>(D==null||G==null||!Math.max(Math.abs(D),Math.abs(G)))?null
+    :(D-G)/Math.max(Math.abs(D),Math.abs(G))*100;
+  const trackPos=v=>50+Math.max(-45,Math.min(45,v*2.2));
+
+  function latRow(d,pair){
+    const {t1,t2}=pair;
+    if(t2.D==null||t2.G==null)return ''; // pas de mesure bilatérale exploitable
+    const b2=bias(t2.D,t2.G), pos2=trackPos(b2), col=cmpAsymColor(t2.asym);
+    const b1=t1&&t1.D!=null&&t1.G!=null?bias(t1.D,t1.G):null;
+    return `<div class="cmpRow">
+      <div class="cmpRowTop"><span class="lft">G ${cmpFmt(t2.G,d.dec)}</span>
+        <span class="mid">${d.lbl}</span><span class="rgt">${cmpFmt(t2.D,d.dec)} D</span></div>
+      <div class="cmpTrack"><span class="axis"></span>
+        ${b1!=null?`<span class="m1" style="left:${trackPos(b1)}%"></span>`:''}
+        <span class="m2" style="left:${pos2}%;background:${col};box-shadow:0 0 8px ${col}"></span>
       </div>
-      <div class="futName"><div class="nm">${p.name}</div>
-        <div class="dt">${fmtDateFR(dates[dates.length-1])}</div></div>
-      <div class="futStats">
-        <div>${left.map(st).join('')||'<div class="futSt"><span class="k">Pas de test force</span></div>'}</div>
-        <div class="futDiv"></div>
-        <div>${right.map(st).join('')||'<div class="futSt"><span class="k">Pas de test</span></div>'}</div>
+      <div class="cmpRowBot">
+        <span>${t1?`était ${t1.asym!=null?t1.asym.toFixed(0)+'%':'—'}`:'1ᵉʳ test'}</span>
+        <span class="asymNow" style="color:${col}">${t2.asym!=null?t2.asym.toFixed(1)+'% d\u2019écart':'—'}</span>
       </div>
-      <div class="futFoot">${zones.map(z=>
-        `<span class="futTag" style="background:${COL[z.severite]}26;color:${COL[z.severite]}">${(ZONE_LABELS[z.zone]||z.zone).replace(/^(Force|Mobilité) — /,'')}</span>`).join('')}</div>
-    </div></div>`);
-  });
-  box.innerHTML=cards.length?cards.join(''):
-    '<div class="futEmpty">Aucun test enregistré. Importe le fichier du centre ci-dessus.</div>';
+    </div>`;
+  }
+  function singleRow(d,pair){
+    const {t1,t2}=pair;
+    const dM=t1?cmpPct(t1.moy,t2.moy):null;
+    return `<div class="cmpSingle">
+      <span class="lb">${d.lbl}</span>
+      <span class="vals">${t1?cmpFmt(t1.moy,d.dec)+' → ':''}<b>${cmpFmt(t2.moy,d.dec)}</b>${cmpCell(dM,d.dir)}</span>
+    </div>`;
+  }
+
+  box.innerHTML=enrich.map(({p,rows,prog,asym})=>{
+    const sm=[prog!=null?`progression moyenne ${prog>0?'+':''}${prog.toFixed(1)} %`:null,
+              asym!=null?`asymétrie max ${asym.toFixed(0)} %`:null].filter(Boolean).join(' · ');
+    const lat=rows.filter(r=>r.d.lat).map(r=>latRow(r.d,r.pair)).filter(Boolean).join('');
+    const single=rows.filter(r=>!r.d.lat).map(r=>singleRow(r.d,r.pair)).join('');
+    return `<div class="cmpPlayer">
+      <div class="cmpPName"><span class="nm">${p.name}</span><span class="sm">${sm}</span></div>
+      <div class="cmpRows">${lat}
+        ${single?`<div class="cmpNoLat"><div class="cmpNoLatT">Mesures non latéralisées</div>${single}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderTests(){
@@ -4243,7 +4291,7 @@ function renderTests(){
   }
   const sel=document.getElementById('tstPlayer');
   if(sel&&!sel.options.length)sel.innerHTML=chgPlayerOptions();
-  renderEvoCards();
+  renderCompare();
   renderTestHistory();
 }
 function renderTestHistory(){
