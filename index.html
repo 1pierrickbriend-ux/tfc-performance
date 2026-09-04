@@ -419,6 +419,47 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .cmpTools{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;align-items:center}
 .cmpTools select,.cmpTools input{background:var(--panel);border:1px solid var(--line);border-radius:8px;
   padding:6px 10px;color:var(--ink);font-family:inherit;font-size:12px}
+/* Grille compacte : vue d'ensemble de l'effectif, une ligne par joueur */
+.cmpGridWrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;margin-bottom:14px}
+.cmpGRow{display:grid;grid-template-columns:1fr repeat(var(--ncols,6),34px) 70px;
+  gap:6px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background .12s}
+.cmpGRow:last-child{border-bottom:none}
+.cmpGRow:hover{background:rgba(255,255,255,.03)}
+.cmpGRow.sel{background:rgba(138,111,214,.14)}
+.cmpGRow.hd{cursor:default;background:var(--panel2)}
+.cmpGRow.hd:hover{background:var(--panel2)}
+.cmpGName{font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px;min-width:0}
+.cmpGName .arrow{color:var(--muted);font-size:10px;flex:none;transition:transform .12s}
+.cmpGRow.sel .cmpGName .arrow{transform:rotate(90deg);color:var(--accent)}
+.cmpGCell{width:34px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;
+  font-size:9.5px;font-weight:800;font-family:'Spline Sans Mono',monospace}
+.cmpGCell.nd{background:rgba(255,255,255,.04);color:var(--muted)}
+.cmpGHead{font-size:8.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);
+  text-align:center;font-weight:800}
+.cmpGSum{text-align:right;font-size:10px;font-weight:800;font-family:'Barlow Condensed',sans-serif;
+  font-size:14px}
+.cmpGSum.up{color:#4fd191} .cmpGSum.down{color:#ff6a6a} .cmpGSum.flat{color:var(--muted)}
+.cmpHint{padding:26px;text-align:center;color:var(--muted);font-size:12.5px}
+/* Détail chiffré : historique complet, groupé par catégorie et mesure */
+.tstCat{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--accent);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+.tstCat:first-child{margin-top:0}
+.tstMeasure{padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.05)}
+.tstMeasure:last-child{border-bottom:none}
+.tstMLbl{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.tstLine{display:flex;align-items:center;gap:9px;padding:2px 0;flex-wrap:wrap}
+.tstSide{width:16px;height:16px;border-radius:4px;background:var(--panel3);color:var(--muted);
+  font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.tstHist{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;
+  font-family:'Spline Sans Mono',monospace;color:var(--muted)}
+.tstPt{display:inline-flex;align-items:baseline;gap:4px;color:var(--muted)}
+.tstPt.now{color:var(--ink);font-weight:800;font-size:12.5px}
+.tstArr{color:rgba(255,255,255,.18);font-size:10px}
+.tstD{font-size:9px;font-weight:700}
+.tstD.up{color:#ff6a6a} .tstD.down{color:#4fd191} .tstD.flat{color:var(--muted)}
+
 .cmpWrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 4px}
 .cmpPlayer{padding:14px 16px 18px;border-bottom:1px solid var(--line)}
 .cmpPlayer:last-child{border-bottom:none}
@@ -1331,7 +1372,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
           <option value="mobilite">Mobilité</option>
           <option value="energetique">Énergétique</option>
         </select>
-        <select id="cmpPl" onchange="renderCompare()"></select>
         <select id="cmpSort" onchange="renderCompare()">
           <option value="nom">Trier par nom</option>
           <option value="prog">Meilleure progression</option>
@@ -1340,11 +1380,12 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
         </select>
       </div>
     </div>
-    <div class="cmpWrap"><div class="cmpScroll"><div id="cmpBody"></div></div></div>
+    <div class="cmpGridWrap"><div id="cmpGrid"></div></div>
+    <div class="cmpWrap" id="cmpDetailWrap"><div class="cmpScroll"><div id="cmpBody"></div></div></div>
 
     <div class="anCard" style="margin-top:18px">
       <div class="anHead"><span class="anIco">📈</span><h3>Détail chiffré</h3>
-        <select id="tstPlayer" onchange="renderTestHistory()" class="anSel"></select></div>
+        <span class="anHint" id="tstPlayerName"></span></div>
       <div id="tstBody"></div>
     </div>
   </div>
@@ -4198,26 +4239,29 @@ function cmpPair(pid,cat,key){
   };
   return {t1:dates.length>1?build(dates[dates.length-2]):null,t2:build(dates[dates.length-1]),n:dates.length};
 }
+const CMP_SHORT={ADD:'ADD',ABD:'ABD',IJ:'ISC',Quad:'QUA',THOMAS:'THO','WALL TEST':'CHE'};
+let cmpSel=null;
+function cmpSelect(id){
+  cmpSel=(cmpSel===id)?null:id;   // reclique sur le même joueur -> replie
+  renderCompare();
+  renderTestHistory();   // le détail chiffré suit la même sélection, plus de doublon
+  if(cmpSel)document.getElementById('cmpDetailWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 function renderCompare(){
-  const box=document.getElementById('cmpBody'); if(!box)return;
-  const cmpPlSel=document.getElementById('cmpPl');
-  if(cmpPlSel&&!cmpPlSel.options.length)
-    cmpPlSel.innerHTML='<option value="">Tout l\'effectif</option>'+chgPlayerOptions();
+  const grid=document.getElementById('cmpGrid'), box=document.getElementById('cmpBody');
+  if(!grid||!box)return;
   const onlyCat=document.getElementById('cmpCat')?.value||'';
-  const onlyP=cmpPlSel?cmpPlSel.value:'';
   const sort=document.getElementById('cmpSort')?.value||'nom';
 
-  // mesures énergétiques réellement présentes
   const eKeys=[...new Set(TESTS.filter(t=>t.categorie==='energetique').map(t=>t.test))]
     .map(k=>({cat:'energetique',key:k,lbl:k,unit:'',dir:EVO_DIR[k]??1,lat:false,dec:true}));
   const defs=[...CMP_TESTS,...eKeys].filter(d=>!onlyCat||d.cat===onlyCat);
+  const latDefs=defs.filter(d=>d.lat);
 
-  let players=IPLAYERS.filter(p=>TESTS.some(t=>t.player_id===p.id));
-  if(onlyP)players=players.filter(p=>p.id===onlyP);
+  const players=IPLAYERS.filter(p=>TESTS.some(t=>t.player_id===p.id));
   const enrich=players.map(p=>{
     const rows=defs.map(d=>({d,pair:cmpPair(p.id,d.cat,d.key)})).filter(x=>x.pair);
-    const prog=rows.map(x=>x.pair.t1?cmpPct(x.pair.t1.moy,x.pair.t2.moy)*(x.d.dir||0):null)
-                   .filter(v=>v!=null);
+    const prog=rows.map(x=>x.pair.t1?cmpPct(x.pair.t1.moy,x.pair.t2.moy)*(x.d.dir||0):null).filter(v=>v!=null);
     const asym=rows.map(x=>x.pair.t2.asym).filter(v=>v!=null);
     return {p,rows,
       prog:prog.length?prog.reduce((a,b)=>a+b,0)/prog.length:null,
@@ -4229,9 +4273,42 @@ function renderCompare(){
   else enrich.sort((a,b)=>a.p.name.localeCompare(b.p.name));
 
   if(!enrich.length){
-    box.innerHTML='<div class="cmpEmpty">Aucun test enregistré. Importe le fichier du centre ci-dessus.</div>';
+    grid.innerHTML='<div class="cmpHint">Aucun test enregistré. Importe le fichier du centre ci-dessus.</div>';
+    box.innerHTML=''; document.getElementById('cmpDetailWrap').style.display='none';
     return;
   }
+  if(cmpSel&&!enrich.some(x=>x.p.id===cmpSel))cmpSel=null;
+
+  // ── Grille compacte : une ligne par joueur, une pastille par zone latéralisée ──
+  grid.style.setProperty('--ncols',latDefs.length);
+  const head=`<div class="cmpGRow hd"><span class="cmpGName">Joueur</span>
+    ${latDefs.map(d=>`<span class="cmpGHead">${CMP_SHORT[d.key]||d.key.slice(0,3).toUpperCase()}</span>`).join('')}
+    <span class="cmpGHead">Tendance</span></div>`;
+  const gridRows=enrich.map(({p,rows,prog})=>{
+    const cells=latDefs.map(d=>{
+      const r=rows.find(x=>x.d===d);
+      const a=r?.pair?.t2?.asym;
+      if(a==null)return '<span class="cmpGCell nd">—</span>';
+      const col=cmpAsymColor(a);
+      return `<span class="cmpGCell" style="background:${col}22;color:${col}">${Math.round(a)}</span>`;
+    }).join('');
+    const pc=prog==null?'flat':(prog>2?'up':(prog<-2?'down':'flat'));
+    return `<div class="cmpGRow${cmpSel===p.id?' sel':''}" onclick="cmpSelect('${p.id}')">
+      <span class="cmpGName"><span class="arrow">▶</span>${p.name}</span>${cells}
+      <span class="cmpGSum ${pc}">${prog==null?'—':(prog>0?'+':'')+prog.toFixed(0)+'%'}</span>
+    </div>`;
+  }).join('');
+  grid.innerHTML=head+gridRows;
+
+  // ── Détail : uniquement le joueur sélectionné ──
+  const detailWrap=document.getElementById('cmpDetailWrap');
+  if(!cmpSel){
+    detailWrap.style.display='block';
+    box.innerHTML='<div class="cmpHint">Clique sur un joueur dans la grille ci-dessus pour voir le détail complet.</div>';
+    return;
+  }
+  detailWrap.style.display='block';
+  const {p,rows,prog,asym}=enrich.find(x=>x.p.id===cmpSel);
 
   // Réglette bilatérale : la position du curseur montre le côté dominant,
   // sa couleur l'asymétrie actuelle. Le repère pâle rappelle la campagne
@@ -4239,10 +4316,9 @@ function renderCompare(){
   const bias=(D,G)=>(D==null||G==null||!Math.max(Math.abs(D),Math.abs(G)))?null
     :(D-G)/Math.max(Math.abs(D),Math.abs(G))*100;
   const trackPos=v=>50+Math.max(-45,Math.min(45,v*2.2));
-
   function latRow(d,pair){
     const {t1,t2}=pair;
-    if(t2.D==null||t2.G==null)return ''; // pas de mesure bilatérale exploitable
+    if(t2.D==null||t2.G==null)return '';
     const b2=bias(t2.D,t2.G), pos2=trackPos(b2), col=cmpAsymColor(t2.asym);
     const b1=t1&&t1.D!=null&&t1.G!=null?bias(t1.D,t1.G):null;
     return `<div class="cmpRow">
@@ -4266,19 +4342,16 @@ function renderCompare(){
       <span class="vals">${t1?cmpFmt(t1.moy,d.dec)+' → ':''}<b>${cmpFmt(t2.moy,d.dec)}</b>${cmpCell(dM,d.dir)}</span>
     </div>`;
   }
-
-  box.innerHTML=enrich.map(({p,rows,prog,asym})=>{
-    const sm=[prog!=null?`progression moyenne ${prog>0?'+':''}${prog.toFixed(1)} %`:null,
-              asym!=null?`asymétrie max ${asym.toFixed(0)} %`:null].filter(Boolean).join(' · ');
-    const lat=rows.filter(r=>r.d.lat).map(r=>latRow(r.d,r.pair)).filter(Boolean).join('');
-    const single=rows.filter(r=>!r.d.lat).map(r=>singleRow(r.d,r.pair)).join('');
-    return `<div class="cmpPlayer">
-      <div class="cmpPName"><span class="nm">${p.name}</span><span class="sm">${sm}</span></div>
-      <div class="cmpRows">${lat}
-        ${single?`<div class="cmpNoLat"><div class="cmpNoLatT">Mesures non latéralisées</div>${single}</div>`:''}
-      </div>
-    </div>`;
-  }).join('');
+  const sm=[prog!=null?`progression moyenne ${prog>0?'+':''}${prog.toFixed(1)} %`:null,
+            asym!=null?`asymétrie max ${asym.toFixed(0)} %`:null].filter(Boolean).join(' · ');
+  const lat=rows.filter(r=>r.d.lat).map(r=>latRow(r.d,r.pair)).filter(Boolean).join('');
+  const single=rows.filter(r=>!r.d.lat).map(r=>singleRow(r.d,r.pair)).join('');
+  box.innerHTML=`<div class="cmpPlayer">
+    <div class="cmpPName"><span class="nm">${p.name}</span><span class="sm">${sm}</span></div>
+    <div class="cmpRows">${lat}
+      ${single?`<div class="cmpNoLat"><div class="cmpNoLatT">Mesures non latéralisées</div>${single}</div>`:''}
+    </div>
+  </div>`;
 }
 
 function renderTests(){
@@ -4289,32 +4362,65 @@ function renderTests(){
   }else{
     document.getElementById('impNoLib')?.remove();
   }
-  const sel=document.getElementById('tstPlayer');
-  if(sel&&!sel.options.length)sel.innerHTML=chgPlayerOptions();
   renderCompare();
   renderTestHistory();
 }
 function renderTestHistory(){
   const box=document.getElementById('tstBody'); if(!box)return;
-  const pid=document.getElementById('tstPlayer')?.value;
+  const nameTag=document.getElementById('tstPlayerName');
+  const pid=cmpSel;
+  if(!pid){
+    if(nameTag)nameTag.textContent='';
+    box.innerHTML='<div class="cmpHint">Sélectionne un joueur dans la grille ci-dessus pour voir son historique complet.</div>';
+    return;
+  }
+  const player=IPLAYERS.find(p=>p.id===pid);
+  if(nameTag)nameTag.textContent=player?player.name:'';
   const list=TESTS.filter(t=>t.player_id===pid);
-  if(!list.length){box.innerHTML='<div class="chgEmpty">Aucun test enregistré pour ce joueur. Importe le fichier du centre ci-dessus.</div>';return;}
-  const g={};
-  list.forEach(t=>{const k=t.test+(t.cote?' '+t.cote:'');(g[k]=g[k]||[]).push(t)});
-  box.innerHTML='<div class="tstRow hd"><span>Date</span><span>Test</span><span class="vl">Valeur</span><span class="vl">Précédent</span><span class="ev">Évolution</span></div>'
-   +Object.entries(g).sort().map(([k,arr])=>{
-      arr.sort((a,b)=>b.date_test.localeCompare(a.date_test));
-      const c=arr[0],p=arr[1];
-      let ev='<span class="flat">—</span>';
-      if(p&&c.valeur_num!=null&&p.valeur_num!=null){
-        const d=c.valeur_num-p.valeur_num;
-        const cls=Math.abs(d)<0.5?'flat':(d>0?'down':'up');
-        ev=`<span class="${cls}">${d>0?'+':''}${d.toFixed(1)}</span>`;
-      }
-      return `<div class="tstRow"><span class="dt">${fmtDateFR(c.date_test)}</span>
-        <span>${k}</span><span class="vl">${c.valeur_num??c.valeur_txt??'—'}${c.unite?' '+c.unite:''}</span>
-        <span class="vl">${p?(p.valeur_num??'—'):'—'}</span><span class="ev">${ev}</span></div>`;
-   }).join('');
+  if(!list.length){box.innerHTML='<div class="cmpHint">Aucun test enregistré pour ce joueur.</div>';return;}
+
+  // Regroupé par catégorie puis par mesure (D et G réunis) — et surtout,
+  // à la différence de la réglette qui ne compare que les deux dernières
+  // campagnes, ici tout l'historique de chaque mesure est visible d'un coup.
+  const CATLBL={force:'Force',mobilite:'Mobilité',energetique:'Énergétique'};
+  const MLBL={ADD:'Adducteurs',ABD:'Abducteurs',IJ:'Ischios',Quad:'Quadriceps',
+    THOMAS:'Fléchisseurs de hanche (Thomas)','WALL TEST':'Cheville (Wall test)'};
+  const byCat={};
+  list.forEach(t=>{
+    (byCat[t.categorie]=byCat[t.categorie]||{});
+    (byCat[t.categorie][t.test]=byCat[t.categorie][t.test]||[]).push(t);
+  });
+  const order=['force','mobilite','energetique'];
+  const line=(arr,tag,dir)=>{
+    if(!arr.length)return '';
+    arr.sort((a,b)=>a.date_test.localeCompare(b.date_test));
+    const hist=arr.map((r,i)=>{
+      const prev=arr[i-1];
+      const d=(prev&&prev.valeur_num!=null&&r.valeur_num!=null)?r.valeur_num-prev.valeur_num:null;
+      // sens réel de l'amélioration selon le test (une hausse de force est
+      // bonne, une hausse de FC max n'a pas de sens favorable défini)
+      const cls=d==null||Math.abs(d)<0.5?'flat':(dir===0?'flat':((d>0)===(dir>0)?'down':'up'));
+      const val=r.valeur_num??r.valeur_txt??'—';
+      return `<span class="tstPt ${i===arr.length-1?'now':''}">${val}${i===arr.length-1&&r.unite?' '+r.unite:''}
+        ${d!=null?`<span class="tstD ${cls}">${d>0?'+':''}${d.toFixed(1)}</span>`:''}</span>`;
+    }).join('<span class="tstArr">→</span>');
+    return `<div class="tstLine">${tag?`<span class="tstSide">${tag}</span>`:''}<span class="tstHist">${hist}</span></div>`;
+  };
+  let html='';
+  order.filter(c=>byCat[c]).forEach(cat=>{
+    html+=`<div class="tstCat">${CATLBL[cat]||cat}</div>`;
+    Object.keys(byCat[cat]).sort().forEach(test=>{
+      const rows=byCat[cat][test];
+      const sides={D:[],G:[],N:[]};
+      rows.forEach(r=>sides[r.cote||'N'].push(r));
+      const dir=cat==='energetique'?(EVO_DIR[test]??1):1; // force/mobilité : hausse toujours favorable ici
+      html+=`<div class="tstMeasure">
+        <div class="tstMLbl">${MLBL[test]||test}</div>
+        ${line(sides.D,'D',dir)}${line(sides.G,'G',dir)}${line(sides.N,'',dir)}
+      </div>`;
+    });
+  });
+  box.innerHTML=html;
 }
 
 
