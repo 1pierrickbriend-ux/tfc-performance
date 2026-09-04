@@ -3833,8 +3833,16 @@ function matchPlayer(nomExcel){
   });
   if(cands.length===1)return cands[0];
   if(cands.length>1){
-    const exact=cands.find(p=>{const pw=normName(p.name);return w.filter(x=>pw.includes(x)).length>=2});
-    return exact||cands[0];
+    // Deux joueurs peuvent partager le même nom de famille (constaté dans
+    // l'effectif du centre : Dansoko, Pujos...). Un accord sur le prénom
+    // aussi permet de trancher sans ambiguïté. S'il n'y en a aucun — par
+    // exemple un prénom orthographié différemment entre les deux fichiers,
+    // "Lenny" vs "Leny" — on refuse de deviner : mieux vaut le signaler en
+    // "non reconnu" que d'attribuer silencieusement les tests d'un joueur
+    // à son homonyme.
+    const exact=cands.filter(p=>{const pw=normName(p.name);return w.filter(x=>pw.includes(x)).length>=2});
+    if(exact.length===1)return exact[0];
+    return null;
   }
   return null;
 }
@@ -4261,7 +4269,15 @@ function renderCompare(){
   const players=IPLAYERS.filter(p=>TESTS.some(t=>t.player_id===p.id));
   const enrich=players.map(p=>{
     const rows=defs.map(d=>({d,pair:cmpPair(p.id,d.cat,d.key)})).filter(x=>x.pair);
-    const prog=rows.map(x=>x.pair.t1?cmpPct(x.pair.t1.moy,x.pair.t2.moy)*(x.d.dir||0):null).filter(v=>v!=null);
+    // Plafonné à ±50 pts : une mesure dont la valeur de départ est proche
+    // de zéro (le test de Thomas peut être proche de 0°) fait exploser le
+    // pourcentage brut sans rapport avec la réalité. Le détail par mesure
+    // (réglette ci-dessous) continue d'afficher les vraies valeurs brutes.
+    const prog=rows.map(x=>{
+      if(!x.pair.t1)return null;
+      const raw=cmpPct(x.pair.t1.moy,x.pair.t2.moy);
+      return raw==null?null:Math.max(-50,Math.min(50,raw))*(x.d.dir||0);
+    }).filter(v=>v!=null);
     const asym=rows.map(x=>x.pair.t2.asym).filter(v=>v!=null);
     return {p,rows,
       prog:prog.length?prog.reduce((a,b)=>a+b,0)/prog.length:null,
