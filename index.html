@@ -16,6 +16,7 @@ if(typeof XLSX==='undefined'){
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root{
   --bg:#f4f2f6; --panel:#150a33; --panel2:#1d1442; --panel3:#271359;
@@ -632,6 +633,13 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 
 .weekCtrls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
 .weekCtrls select{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:13px}
+#smartScreenZone{background:var(--panel2);border:1px dashed var(--line);color:var(--muted);border-radius:10px;padding:9px 12px;font-size:13px;cursor:pointer;user-select:none}
+#smartScreenZone.drag{border-color:var(--accent);color:var(--ink);background:rgba(139,123,255,.12)}
+#smartScreenModal{position:fixed;inset:0;background:rgba(15,10,30,.7);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+#smartScreenModal.on{display:flex}
+#smartScreenTable th,#smartScreenTable td{padding:4px 6px;text-align:center;border:1px solid var(--line)}
+#smartScreenTable input{width:56px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:5px;padding:3px;font-size:11px;text-align:center}
+#smartScreenTable input.ocrMiss{border-color:rgba(255,107,107,.6)}
 .testHint{font-size:11.5px;color:var(--muted);margin:2px 0 14px}
 .weekWrap{display:grid;gap:8px;align-items:stretch}
 .dayCol{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 7px;display:flex;flex-direction:column;gap:7px;min-width:0}
@@ -645,6 +653,9 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .bar .rpeTip{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:700;white-space:nowrap;font-family:'Spline Sans Mono'}
 .bar.repos{display:flex;align-items:center;justify-content:center;font-size:19px;background:#cfc9d4!important;border-color:#fff}
 .barZone .matchIn{width:78%;height:96%;border-radius:6px;border:2px solid rgba(255,255,255,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.addMatchBtn{position:absolute;top:3px;left:3px;right:3px;background:none;border:1px dashed rgba(255,255,255,.25);color:var(--muted);border-radius:5px;padding:2px 0;font-size:8.5px;cursor:pointer}
+.addMatchBtn:hover{border-color:var(--accent);color:var(--ink)}
+.rmMatch{position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;font-size:10px;line-height:16px;cursor:pointer;padding:0}
 .daySel{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:5px;font-size:10.5px}
 .rpeRow{display:flex;align-items:center;gap:5px;font-size:9.5px;color:var(--muted)}
 .rpeRow input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
@@ -659,6 +670,7 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .blk.test{background:rgba(255,107,107,.16);border:1px solid rgba(255,107,107,.5);color:#ffc2c2}
 .blk.match{background:rgba(30,107,30,.25);border:1px solid rgba(30,107,30,.6)}
 .blk.seance{color:#17122b;font-weight:700}
+.blk.action{background:rgba(255,255,255,.06);border:1px dashed var(--line);color:var(--ink)}
 .addSeance{border:1px dashed var(--line);background:none;color:var(--muted);border-radius:8px;padding:4px;font-size:10px}
 .addSeance:hover{color:var(--ink);border-color:var(--accent)}
 
@@ -760,6 +772,8 @@ th:hover>.pctPop, td:hover>.pctPop, .pctPop:hover{display:flex}
 #modal.on{display:flex}
 #seanceModal{position:fixed;inset:0;background:rgba(15,10,30,.7);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
 #seanceModal.on{display:flex}
+#matchModal{position:fixed;inset:0;background:rgba(15,10,30,.7);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+#matchModal.on{display:flex}
 .presList{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto;margin:10px 0}
 .presRow{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--line);border-radius:9px;cursor:pointer;user-select:none}
 .presRow:hover{border-color:var(--accent)}
@@ -771,6 +785,11 @@ th:hover>.pctPop, td:hover>.pctPop, .pctPop:hover{display:flex}
 .checkAllRow{display:flex;gap:8px;margin-bottom:8px}
 .seanceForm label{font-size:11px;color:var(--muted);display:block;margin:10px 0 4px}
 .seanceForm input,.seanceForm select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 10px;font-size:12.5px}
+.freeActionRow{display:flex;gap:6px;align-items:center}
+.freeActionRow input{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 10px;font-size:12.5px}
+.freeActionRow input#freeActionEmoji{width:52px;text-align:center;flex:none}
+.freeActionRow input#freeActionText{flex:1;min-width:0}
+.freeActionRow input[type=color]{width:36px;height:36px;padding:2px;border-radius:8px;flex:none;cursor:pointer}
 .modalCard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:520px;width:100%;max-height:80vh;overflow:auto}
 .modalCard h3{font-size:14.5px;margin-bottom:4px}
 .modalCard .sub{font-size:12px;color:var(--muted);margin-bottom:13px}
@@ -1130,6 +1149,8 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <select id="profilSel" onchange="applyProfil(this.value)">
       <option value="">—</option><option value="normale">Normale (1-5)</option><option value="decharge">Décharge (2-4)</option>
     </select>
+    <div id="smartScreenZone" tabindex="0" title="Glisse, colle (Ctrl+V) ou clique pour importer une capture des données GPS prescrites">📷 Screen intelligent</div>
+    <input type="file" id="smartScreenFile" accept="image/*" style="display:none">
   </div>
   <div class="testHint">🧪 Derniers tests physiques : Semaine 5 (force, vitesse, pesée) — prochaine fenêtre estimée vers la Semaine 10-11.</div>
   <div class="weekWrap" id="weekGrid"></div>
@@ -1590,7 +1611,61 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div id="modalSeances"></div>
     <div class="modalSec">Blocs fixes</div>
     <div id="modalFixes"></div>
+    <div class="modalSec">Action libre</div>
+    <div class="freeActionRow">
+      <input id="freeActionEmoji" placeholder="emoji" maxlength="4">
+      <input id="freeActionText" placeholder="Écris ce que tu veux…">
+      <input type="color" id="freeActionColor" value="#8b7bff" title="Couleur de fond">
+      <button class="btn primary" onclick="addFreeActionBlock()">Ajouter</button>
+    </div>
     <button class="btn modalClose" onclick="closeModal()">Fermer</button>
+  </div>
+</div>
+
+<div id="matchModal">
+  <div class="modalCard">
+    <h3>Ajouter un match</h3>
+    <div class="sub" id="matchModalSub"></div>
+    <div class="seanceForm">
+      <label>Équipe adverse</label>
+      <input id="newMatchTeam" list="teamListDatalist" placeholder="ex : Colomiers, AS Monaco…">
+      <datalist id="teamListDatalist"></datalist>
+      <label>Lieu</label>
+      <select id="newMatchDom"><option value="1">🏠 Domicile</option><option value="0">✈️ Extérieur</option></select>
+      <label>Heure (facultatif)</label>
+      <input id="newMatchTime" placeholder="ex : 18:00">
+      <label>Compétition</label>
+      <select id="newMatchComp">
+        <option value="amical">Amical</option>
+        <option value="n2">N2</option>
+        <option value="ce">Challenge Espoirs</option>
+        <option value="coupe">Coupe</option>
+        <option value="autre">Autre</option>
+      </select>
+    </div>
+    <div class="modalFoot">
+      <button class="btn primary" onclick="submitManualMatch()">Ajouter</button>
+      <button class="btn modalClose" onclick="closeMatchModal()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<div id="smartScreenModal">
+  <div class="modalCard" style="max-width:680px">
+    <h3>Screen intelligent — vérifier avant import</h3>
+    <div class="sub">Lecture automatique de la capture. Corrige les cases si besoin (OCR imparfait), puis valide. Les jours laissés vides restent inchangés dans la semaine cible.</div>
+    <label class="note">Semaine cible</label>
+    <select id="smartScreenWeek"></select>
+    <div style="overflow-x:auto;margin-top:8px">
+      <table id="smartScreenTable" style="width:100%;border-collapse:collapse;font-size:11px">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="modalFoot">
+      <button class="btn primary" onclick="confirmSmartScreenImport()">Importer</button>
+      <button class="btn modalClose" onclick="closeSmartScreenModal()">Annuler</button>
+    </div>
   </div>
 </div>
 
@@ -1640,7 +1715,7 @@ const FIXED_TYPES=[
 ];
 
 /* ═══════ CALENDRIER RÉEL (statique, pas confidentiel, pas en base) ═══════ */
-const MATCHES=[
+const MATCHES_STATIC=[
   {d:'2026-08-22',team:'Balma SC',dom:true,time:'11:00',amical:true,comp:'amical'},
   {d:'2026-08-29',team:'Anglet Genêts',dom:true,time:'18:00',j:'J01',comp:'n2'},
   {d:'2026-09-05',team:'Mérignac Arlac',dom:true,time:'18:00',j:'J02',comp:'n2'},
@@ -1678,8 +1753,24 @@ const MATCHES=[
   {d:'2027-01-13',team:'SM Caen',dom:false,time:null,j:'CE-J5',comp:'ce'},
   {d:'2027-02-03',team:'Havre AC',dom:true,time:null,j:'CE-J6',comp:'ce'},
 ].sort((a,b)=>a.d.localeCompare(b.d));
-const COMP_LABEL={n2:'N2',ce:'Challenge Espoirs',amical:'Amical'};
-const COMP_COLOR={n2:'#1e6b1e',ce:'#8b7bff',amical:'#6E6880'};
+/* Matchs ajoutés à la main par Pierrick/Julien (Supabase, table manual_matches),
+   fondus dans MATCHES au chargement et à chaque ajout/suppression — traités
+   à l'identique des matchs N2/CE (badge JDM, logo, J+/J-), sans jamais toucher
+   le type de jour déjà planifié (Pierrick le change lui-même si besoin). */
+let MANUAL_MATCHES=[];
+let MATCHES=[...MATCHES_STATIC];
+function rebuildMatches(){
+  MATCHES=[...MATCHES_STATIC,...MANUAL_MATCHES].sort((a,b)=>a.d.localeCompare(b.d));
+  refreshWeekMatches();
+}
+function refreshWeekMatches(){
+  WEEKS.forEach(w=>{
+    w.matches=MATCHES.filter(m=>w.days.some(d=>iso(d)===m.d));
+    w.match=w.matches[0]||null;
+  });
+}
+const COMP_LABEL={n2:'N2',ce:'Challenge Espoirs',amical:'Amical',coupe:'Coupe',autre:'Autre'};
+const COMP_COLOR={n2:'#1e6b1e',ce:'#8b7bff',amical:'#6E6880',coupe:'#c0392b',autre:'#8a8a8a'};
 const EXT_LABEL={l1:'Ligue 1',cdf:'Coupe de France',u18r1:'U18 Régional 1',gamb:'Gambardella'};
 const EXT_TEAM_COLOR={pro:'var(--warn)',u18:'var(--info)'};
 let EXT_MATCHES={pro:[],u18:[]};
@@ -2641,17 +2732,21 @@ function sortBlocks(key){DAY_BLOCKS[key].sort((a,b)=>timeToMin(a.time)-timeToMin
 
 /* ═══════ SUPABASE : lecture initiale ═══════ */
 async function loadAll(){
-  const [{data:types,error:e1},{data:wdays,error:e2},{data:blocks,error:e3},{data:gps,error:e4},{data:logoFiles,error:e5}]=await Promise.all([
+  const [{data:types,error:e1},{data:wdays,error:e2},{data:blocks,error:e3},{data:gps,error:e4},{data:logoFiles,error:e5},{data:manualMatches,error:e6}]=await Promise.all([
     supa.from('day_types').select('*'),
     supa.from('week_days').select('*').gte('week_n',WMIN).lte('week_n',WMAX),
     supa.from('day_blocks').select('*').gte('week_n',WMIN).lte('week_n',WMAX).order('sort_order'),
     supa.from('gps_data').select('*').gte('week_n',WMIN).lte('week_n',WMAX),
     supa.storage.from('logos').list(),
+    supa.from('manual_matches').select('*'),
   ]);
   if(e1||e2||e3||e4){
     alert('Erreur de connexion à la base : '+((e1||e2||e3||e4).message)+'\\nVérifie que le script SQL a bien été exécuté.');
     throw e1||e2||e3||e4;
   }
+  if(e6)console.error('manual_matches',e6);
+  MANUAL_MATCHES=(manualMatches||[]).map(r=>({d:r.date,team:r.team,dom:r.dom,time:r.time,comp:r.comp||'amical',_manualId:r.id}));
+  rebuildMatches();
   (types||[]).forEach(t=>{TYPES[t.key]={nom:t.nom,color:t.color,rpe:Number(t.rpe),repos:t.is_repos,stripes:t.stripe_color2?[t.color,t.stripe_color2]:null}});
   WEEKS.filter(w=>w.n>=WMIN&&w.n<=WMAX).forEach(w=>{ if(!WEEK_TYPES[w.n]) WEEK_TYPES[w.n]=defaultTypesFor(w.n); GPS[w.n]=emptyGpsWeek(); });
   (wdays||[]).forEach(r=>{
@@ -2919,16 +3014,19 @@ function renderWeek(){
     const h=Math.max(8,(rpe/10)*100);
     const bg=T.stripes?`repeating-linear-gradient(0deg,${T.stripes[0]} 0 12px,${T.stripes[1]} 12px 24px)`:T.color;
     const md=matchOnDay(wk,d); const isMatch=!!md;
-    const barHTML=isMatch?`<div class="matchIn" style="background:${COMP_COLOR[compOf(md)]}">${logoHTML(md.team)}<span style="font-size:9px;font-weight:700;color:#fff">${md.dom?'🏠 DOM':'✈️ EXT'}</span><span style="font-size:8px;font-weight:700;color:#fff;opacity:.85">${COMP_LABEL[compOf(md)]}</span></div>`
-      :T.repos?`<div class="bar repos" style="height:24%">😴</div>`
-      :`<div class="bar" style="height:${h}%;background:${bg}"><span class="rpeTip">RPE ${rpe}</span></div>`;
+    const barHTML=isMatch?`<div class="matchIn" style="background:${COMP_COLOR[compOf(md)]}">${logoHTML(md.team)}<span style="font-size:9px;font-weight:700;color:#fff">${md.dom?'🏠 DOM':'✈️ EXT'}</span><span style="font-size:8px;font-weight:700;color:#fff;opacity:.85">${COMP_LABEL[compOf(md)]}</span>${md._manualId?`<button class="rmMatch" onclick="deleteManualMatch(${md._manualId})" title="Supprimer ce match">×</button>`:''}</div>`
+      :T.repos?`<div class="bar repos" style="height:24%">😴</div><button class="addMatchBtn" onclick="openMatchModal('${iso(d)}')">⚽ + Match</button>`
+      :`<div class="bar" style="height:${h}%;background:${bg}"><span class="rpeTip">RPE ${rpe}</span></div><button class="addMatchBtn" onclick="openMatchModal('${iso(d)}')">⚽ + Match</button>`;
     const blocks=blocksFor(wk,i);
-    const schedHTML=blocks.map((b,bi)=>`
-      <div class="blk ${b.kind}" ${b.c?`style="background:${b.c}${b.tc?`;color:${b.tc}`:''}"`:''}>
+    const schedHTML=blocks.map((b,bi)=>{
+      const tc=(b.kind==='action'&&b.c)?jTextOn(b.c):b.tc;
+      return `
+      <div class="blk ${b.kind}" ${b.c?`style="background:${b.c}${tc?`;color:${tc}`:''}"`:''}>
         <input class="t" value="${b.time}" onchange="setBlockTime('${key}',${bi},this.value)">
         <span class="lbl">${b.ic||''} ${b.kind==='match'?(b.dom?'🏠 ':'✈️ ')+"Coup d'envoi — "+b.n+(b.approx?' (h. à confirmer)':''):b.n}</span>
         <button class="rmBlk" onclick="removeBlock('${key}',${bi})">×</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     cols.push(`
       <div class="dayCol${iso(d)===iso(TODAY)?' today':''}">
         <div class="dayLabel"><div class="rel">${dayLabel(d,wk)}</div><div class="cal">${DAYN[i]} ${d.getDate()} ${MOIS[d.getMonth()].slice(0,4)}.</div></div>
@@ -2951,10 +3049,152 @@ function edgeCol(m,label){
   const d=matchDate(m);
   return `<div class="dayCol edge">
     <div class="dayLabel"><div class="rel">JDM</div><div class="cal">${label}<br>${fmtD(d)}</div></div>
-    <div class="barZone"><div class="matchIn" style="background:#1e6b1e">${logoHTML(m.team)}<span style="font-size:9px;font-weight:700;color:#fff">${m.dom?'🏠 DOM':'✈️ EXT'}</span></div></div>
+    <div class="barZone"><div class="matchIn" style="background:#1e6b1e">${logoHTML(m.team)}<span style="font-size:9px;font-weight:700;color:#fff">${m.dom?'🏠 DOM':'✈️ EXT'}</span>${m._manualId?`<button class="rmMatch" onclick="deleteManualMatch(${m._manualId})" title="Supprimer ce match">×</button>`:''}</div></div>
     <div class="note" style="text-align:center">${m.team}<br><b style="color:${COMP_COLOR[compOf(m)]}">${COMP_LABEL[compOf(m)]}</b> · ${matchTimeLabel(m)}</div>
   </div>`;
 }
+
+/* ═══════ MODAL AJOUT DE MATCH MANUEL ═══════ */
+let matchModalDate=null;
+function openMatchModal(dateIso){
+  matchModalDate=dateIso;
+  document.getElementById('teamListDatalist').innerHTML=teamList().map(t=>`<option value="${t.replace(/"/g,'&quot;')}">`).join('');
+  document.getElementById('newMatchTeam').value='';
+  document.getElementById('newMatchTime').value='';
+  document.getElementById('newMatchDom').value='1';
+  document.getElementById('newMatchComp').value='amical';
+  const d=new Date(dateIso+'T12:00:00');
+  document.getElementById('matchModalSub').textContent=`${DAYFULL[(d.getDay()+6)%7]} ${fmtD(d)}`;
+  document.getElementById('matchModal').classList.add('on');
+}
+function closeMatchModal(){document.getElementById('matchModal').classList.remove('on')}
+async function submitManualMatch(){
+  const team=document.getElementById('newMatchTeam').value.trim();
+  if(!team){alert("Indique le nom de l'équipe adverse.");return;}
+  const dom=document.getElementById('newMatchDom').value==='1';
+  const time=document.getElementById('newMatchTime').value.trim()||null;
+  const comp=document.getElementById('newMatchComp').value;
+  const {data,error}=await supa.from('manual_matches').insert({date:matchModalDate,team,dom,time,comp}).select().single();
+  if(error){alert('Erreur : '+error.message);return;}
+  MANUAL_MATCHES.push({d:data.date,team:data.team,dom:data.dom,time:data.time,comp:data.comp,_manualId:data.id});
+  rebuildMatches();
+  closeMatchModal();renderWeek();renderMonth();
+}
+async function deleteManualMatch(id){
+  if(!confirm('Supprimer ce match ?'))return;
+  const {error}=await supa.from('manual_matches').delete().eq('id',id);
+  if(error){alert('Erreur : '+error.message);return;}
+  MANUAL_MATCHES=MANUAL_MATCHES.filter(m=>m._manualId!==id);
+  rebuildMatches();
+  renderWeek();renderMonth();
+}
+
+/* ═══════ SCREEN INTELLIGENT : lecture OCR du tableau GPS prévisionnel ═══════
+   Repérage par nom de jour (Lundi..Dimanche) dans le texte reconnu, pas par
+   position — tout le reste (en-têtes, ligne "Match", Total semaine) est donc
+   ignoré naturellement sans logique dédiée. Colonnes prises dans l'ordre de
+   lecture gauche→droite après le nom du jour : doit correspondre à l'ordre
+   du tableau GPS de l'app (DT, D15-20, D20-25, D+25, D+30, D Acc3, D Dec3,
+   D Acc4, D Dec4, D Acc5, D Dec5) — si la capture change de mise en page ou
+   de colonnes, cette correspondance positionnelle doit être revue. */
+const GPS_COLS=['DT','D15-20','D20-25','D+25','D+30','D Acc3','D Dec3','D Acc4','D Dec4','D Acc5','D Dec5'];
+const DAY_RE=[/lundi/i,/mardi/i,/mercredi/i,/jeudi/i,/vendredi/i,/samedi/i,/dimanche/i];
+(function initSmartScreen(){
+  const zone=document.getElementById('smartScreenZone');
+  if(!zone)return;
+  const fileInput=document.getElementById('smartScreenFile');
+  zone.onclick=()=>fileInput.click();
+  fileInput.onchange=()=>{if(fileInput.files[0])handleSmartScreenFile(fileInput.files[0]);fileInput.value='';};
+  zone.ondragover=e=>{e.preventDefault();zone.classList.add('drag');};
+  zone.ondragleave=()=>zone.classList.remove('drag');
+  zone.ondrop=e=>{e.preventDefault();zone.classList.remove('drag');const f=e.dataTransfer.files&&e.dataTransfer.files[0];if(f)handleSmartScreenFile(f);};
+  document.addEventListener('paste',e=>{
+    const semaineOn=document.getElementById('v-semaine');
+    if(!semaineOn||!semaineOn.classList.contains('on'))return;
+    const items=(e.clipboardData&&e.clipboardData.items)||[];
+    for(const it of items){
+      if(it.type&&it.type.startsWith('image/')){handleSmartScreenFile(it.getAsFile());e.preventDefault();break;}
+    }
+  });
+})();
+async function handleSmartScreenFile(file){
+  if(typeof Tesseract==='undefined'){alert("La librairie de lecture n'a pas pu se charger (réseau ou bloqueur) — réessaie dans un instant.");return;}
+  const zone=document.getElementById('smartScreenZone');
+  const original=zone.textContent;
+  zone.textContent='⏳ Lecture…';zone.style.pointerEvents='none';
+  try{
+    const {data}=await Tesseract.recognize(file,'fra');
+    const parsed=parseGpsScreenshot(data);
+    if(!parsed.rows.length){alert("Aucun jour n'a été reconnu dans cette capture (Lundi, Mardi…). Vérifie que le texte est net et pas coupé.");return;}
+    openSmartScreenReview(parsed);
+  }catch(err){
+    console.error('smart screen OCR',err);
+    alert('Erreur de lecture : '+err.message);
+  }finally{
+    zone.textContent=original;zone.style.pointerEvents='';
+  }
+}
+function parseGpsScreenshot(ocrData){
+  const words=(ocrData.words||[])
+    .map(w=>({text:w.text,cx:(w.bbox.x0+w.bbox.x1)/2,cy:(w.bbox.y0+w.bbox.y1)/2,x0:w.bbox.x0}))
+    .filter(w=>w.text.trim().length>0);
+  words.sort((a,b)=>a.cy-b.cy);
+  const lines=[];
+  words.forEach(w=>{
+    let line=lines.find(l=>Math.abs(l.cy-w.cy)<15);
+    if(!line){line={cy:w.cy,n:0,words:[]};lines.push(line);}
+    line.cy=(line.cy*line.n+w.cy)/(line.n+1);line.n++;
+    line.words.push(w);
+  });
+  let weekGuess=null;const rows=[];
+  lines.forEach(line=>{
+    line.words.sort((a,b)=>a.x0-b.x0);
+    const text=line.words.map(w=>w.text).join(' ');
+    const sem=text.match(/semaine\s*(\d+)/i);
+    if(sem)weekGuess=parseInt(sem[1],10);
+    const dayIndex=DAY_RE.findIndex(re=>re.test(text));
+    if(dayIndex<0)return;
+    const nums=line.words
+      .map(w=>w.text.replace(/[^\d-]/g,''))
+      .filter(t=>t.length>0&&/^-?\d+$/.test(t))
+      .map(t=>parseInt(t,10));
+    if(nums.length>=11)rows.push({dayIndex,values:nums.slice(0,11)});
+  });
+  return {weekGuess,rows};
+}
+function openSmartScreenReview(parsed){
+  const sel=document.getElementById('smartScreenWeek');
+  sel.innerHTML=WEEKS.filter(w=>w.n>=WMIN&&w.n<=WMAX).map(w=>`<option value="${w.n}">Semaine ${w.n}${w.n===curWeek?' (en cours)':''}</option>`).join('');
+  sel.value=(parsed.weekGuess&&GPS[parsed.weekGuess])?parsed.weekGuess:curWeek;
+  const thead=document.querySelector('#smartScreenTable thead');
+  thead.innerHTML='<tr><th>Jour</th>'+GPS_COLS.map(c=>`<th>${c}</th>`).join('')+'</tr>';
+  const tbody=document.querySelector('#smartScreenTable tbody');
+  tbody.innerHTML=DAYFULL.map((dn,i)=>{
+    const row=parsed.rows.find(r=>r.dayIndex===i);
+    const vals=row?row.values:Array(11).fill(null);
+    return `<tr><td><b>${dn}</b></td>`+vals.map((v,ci)=>
+      `<td><input class="${v===null?'ocrMiss':''}" data-day="${i}" data-col="${ci}" value="${v===null?'':v}" placeholder="—"></td>`).join('')+'</tr>';
+  }).join('');
+  document.getElementById('smartScreenModal').classList.add('on');
+}
+function closeSmartScreenModal(){document.getElementById('smartScreenModal').classList.remove('on')}
+async function confirmSmartScreenImport(){
+  const targetWeek=parseInt(document.getElementById('smartScreenWeek').value,10);
+  if(!GPS[targetWeek]){alert('Semaine invalide.');return;}
+  const touched=new Set();
+  document.querySelectorAll('#smartScreenTable input').forEach(inp=>{
+    const day=parseInt(inp.dataset.day,10),col=parseInt(inp.dataset.col,10);
+    const raw=inp.value.trim();
+    if(raw===''||!/^-?\d+$/.test(raw))return;
+    GPS[targetWeek][day][col]=parseInt(raw,10);
+    touched.add(day);
+  });
+  for(const day of touched){await saveGpsCell(targetWeek,day);}
+  closeSmartScreenModal();
+  if(targetWeek===curWeek)renderGps();
+  alert(touched.size?`Import terminé — ${touched.size} jour(s) mis à jour pour la semaine ${targetWeek}.`:'Aucune valeur à importer.');
+}
+
 function setDayType(i,t){
   WEEK_TYPES[curWeek][i]=t;if(RPE_OVR[curWeek])delete RPE_OVR[curWeek][i];delete DAY_BLOCKS[curWeek+'-'+i];
   renderWeek();saveWeekDay(curWeek,i);saveBlocks(curWeek,i);
@@ -2978,11 +3218,24 @@ function openModal(key){
   document.getElementById('modalFixes').innerHTML=FIXED_TYPES.map(s=>
     `<div class="pickRow" onclick='addBlock(${JSON.stringify(s).replace(/'/g,"&apos;")})'>
       <span class="cdot" style="background:#888"></span><span>${s.ic} ${s.n}</span></div>`).join('');
+  document.getElementById('freeActionEmoji').value='';
+  document.getElementById('freeActionText').value='';
+  document.getElementById('freeActionColor').value='#8b7bff';
   document.getElementById('modal').classList.add('on');
 }
 function addBlock(data){
   const key=modalDayKey;
   DAY_BLOCKS[key].push({kind:data.k==='dej'||data.k==='wellness'||data.k==='repas'||data.k==='test'?'fixe':'seance',n:data.n,ic:data.ic,c:data.c,time:data.t||'12:00'});
+  sortBlocks(key);closeModal();renderWeek();
+  const[wn,di]=key.split('-').map(Number);saveBlocks(wn,di);
+}
+function addFreeActionBlock(){
+  const emoji=document.getElementById('freeActionEmoji').value.trim();
+  const text=document.getElementById('freeActionText').value.trim();
+  const color=document.getElementById('freeActionColor').value;
+  if(!text){alert('Écris un texte pour ton action.');return;}
+  const key=modalDayKey;
+  DAY_BLOCKS[key].push({kind:'action',n:text,ic:emoji,c:color,time:'12:00'});
   sortBlocks(key);closeModal();renderWeek();
   const[wn,di]=key.split('-').map(Number);saveBlocks(wn,di);
 }
