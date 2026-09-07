@@ -1149,8 +1149,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <select id="profilSel" onchange="applyProfil(this.value)">
       <option value="">—</option><option value="normale">Normale (1-5)</option><option value="decharge">Décharge (2-4)</option>
     </select>
-    <div id="smartScreenZone" tabindex="0" title="Glisse, colle (Ctrl+V) ou clique pour importer une capture des données GPS prescrites">📷 Screen intelligent</div>
-    <input type="file" id="smartScreenFile" accept="image/*" style="display:none">
   </div>
   <div class="testHint">🧪 Derniers tests physiques : Semaine 5 (force, vitesse, pesée) — prochaine fenêtre estimée vers la Semaine 10-11.</div>
   <div class="weekWrap" id="weekGrid"></div>
@@ -1169,6 +1167,8 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="gpsCtrls">
       <label class="note">Semaine patron :</label>
       <select id="patronSel" onchange="renderGps()"></select>
+      <div id="smartScreenZone" tabindex="0" title="Glisse, colle (Ctrl+V) ou clique pour importer une capture des données GPS prescrites">📷 Screen intelligent</div>
+      <input type="file" id="smartScreenFile" accept="image/*" style="display:none">
     </div>
     <div class="gpsScroll"><table class="gpsTable" id="gpsTable"><thead></thead><tbody></tbody></table></div>
     <div class="cycleBox">
