@@ -603,7 +603,8 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 
 .teamLogo{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:9.5px;color:#fff;flex:none;border:2px solid rgba(255,255,255,.75);overflow:hidden}
 .teamLogo.sm{width:24px;height:24px;font-size:8px}
-.teamLogo img{width:100%;height:100%;object-fit:cover}
+.teamLogo.hasImg{border-radius:0;border:none;overflow:visible;background:none}
+.teamLogo img{width:100%;height:100%;object-fit:contain}
 
 .gauge{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
 .gauge svg{display:block}
@@ -748,7 +749,8 @@ th:hover>.pctPop, td:hover>.pctPop, .pctPop:hover{display:flex}
 .dropZone.over{border-color:var(--accent);background:rgba(139,123,255,.08)}
 .logoCard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
 .logoCard .prev{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(255,255,255,.3);font-family:var(--font-display);font-size:13px;color:#fff}
-.logoCard .prev img{width:100%;height:100%;object-fit:cover}
+.logoCard .prev.hasImg{border-radius:0;border:none;overflow:visible;background:none}
+.logoCard .prev img{width:100%;height:100%;object-fit:contain}
 .logoCard .exact{font-family:'Spline Sans Mono';font-size:10px;color:var(--muted);word-break:break-word}
 .logoCard .st{font-size:10px;font-weight:700;padding:2px 9px;border-radius:999px}
 .logoCard .st.ok{background:rgba(90,209,138,.16);color:var(--ok)}
@@ -2546,7 +2548,7 @@ function teamKey(name){
 function teamFromKey(key){ return teamList().find(t=>teamKey(t)===key)||null; }
 function teamList(){return[...new Set([...calendarTeams(),...EXTRA_TEAMS])].sort((a,b)=>a.localeCompare(b,'fr'))}
 function logoHTML(team,sm){
-  if(TEAM_LOGOS[team])return `<span class="teamLogo${sm?' sm':''}"><img src="${TEAM_LOGOS[team]}"></span>`;
+  if(TEAM_LOGOS[team])return `<span class="teamLogo hasImg${sm?' sm':''}"><img src="${TEAM_LOGOS[team]}"></span>`;
   return `<span class="teamLogo${sm?' sm':''}" style="background:${hashColor(team)}">${initials(team)}</span>`;
 }
 
@@ -3575,7 +3577,7 @@ function renderLogos(){
     const has=TEAM_LOGOS[team];
     grid.insertAdjacentHTML('beforeend',`
       <div class="logoCard">
-        <div class="prev" style="background:${has?'none':hashColor(team)}">${has?`<img src="${has}">`:initials(team)}</div>
+        <div class="prev${has?' hasImg':''}" style="background:${has?'none':hashColor(team)}">${has?`<img src="${has}">`:initials(team)}</div>
         <div style="font-weight:700;font-size:12.5px">${team}</div>
         ${cal.has(team)?'':'<div style="font-size:9.5px;color:var(--muted)">hors calendrier</div>'}
         <div class="exact">${team}.png</div>
