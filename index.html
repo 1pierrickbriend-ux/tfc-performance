@@ -991,12 +991,10 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   <div class="loginCard">
     <div class="crest">TFC</div>
     <h1>Performance · Équipe Réserve</h1>
-    <p>Connecte-toi avec le compte que Pierrick t'a invité à créer</p>
     <input type="email" id="loginEmail" placeholder="Adresse email">
     <input type="password" id="loginPass" placeholder="Mot de passe">
     <button id="loginBtn" onclick="doLogin()">Se connecter</button>
     <div class="loginErr" id="loginErr"></div>
-    <div class="loginNote">Accès réservé au staff performance invité par Supabase.</div>
   </div>
 </div>
 
@@ -1031,7 +1029,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <h2>Vue d'ensemble — 2 mois glissants</h2>
     <span class="tag live">Données partagées Supabase</span>
   </div>
-  <p class="note" style="margin-bottom:6px">Semaines passées disparues, jour actuel encadré. Cliquer sur une semaine ouvre sa planification.</p>
   <div id="monthRows"></div>
 </section>
 
@@ -1040,7 +1037,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <h2>Board</h2>
     <span class="tag live" id="boardSyncTag">Synchronisé en temps réel</span>
   </div>
-  <p class="note" style="margin-bottom:16px">Communication rapide entre Pierrick et Julien — agenda de la semaine, notes générales, informations par joueur.</p>
 
   <div class="boardSection">
     <h3 class="boardSectionTitle">📆 Planning Julien + Pierrick</h3>
@@ -1052,7 +1048,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <span><span class="dot" style="background:var(--julien)"></span> Julien</span>
       <span><span class="dot" style="background:var(--pierrick)"></span> Pierrick</span>
       <span><span class="dot" style="background:var(--both)"></span> Les deux</span>
-      <span class="note">Clic sur une séance : Julien → Julien + Pierrick → Pierrick seul → (nouveau clic) retour à Julien. Les séances affichées sont celles réellement planifiées dans Planification semaine.</span>
+      <span class="note">Clic : Julien → Julien+Pierrick → Pierrick → Julien</span>
     </div>
     <div class="agendaGrid" id="agendaGrid"></div>
   </div>
@@ -1159,12 +1155,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <h2 style="font-size:14px">Objectifs GPS de la semaine (prévisionnel)</h2>
       <div class="gaugesBox" id="weekGaugesBox" style="margin-left:auto;flex-direction:row;padding:6px 10px"></div>
     </div>
-    <div class="legend3">
-      <span><b>Survol case</b> → modifie uniquement cette case</span>
-      <span><b>Survol en-tête colonne</b> → modifie toute la colonne</span>
-      <span><b>Survol libellé jour</b> → modifie toute la ligne</span>
-      <span>Base de calcul commune aux 3 : la semaine patron ci-dessous</span>
-    </div>
     <div class="gpsCtrls">
       <label class="note">Semaine patron :</label>
       <select id="patronSel" onchange="renderGps()"></select>
@@ -1231,7 +1221,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 
   <div id="indiv-carto" style="display:none">
     <div class="filterRow">
-      <span class="note">22 joueurs · cliquer un en-tête pour trier</span>
+      <span class="note">22 joueurs</span>
       <span class="legendMini">
         <span><i class="sev-R"></i>Rouge</span><span><i class="sev-O"></i>Orange</span>
         <span><i class="sev-J"></i>Jaune</span><span><i class="sev-V"></i>Vert</span>
@@ -1460,7 +1450,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   <div class="rowHead">
     <h2>Programmes</h2>
   </div>
-  <p class="note" style="margin-bottom:16px">Bibliothèque des programmes d'entraînement (PDF) + banque d'exercices réutilisable, partagées entre Pierrick et Julien.</p>
 
   <div class="boardSection">
     <h3 class="boardSectionTitle">📄 Bibliothèque de programmes</h3>
@@ -1536,7 +1525,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <button class="btn ghost" onclick="exportSheetImage()">⬇️ Exporter en image</button>
       <button class="btn ghost" onclick="printSheetVisual()">🖨️ Imprimer / PDF</button>
     </div>
-    <p class="note" style="margin-bottom:8px">Glisse un exercice pour le repositionner. Renseigne reps / séries / récup directement sur chaque bloc.</p>
     <div id="sheetCanvasWrap"><div id="sheetCanvas"></div></div>
   </div>
 
@@ -1607,7 +1595,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 <div id="modal">
   <div class="modalCard">
     <h3 id="modalTitle">Ajouter un bloc</h3>
-    <div class="sub">Étiquette de visualisation uniquement — le contenu détaillé se construit dans l'onglet Séances.</div>
     <div class="modalSec">Séances</div>
     <div id="modalSeances"></div>
     <div class="modalSec">Blocs fixes</div>
@@ -1654,7 +1641,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 <div id="smartScreenModal">
   <div class="modalCard" style="max-width:680px">
     <h3>Screen intelligent — vérifier avant import</h3>
-    <div class="sub">Lecture automatique de la capture. Corrige les cases si besoin (OCR imparfait), puis valide. Les jours laissés vides restent inchangés dans la semaine cible.</div>
+    <div class="sub">Corrige les cases si besoin. Les jours laissés vides restent inchangés.</div>
     <label class="note">Semaine cible</label>
     <select id="smartScreenWeek"></select>
     <div style="overflow-x:auto;margin-top:8px">
@@ -3434,7 +3421,7 @@ function renderSeances(){
   const box=document.getElementById('jList');
   if(!box)return;
   if(!items.length){
-    box.innerHTML='<div class="jEmpty">Aucune séance sur ce filtre. Enregistre une séance collective ou une sollicitation individualisée depuis les boutons ci-dessus.</div>';
+    box.innerHTML='<div class="jEmpty">Aucune séance sur ce filtre.</div>';
     return;
   }
   const byDay={};
@@ -4569,7 +4556,7 @@ function renderCompare(){
   else enrich.sort((a,b)=>a.p.name.localeCompare(b.p.name));
 
   if(!enrich.length){
-    grid.innerHTML='<div class="cmpHint">Aucun test enregistré. Importe le fichier du centre ci-dessus.</div>';
+    grid.innerHTML='<div class="cmpHint">Aucun test enregistré.</div>';
     box.innerHTML=''; document.getElementById('cmpDetailWrap').style.display='none';
     return;
   }
@@ -4600,7 +4587,7 @@ function renderCompare(){
   const detailWrap=document.getElementById('cmpDetailWrap');
   if(!cmpSel){
     detailWrap.style.display='block';
-    box.innerHTML='<div class="cmpHint">Clique sur un joueur dans la grille ci-dessus pour voir le détail complet.</div>';
+    box.innerHTML='';
     return;
   }
   detailWrap.style.display='block';
@@ -4667,7 +4654,7 @@ function renderTestHistory(){
   const pid=cmpSel;
   if(!pid){
     if(nameTag)nameTag.textContent='';
-    box.innerHTML='<div class="cmpHint">Sélectionne un joueur dans la grille ci-dessus pour voir son historique complet.</div>';
+    box.innerHTML='';
     return;
   }
   const player=IPLAYERS.find(p=>p.id===pid);
@@ -5702,7 +5689,7 @@ function renderIndivMain(){
       ${abs.length?`<p class="note" style="margin-bottom:10px">Absents ce jour-là, non enregistrés : ${abs.join(', ')}</p>`:''}
       <div class="indivGrid">${cards}</div>`;
   } else {
-    m.innerHTML=`<div class="placeholder"><h3>Aucune séance validée pour l'instant</h3><p>Clique sur « Prévisualiser » pour générer la première séance du cycle.</p></div>`;
+    m.innerHTML=`<div class="placeholder"><h3>Aucune séance validée pour l'instant</h3></div>`;
   }
 }
 function renderCarto(){
