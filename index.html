@@ -698,7 +698,9 @@ th:hover>.pctPop, td:hover>.pctPop, .pctPop:hover{display:flex}
 .legend3{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;color:var(--muted)}
 .legend3 b{color:var(--ink)}
 
-.subTabs{display:flex;gap:8px;margin-bottom:14px}
+.subTabs{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.subGroupLabel{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:0 2px 0 10px}
+.subGroupLabel:first-child{margin-left:0}
 .subTabs button{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:7px 15px;font-size:12px;font-weight:600}
 .subTabs button.on{background:var(--accent);border-color:var(--accent);color:#17122b}
 .filterRow{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
@@ -1205,21 +1207,23 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <span class="note" id="indivStatus"></span>
   </div>
   <div class="subTabs">
-    <button class="on" onclick="indivTab(this,'seance')">Séance du jour</button>
-    <button onclick="indivTab(this,'carto')">Cartographie joueurs</button>
-    <button onclick="indivTab(this,'histo')">Historique</button>
-    <button onclick="indivTab(this,'charge')">Charge externe</button>
-    <button onclick="indivTab(this,'presc')">Prescription</button>
-    <button onclick="indivTab(this,'analyse')">Analyse</button>
+    <span class="subGroupLabel">Diagnostic</span>
+    <button class="on" onclick="indivTab(this,'carto')">Cartographie joueurs</button>
     <button onclick="indivTab(this,'tests')">Tests</button>
+    <span class="subGroupLabel">Prescription</span>
+    <button onclick="indivTab(this,'seance')" title="Rotation automatique — effectif complet">Séance du jour</button>
+    <button onclick="indivTab(this,'presc')" title="Séance détaillée — sur-mesure, joueur par joueur">Prescription</button>
+    <span class="subGroupLabel">Suivi</span>
+    <button onclick="indivTab(this,'charge')">Charge externe</button>
+    <button onclick="indivTab(this,'analyse')">Analyse</button>
   </div>
 
-  <div id="indiv-seance">
+  <div id="indiv-seance" style="display:none">
     <div class="indivCtrls" id="indivControls"></div>
     <div id="indivMain"></div>
   </div>
 
-  <div id="indiv-carto" style="display:none">
+  <div id="indiv-carto">
     <div class="filterRow">
       <span class="note">22 joueurs</span>
       <span class="legendMini">
@@ -1227,16 +1231,9 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
         <span><i class="sev-J"></i>Jaune</span><span><i class="sev-V"></i>Vert</span>
         <span><i class="sev-GRIS"></i>Non testé</span>
       </span>
-    </div>
-    <div class="sheetWrap"><table class="sheet" id="cartoTable"></table></div>
-  </div>
-
-  <div id="indiv-histo" style="display:none">
-    <div class="filterRow">
-      <span class="note">Exercices cumulés par joueur depuis le début du cycle</span>
       <button class="btn" style="margin-left:auto" onclick="resetIndivHistory()">Réinitialiser l'historique</button>
     </div>
-    <div id="indivHisto"></div>
+    <div class="sheetWrap"><table class="sheet" id="cartoTable"></table></div>
   </div>
 
   <div id="indiv-charge" style="display:none">
@@ -4068,7 +4065,6 @@ function indivTab(btn,name){
   btn.classList.add('on');
   document.getElementById('indiv-seance').style.display=name==='seance'?'block':'none';
   document.getElementById('indiv-carto').style.display=name==='carto'?'block':'none';
-  document.getElementById('indiv-histo').style.display=name==='histo'?'block':'none';
   document.getElementById('indiv-charge').style.display=name==='charge'?'block':'none';
   document.getElementById('indiv-presc').style.display=name==='presc'?'block':'none';
   document.getElementById('indiv-analyse').style.display=name==='analyse'?'block':'none';
@@ -5694,7 +5690,7 @@ function renderIndivMain(){
 }
 function renderCarto(){
   const t=document.getElementById('cartoTable');
-  const head=['Joueur','Statut','Alertes','Douleurs',...ZONE_COLS.map(z=>ZONE_SHORT[z]),'Priorités'];
+  const head=['Joueur','Statut','Alertes','Douleurs',...ZONE_COLS.map(z=>ZONE_SHORT[z]),'Priorités','Zones à pb','Exercices cumulés'];
   const rows=IPLAYERS.slice().sort((a,b)=>(SEV_RANK[b.statut]??-9)-(SEV_RANK[a.statut]??-9)).map(p=>{
     const z=IZONES[p.id]||{};
     const cells=ZONE_COLS.map(zc=>{
@@ -5703,13 +5699,18 @@ function renderCarto(){
       const txt=(sev==='V')?'OK':(c.detail||'—');
       return `<td class="zoneCell ${sev?'cell-'+sev:''}" data-sort="${sev}" title="${(c.detail||'').replace(/"/g,'&quot;')}">${txt}</td>`;
     }).join('');
+    const h=IHIST[p.id]||{};
+    const total=Object.values(h).reduce((s,a)=>s+a.length,0);
+    const nZones=(p.zones||[]).length;
     return `<tr>
       <td class="colName" data-sort="${p.name}">${p.name}</td>
       <td class="cell-${p.statut==='V?'?'GRIS':p.statut}" data-sort="${p.statut}">${STATUT_LABEL[p.statut]||p.statut}</td>
       <td data-sort="${p.alertes||''}">${p.alertes||'—'}</td>
       <td class="${p.douleurs?'cell-O':''}" data-sort="${p.douleurs||''}">${p.douleurs||'—'}</td>
       ${cells}
-      <td class="colPrio">${p.priorites||'—'}</td></tr>`;
+      <td class="colPrio">${p.priorites||'—'}</td>
+      <td data-sort="${nZones}">${nZones||'—'}</td>
+      <td data-sort="${total}">${total}</td></tr>`;
   }).join('');
   t.innerHTML=`<thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody>`;
   initCartoSort();
@@ -5739,16 +5740,6 @@ function initCartoSort(){
     });
   });
 }
-function renderIndivHisto(){
-  const rows=IPLAYERS.map(p=>{
-    const h=IHIST[p.id]||{};
-    const total=Object.values(h).reduce((s,a)=>s+a.length,0);
-    return `<tr><td>${p.name}</td><td>${(p.zones||[]).length||'—'}</td><td>${total}</td></tr>`;
-  }).join('');
-  document.getElementById('indivHisto').innerHTML=
-    `<div class="panel"><table class="histTable">
-      <tr><th>Joueur</th><th>Zones à problème</th><th>Exercices réalisés (cumulé)</th></tr>${rows}</table></div>`;
-}
 function renderIndiv(){
   if(!indivLoaded){
     document.getElementById('indivMain').innerHTML=
@@ -5756,7 +5747,7 @@ function renderIndiv(){
     document.getElementById('indivControls').innerHTML='';
     return;
   }
-  renderIndivControls(); renderIndivMain(); renderCarto(); renderIndivHisto();
+  renderIndivControls(); renderIndivMain(); renderCarto();
 }
 
 /* ═══════ PDF (paysage, patron S5) ═══════ */
