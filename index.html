@@ -3117,13 +3117,33 @@ const DAY_RE=[/lundi/i,/mardi/i,/mercredi/i,/jeudi/i,/vendredi/i,/samedi/i,/dima
     }
   });
 })();
+async function upscaleImage(file,scale){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);
+      const ctx=canvas.getContext('2d');
+      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      URL.revokeObjectURL(img.src);
+      resolve(canvas);
+    };
+    img.onerror=()=>reject(new Error('Image illisible'));
+    img.src=URL.createObjectURL(file);
+  });
+}
 async function handleSmartScreenFile(file){
   if(typeof Tesseract==='undefined'){alert("La librairie de lecture n'a pas pu se charger (réseau ou bloqueur) — réessaie dans un instant.");return;}
   const zone=document.getElementById('smartScreenZone');
   const original=zone.textContent;
   zone.textContent='⏳ Lecture…';zone.style.pointerEvents='none';
+  let worker=null;
   try{
-    const {data}=await Tesseract.recognize(file,'fra');
+    const canvas=await upscaleImage(file,2.5);
+    worker=await Tesseract.createWorker('fra');
+    await worker.setParameters({tessedit_pageseg_mode:'6'});
+    const {data}=await worker.recognize(canvas);
     const parsed=parseGpsScreenshot(data);
     if(!parsed.rows.length){alert("Aucun jour n'a été reconnu dans cette capture (Lundi, Mardi…). Vérifie que le texte est net et pas coupé.");return;}
     openSmartScreenReview(parsed);
@@ -3131,6 +3151,7 @@ async function handleSmartScreenFile(file){
     console.error('smart screen OCR',err);
     alert('Erreur de lecture : '+err.message);
   }finally{
+    if(worker)await worker.terminate();
     zone.textContent=original;zone.style.pointerEvents='';
   }
 }
@@ -3158,7 +3179,9 @@ function parseGpsScreenshot(ocrData){
       .map(w=>w.text.replace(/[^\d-]/g,''))
       .filter(t=>t.length>0&&/^-?\d+$/.test(t))
       .map(t=>parseInt(t,10));
-    if(nums.length>=11)rows.push({dayIndex,values:nums.slice(0,11)});
+    const values=Array(11).fill(null);
+    nums.slice(0,11).forEach((v,i)=>{values[i]=v;});
+    rows.push({dayIndex,values});
   });
   return {weekGuess,rows};
 }
@@ -3170,7 +3193,8 @@ function openSmartScreenReview(parsed){
   thead.innerHTML='<tr><th>Jour</th>'+GPS_COLS.map(c=>`<th>${c}</th>`).join('')+'</tr>';
   const tbody=document.querySelector('#smartScreenTable tbody');
   tbody.innerHTML=DAYFULL.map((dn,i)=>{
-    const row=parsed.rows.find(r=>r.dayIndex===i);
+    const candidates=parsed.rows.filter(r=>r.dayIndex===i);
+    const row=candidates.sort((a,b)=>a.values.filter(v=>v===null).length-b.values.filter(v=>v===null).length)[0];
     const vals=row?row.values:Array(11).fill(null);
     return `<tr><td><b>${dn}</b></td>`+vals.map((v,ci)=>
       `<td><input class="${v===null?'ocrMiss':''}" data-day="${i}" data-col="${ci}" value="${v===null?'':v}" placeholder="—"></td>`).join('')+'</tr>';
