@@ -168,6 +168,9 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .prBloc{margin-bottom:14px}
 .prBlocHead{background:var(--accent);color:#fff;border-radius:8px 8px 0 0;padding:6px 12px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;display:flex;gap:10px;align-items:center}
 .prBlocHead .cat{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:5px;font-size:10px}
+.prBlocHead .catEdit{background:rgba(255,255,255,.2);border:1px solid transparent;color:#fff;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;font-family:inherit;width:150px}
+.prBlocHead .catEdit::placeholder{color:rgba(255,255,255,.6);text-transform:none;font-weight:600;letter-spacing:normal}
+.prBlocHead .catEdit:hover,.prBlocHead .catEdit:focus{border-color:rgba(255,255,255,.6);outline:none}
 .prItem{background:var(--panel2);border:1px solid var(--line);border-top:none;padding:10px 12px}
 .prItem:last-child{border-radius:0 0 8px 8px}
 .prItemTop{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -1326,7 +1329,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
         <button class="btn" style="font-size:11px" onclick="markPrescDone()">✅ Marquer réalisée</button>
       </div>
       <div class="prAddRow">
-        <select id="prBloc"><option value="1">Bloc 1</option><option value="2">Bloc 2</option><option value="3">Bloc 3</option><option value="4">Bloc 4</option></select>
+        <select id="prBloc" onchange="prBlocSwitch()"><option value="1">Bloc 1</option><option value="2">Bloc 2</option><option value="3">Bloc 3</option><option value="4">Bloc 4</option></select>
         <input type="text" id="prCategorie" placeholder="Plan de sollicitation (Vertical, COD…)" list="prCatList">
         <datalist id="prCatList"><option>Vertical</option><option>Horizontal</option><option>COD</option><option>Prévention</option><option>Gainage</option></datalist>
         <select id="prExSel"></select>
@@ -5147,7 +5150,8 @@ function renderPrescItems(){
     return `<div class="prBloc${F.groupe?' grp':''}">
       <div class="prBlocHead">
         <span class="blocL">${L}</span>Bloc ${b}
-        ${cats.map(c=>`<span class="cat">${c}</span>`).join('')}
+        <input class="catEdit" list="prCatList" value="${cats[0]||''}" placeholder="Nature du bloc (Prévention, Gainage…)" onchange="updBlocCategorie('${b}',this.value)">
+        ${cats.length>1?cats.slice(1).map(c=>`<span class="cat" title="Exercices existants avec une autre nature — sera uniformisée si tu modifies le champ ci-contre">${c}</span>`).join(''):''}
         <span class="blocFmt">${F.nom}</span>
       </div>
       <div class="prBlocCfg">
@@ -5181,6 +5185,21 @@ function renderPrescItems(){
       }).join('')}
     </div>`;
   }).join('');
+}
+function prBlocSwitch(){
+  const bloc=Number(document.getElementById('prBloc').value);
+  const items=PRESC_ITEMS.filter(i=>i.bloc===bloc);
+  const cats=[...new Set(items.map(i=>i.categorie).filter(Boolean))];
+  document.getElementById('prCategorie').value=cats[0]||'';
+}
+async function updBlocCategorie(bloc,val){
+  const v=val.trim()===''?null:val.trim();
+  const items=PRESC_ITEMS.filter(i=>i.bloc===Number(bloc));
+  if(!items.length)return;
+  const {error}=await supa.from('presc_items').update({categorie:v}).in('id',items.map(i=>i.id));
+  if(error){alert('Erreur : '+error.message);return;}
+  items.forEach(i=>i.categorie=v);
+  renderPrescItems();
 }
 async function addPrescItem(){
   if(!currentPrescId)return;
