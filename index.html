@@ -1261,37 +1261,37 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div id="dashDetail" style="display:none"></div>
 
     <div class="hmWrap" id="hmWrap"></div>
+  </div>
 
-    <div class="qaOverlay" id="qaOverlay" onclick="if(event.target===this)closeQuickAdd()">
-      <div class="qaPanel">
-        <div class="qaHead">
-          <span id="qaTitle">Enregistrer une sollicitation individualisée</span>
-          <button onclick="closeQuickAdd()">✕</button>
+  <div class="qaOverlay" id="qaOverlay" onclick="if(event.target===this)closeQuickAdd()">
+    <div class="qaPanel">
+      <div class="qaHead">
+        <span id="qaTitle">Enregistrer une sollicitation individualisée</span>
+        <button onclick="closeQuickAdd()">✕</button>
+      </div>
+      <div class="qaBody">
+        <div id="qaHint" class="qaHint" style="display:none">Renseigne le <b>volume réellement effectué</b> et l'action correspondante : sans volume, la séance n'apparaîtrait pas dans les analyses.</div>
+        <div class="qaRow2">
+          <div class="mpField" style="grid-column:1/-1">Joueurs <span class="mpCount" id="chgPlayerCount">0 sélectionné</span>
+            <div class="mpBox" id="chgPlayerBox"></div>
+            <div class="mpQuick"><button type="button" onclick="mpAll('chg',true)">Tout</button><button type="button" onclick="mpAll('chg',false)">Aucun</button></div>
+          </div>
+          <label style="grid-column:1/-1">Date<input type="date" id="chgDate"></label>
         </div>
-        <div class="qaBody">
-          <div id="qaHint" class="qaHint" style="display:none">Renseigne le <b>volume réellement effectué</b> et l'action correspondante : sans volume, la séance n'apparaîtrait pas dans les analyses.</div>
-          <div class="qaRow2">
-            <div class="mpField" style="grid-column:1/-1">Joueurs <span class="mpCount" id="chgPlayerCount">0 sélectionné</span>
-              <div class="mpBox" id="chgPlayerBox"></div>
-              <div class="mpQuick"><button type="button" onclick="mpAll('chg',true)">Tout</button><button type="button" onclick="mpAll('chg',false)">Aucun</button></div>
-            </div>
-            <label style="grid-column:1/-1">Date<input type="date" id="chgDate"></label>
-          </div>
-          <div class="qaRow2">
-            <label>Secteur<select id="chgSecteur" onchange="fillChgActions()"></select></label>
-            <label>Action<select id="chgAction"></select></label>
-          </div>
-          <div class="qaRow4">
-            <label>Séries<input type="number" id="chgSeries" min="0" placeholder="4"></label>
-            <label>Reps<input type="text" id="chgReps" placeholder="8-10"></label>
-            <label>Charge kg<input type="number" id="chgKg" step="0.5" placeholder="60"></label>
-            <label>Volume (min)<input type="number" id="chgDuree" min="0" placeholder="30"></label>
-          </div>
-          <textarea id="chgComment" placeholder="Commentaire (facultatif)"></textarea>
-          <div class="qaRow2">
-            <label>Réalisé par<input type="text" id="chgRealisePar" placeholder="Pierrick / Julien"></label>
-            <button class="btn primary" onclick="addChargeSession()">Enregistrer</button>
-          </div>
+        <div class="qaRow2">
+          <label>Secteur<select id="chgSecteur" onchange="fillChgActions()"></select></label>
+          <label>Action<select id="chgAction"></select></label>
+        </div>
+        <div class="qaRow4">
+          <label>Séries<input type="number" id="chgSeries" min="0" placeholder="4"></label>
+          <label>Reps<input type="text" id="chgReps" placeholder="8-10"></label>
+          <label>Charge kg<input type="number" id="chgKg" step="0.5" placeholder="60"></label>
+          <label>Volume (min)<input type="number" id="chgDuree" min="0" placeholder="30"></label>
+        </div>
+        <textarea id="chgComment" placeholder="Commentaire (facultatif)"></textarea>
+        <div class="qaRow2">
+          <label>Réalisé par<input type="text" id="chgRealisePar" placeholder="Pierrick / Julien"></label>
+          <button class="btn primary" onclick="addChargeSession()">Enregistrer</button>
         </div>
       </div>
     </div>
@@ -1355,6 +1355,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <div class="jSelBar" id="prSelBar" style="display:none">
         <span id="prSelCount">0 sélectionnée</span>
         <button class="btn ghost" onclick="togglePSel()">Annuler</button>
+        <button class="btn primary" onclick="markPSelectionDone()">✅ Marquer réalisées</button>
         <button class="btn danger" onclick="deletePSelection()">🗑 Supprimer la sélection</button>
       </div>
       <div id="prList"></div>
@@ -5097,6 +5098,29 @@ async function deletePSelection(){
   renderPrescList();renderPrescUpcoming();
   if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
 }
+function markPSelectionDone(){
+  const ids=[...pSel]; if(!ids.length)return;
+  const sessions=ids.map(id=>PRESC.find(p=>p.id===id)).filter(Boolean);
+  if(!sessions.length)return;
+  const already=sessions.filter(s=>s.statut==='fait');
+  if(already.length&&!confirm(`${already.length} des ${sessions.length} séances sélectionnées sont déjà marquées réalisées. Continuer quand même ?`))return;
+  pendingPrescBulk=sessions.map(p=>({id:p.id,player_id:p.player_id}));
+  ensureChgFormReady();
+  MP_SEL.chg.clear(); sessions.forEach(p=>MP_SEL.chg.add(p.player_id)); mpRender('chg');
+  const ref=sessions[0];
+  document.getElementById('chgDate').value=ref.date;
+  document.getElementById('chgDuree').value=ref.duree_prevue_min||'';
+  document.getElementById('chgComment').value='Séance prescrite : '+(ref.objectif||ref.titre);
+  const q=(ref.objectif||'').toLowerCase();
+  const best=CHG_ACTIONS.find(a=>q&&a.nom.toLowerCase().split(/[\s-]+/).some(w=>w.length>3&&q.includes(w)));
+  if(best){
+    document.getElementById('chgSecteur').value=best.secteur; fillChgActions();
+    document.getElementById('chgAction').value=best.id;
+  }
+  document.getElementById('qaTitle').textContent=`Valider ${sessions.length} séances réalisées`;
+  document.getElementById('qaHint').style.display='block';
+  document.getElementById('qaOverlay').classList.add('on');
+}
 /* Annuler sans supprimer : la trace reste, mais la prescription sort
    du calcul d'observance. */
 async function cancelPresc(id){
@@ -5263,6 +5287,7 @@ async function movePrescItem(id,dir){
   renderPrescItems();
 }
 let pendingPresc=null;   // prescription en cours de validation
+let pendingPrescBulk=null; // plusieurs prescriptions validées d'un coup (sélection multiple)
 async function markPrescDone(){
   if(!currentPrescId)return;
   const p=PRESC.find(x=>x.id===currentPrescId); if(!p)return;
@@ -5271,6 +5296,7 @@ async function markPrescDone(){
   // analyses, et une action choisie au hasard fausserait la distribution.
   pendingPresc={id:p.id,player_id:p.player_id,date:p.date,
                 duree:p.duree_prevue_min,objectif:p.objectif||p.titre};
+  ensureChgFormReady();
   MP_SEL.chg.clear(); MP_SEL.chg.add(p.player_id);
   mpRender('chg');
   document.getElementById('chgDate').value=p.date;
@@ -5371,13 +5397,16 @@ function mpRender(ns){
 function mpToggle(ns,id){MP_SEL[ns].has(id)?MP_SEL[ns].delete(id):MP_SEL[ns].add(id);mpRender(ns)}
 function mpAll(ns,on){MP_SEL[ns].clear();if(on)IPLAYERS.forEach(p=>MP_SEL[ns].add(p.id));mpRender(ns)}
 
-function renderCharge(){
+function ensureChgFormReady(){
   const sect=document.getElementById('chgSecteur');
   if(sect&&!sect.options.length){
     sect.innerHTML=Object.entries(CHG_SECTEURS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
     document.getElementById('chgDate').value=new Date().toISOString().slice(0,10);
     fillChgActions();
   }
+}
+function renderCharge(){
+  ensureChgFormReady();
   mpRender('chg');
   renderDashStrip(); renderDashGrid(); renderHeatmap();
   if(dashSel)renderDashDetail(dashSel);
@@ -5581,7 +5610,7 @@ function openQuickAdd(){
 }
 function closeQuickAdd(){
   document.getElementById('qaOverlay').classList.remove('on');
-  pendingPresc=null;
+  pendingPresc=null; pendingPrescBulk=null;
   const t=document.getElementById('qaTitle'); if(t)t.textContent='Enregistrer une sollicitation individualisée';
   const hn=document.getElementById('qaHint'); if(hn)hn.style.display='none';
 }
@@ -5599,20 +5628,24 @@ async function addChargeSession(){
     commentaire:document.getElementById('chgComment').value.trim()||null,
     realise_par:document.getElementById('chgRealisePar').value.trim()||CURRENT_USER_LABEL||null,
     created_by:CURRENT_USER_LABEL};
-  const rows=ids.map(player_id=>({player_id,...base}));
-  if(pendingPresc)rows.forEach(r=>{r.presc_session_id=pendingPresc.id});
+  const rows=ids.map(player_id=>{
+    const row={player_id,...base};
+    if(pendingPresc&&pendingPresc.player_id===player_id)row.presc_session_id=pendingPresc.id;
+    if(pendingPrescBulk){const m=pendingPrescBulk.find(x=>x.player_id===player_id); if(m)row.presc_session_id=m.id;}
+    return row;
+  });
   const {data,error}=await supa.from('charge_sessions').insert(rows).select();
   if(error){alert('Erreur : '+error.message);return;}
   (data||[]).forEach(d=>CHG_SESSIONS.unshift(d));
-  if(pendingPresc){
-    const {error:ep}=await supa.from('presc_sessions')
-      .update({statut:'fait',done_at:new Date().toISOString()}).eq('id',pendingPresc.id);
-    if(ep)alert('Séance enregistrée, mais statut non mis à jour : '+ep.message);
-    else{
-      const p=PRESC.find(x=>x.id===pendingPresc.id);
-      if(p)p.statut='fait';
-    }
-    pendingPresc=null;
+  const doneIds=[];
+  if(pendingPresc)doneIds.push(pendingPresc.id);
+  if(pendingPrescBulk)pendingPrescBulk.forEach(x=>doneIds.push(x.id));
+  if(doneIds.length){
+    const {error:ep}=await supa.from('presc_sessions').update({statut:'fait',done_at:new Date().toISOString()}).in('id',doneIds);
+    if(ep)alert('Séance(s) enregistrée(s), mais statut non mis à jour : '+ep.message);
+    else doneIds.forEach(id=>{const p=PRESC.find(x=>x.id===id); if(p)p.statut='fait';});
+    pendingPresc=null; pendingPrescBulk=null;
+    pSel.clear(); pSelMode=false;
     if(typeof renderPrescList==='function'){renderPrescList();renderPrescUpcoming();}
   }
   ['chgSeries','chgReps','chgKg','chgDuree','chgComment'].forEach(id=>document.getElementById(id).value='');
