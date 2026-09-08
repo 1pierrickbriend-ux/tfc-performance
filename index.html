@@ -5090,6 +5090,8 @@ async function deletePSelection(){
   if(!pSel.size)return;
   if(!confirm(`Supprimer définitivement ${pSel.size} prescription${pSel.size>1?'s':''} et leur contenu ?`))return;
   const ids=[...pSel];
+  await supa.from('presc_items').delete().in('session_id',ids);
+  await supa.from('presc_blocs').delete().in('session_id',ids);
   const {error}=await supa.from('presc_sessions').delete().in('id',ids);
   if(error){alert('Erreur : '+error.message);return;}
   PRESC=PRESC.filter(p=>!ids.includes(p.id));
@@ -5136,6 +5138,8 @@ async function cancelPresc(id){
 }
 async function deletePresc(id){
   if(!confirm('Supprimer cette séance prescrite et son contenu ?'))return;
+  await supa.from('presc_items').delete().eq('session_id',id);
+  await supa.from('presc_blocs').delete().eq('session_id',id);
   const {error}=await supa.from('presc_sessions').delete().eq('id',id);
   if(error){alert('Erreur : '+error.message);return;}
   PRESC=PRESC.filter(p=>p.id!==id);
