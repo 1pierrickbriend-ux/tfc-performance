@@ -5090,15 +5090,18 @@ async function deletePSelection(){
   if(!pSel.size)return;
   if(!confirm(`Supprimer définitivement ${pSel.size} prescription${pSel.size>1?'s':''} et leur contenu ?`))return;
   const ids=[...pSel];
+  await supa.from('charge_sessions').delete().in('presc_session_id',ids);
   await supa.from('presc_items').delete().in('session_id',ids);
   await supa.from('presc_blocs').delete().in('session_id',ids);
   const {error}=await supa.from('presc_sessions').delete().in('id',ids);
   if(error){alert('Erreur : '+error.message);return;}
+  CHG_SESSIONS=CHG_SESSIONS.filter(c=>!ids.includes(c.presc_session_id));
   PRESC=PRESC.filter(p=>!ids.includes(p.id));
   if(ids.includes(currentPrescId))closePrescBuilder();
   pSel.clear(); pSelMode=false;
   renderPrescList();renderPrescUpcoming();
   if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
+  renderCharge();
 }
 function markPSelectionDone(){
   const ids=[...pSel]; if(!ids.length)return;
@@ -5138,13 +5141,16 @@ async function cancelPresc(id){
 }
 async function deletePresc(id){
   if(!confirm('Supprimer cette séance prescrite et son contenu ?'))return;
+  await supa.from('charge_sessions').delete().eq('presc_session_id',id);
   await supa.from('presc_items').delete().eq('session_id',id);
   await supa.from('presc_blocs').delete().eq('session_id',id);
   const {error}=await supa.from('presc_sessions').delete().eq('id',id);
   if(error){alert('Erreur : '+error.message);return;}
+  CHG_SESSIONS=CHG_SESSIONS.filter(c=>c.presc_session_id!==id);
   PRESC=PRESC.filter(p=>p.id!==id);
   if(currentPrescId===id)closePrescBuilder();
   renderPrescList();renderPrescUpcoming();
+  renderCharge();
 }
 async function openPrescBuilder(id){
   currentPrescId=id;
