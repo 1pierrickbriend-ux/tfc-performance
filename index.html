@@ -2794,8 +2794,8 @@ async function saveBlocks(weekN,dayIndex){
 async function saveGpsCell(weekN,dayIndex){
   const v=GPS[weekN][dayIndex];
   const row={week_n:weekN,day_index:dayIndex,dt:v[0],d15_20:v[1],d20_25:v[2],d25plus:v[3],d30plus:v[4],acc3:v[5],dec3:v[6],acc4:v[7],dec4:v[8],acc5:v[9],dec5:v[10]};
-  const {error}=await supa.from('gps_data').upsert(row);
-  if(error)console.error('saveGpsCell',error);
+  const {error}=await supa.from('gps_data').upsert(row,{onConflict:'week_n,day_index'});
+  if(error){console.error('saveGpsCell',error);alert('⚠️ La sauvegarde GPS a échoué (semaine '+weekN+', jour '+dayIndex+') : '+error.message+'\\nLa case affichée peut ne pas correspondre à ce qui est enregistré — recharge la page pour vérifier avant de continuer.');}
 }
 async function saveType(key){
   const T=TYPES[key];
