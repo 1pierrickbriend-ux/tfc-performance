@@ -1170,6 +1170,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="gpsCtrls">
       <label class="note">Semaine patron :</label>
       <select id="patronSel" onchange="renderGps()"></select>
+      <button class="btn ghost" style="font-size:11px" onclick="copyPatronToCurrent()" title="Reprend les 11 colonnes de la semaine patron dans la semaine en cours, pour partir de vrais chiffres au lieu de zéros">📋 Copier la semaine patron</button>
       <div id="smartScreenZone" tabindex="0" title="Glisse, colle (Ctrl+V) ou clique pour importer une capture des données GPS prescrites">📷 Screen intelligent</div>
       <input type="file" id="smartScreenFile" accept="image/*" style="display:none">
     </div>
@@ -3360,6 +3361,17 @@ function renderGps(){
     </tr>`);
   });
   tb.insertAdjacentHTML('beforeend',`<tr class="total"><td>Total semaine</td>${tot.map(v=>`<td>${v.toLocaleString('fr')}</td>`).join('')}</tr>`);
+}
+function copyPatronToCurrent(){
+  const pat=parseInt(document.getElementById('patronSel').value)||curWeek-1;
+  const patW=GPS[pat];
+  if(!patW){alert('Aucune donnée trouvée pour la semaine patron sélectionnée.');return;}
+  const hasData=GPS[curWeek].some(row=>row.some(v=>v));
+  if(hasData&&!confirm(`La semaine en cours contient déjà des valeurs non nulles. Les remplacer par celles de la semaine ${pat} ?`))return;
+  GPS[curWeek]=patW.map(row=>[...row]);
+  for(let di=0;di<7;di++){delete (CELL_MOD[curWeek+'-'+di]);saveGpsCell(curWeek,di);}
+  delete COL_PCT[curWeek]; delete ROW_PCT[curWeek];
+  renderGps();
 }
 function applyPct(scope,ci,di,p){
   const pat=parseInt(document.getElementById('patronSel').value)||curWeek-1;
