@@ -5043,6 +5043,26 @@ async function createPrescSession(){
 }
 /* Duplique le contenu composé vers d'autres joueurs : évite de recomposer
    la même séance autant de fois qu'il y a de joueurs concernés. */
+async function copyPrescContentTo(targetId){
+  await supa.from('presc_items').delete().eq('session_id',targetId);
+  const clones=PRESC_ITEMS.map(it=>({session_id:targetId,exercise_id:it.exercise_id,nom_libre:it.nom_libre,
+    bloc:it.bloc,categorie:it.categorie,consignes:it.consignes,intentions:it.intentions,
+    series:it.series,reps:it.reps,tempo:it.tempo,intensite_rm:it.intensite_rm,vbt:it.vbt,
+    rpe_cible:it.rpe_cible,recup:it.recup,sort_order:it.sort_order}));
+  if(clones.length){
+    const {error}=await supa.from('presc_items').insert(clones);
+    if(error){alert('Erreur : '+error.message);return false;}
+  }
+  await supa.from('presc_blocs').delete().eq('session_id',targetId);
+  if(PRESC_BLOCS.length){
+    const bclones=PRESC_BLOCS.map(b=>({session_id:targetId,bloc:b.bloc,format:b.format,
+      tours:b.tours,recup_inter:b.recup_inter,recup_bloc:b.recup_bloc,
+      duree_cible:b.duree_cible,note:b.note}));
+    const {error:e4}=await supa.from('presc_blocs').insert(bclones);
+    if(e4){console.error(e4);return false;}
+  }
+  return true;
+}
 async function duplicatePrescTo(){
   if(!currentPrescId)return;
   if(!PRESC_ITEMS.length){alert('Compose d\'abord au moins un exercice.');return;}
@@ -5059,24 +5079,9 @@ async function duplicatePrescTo(){
         duree_prevue_min:src.duree_prevue_min,created_by:CURRENT_USER_LABEL}).select().single();
       if(error){alert('Erreur : '+error.message);return;}
       PRESC.unshift(data); target=data;
-    }else{
-      await supa.from('presc_items').delete().eq('session_id',target.id);
     }
-    const clones=PRESC_ITEMS.map(it=>({session_id:target.id,exercise_id:it.exercise_id,nom_libre:it.nom_libre,
-      bloc:it.bloc,categorie:it.categorie,consignes:it.consignes,intentions:it.intentions,
-      series:it.series,reps:it.reps,tempo:it.tempo,intensite_rm:it.intensite_rm,vbt:it.vbt,
-      rpe_cible:it.rpe_cible,recup:it.recup,sort_order:it.sort_order}));
-    const {error:e2}=await supa.from('presc_items').insert(clones);
-    if(e2){alert('Erreur : '+e2.message);return;}
-    // les méthodes d'enchaînement suivent la duplication
-    if(PRESC_BLOCS.length){
-      await supa.from('presc_blocs').delete().eq('session_id',target.id);
-      const bclones=PRESC_BLOCS.map(b=>({session_id:target.id,bloc:b.bloc,format:b.format,
-        tours:b.tours,recup_inter:b.recup_inter,recup_bloc:b.recup_bloc,
-        duree_cible:b.duree_cible,note:b.note}));
-      const {error:e4}=await supa.from('presc_blocs').insert(bclones);
-      if(e4)console.error(e4);
-    }
+    const ok=await copyPrescContentTo(target.id);
+    if(!ok)return;
     created++;
   }
   MP_SEL.dup.clear(); mpRender('dup');
@@ -5301,13 +5306,24 @@ let pendingPrescBulk=null; // plusieurs prescriptions validées d'un coup (séle
 async function markPrescDone(){
   if(!currentPrescId)return;
   const p=PRESC.find(x=>x.id===currentPrescId); if(!p)return;
+  // Le groupe = toutes les séances créées en même temps que celle-ci (même date,
+  // même objectif, autre joueur) — pas besoin d'être passé par "Dupliquer" au
+  // préalable : on synchronise le contenu maintenant, pour tout le monde.
+  const siblings=PRESC.filter(s=>s.id!==p.id&&s.player_id!==p.player_id&&s.date===p.date&&(s.objectif||s.titre)===(p.objectif||p.titre));
+  if(siblings.length&&PRESC_ITEMS.length){
+    for(const sib of siblings){
+      const ok=await copyPrescContentTo(sib.id);
+      if(!ok)return;
+    }
+  }
+  const group=[p,...siblings];
   // On passe par la fenêtre de saisie pour garantir un volume et une action
   // corrects : sans volume la séance compterait pour zéro dans toutes les
   // analyses, et une action choisie au hasard fausserait la distribution.
-  pendingPresc={id:p.id,player_id:p.player_id,date:p.date,
-                duree:p.duree_prevue_min,objectif:p.objectif||p.titre};
+  pendingPresc=null;
+  pendingPrescBulk=group.map(g=>({id:g.id,player_id:g.player_id}));
   ensureChgFormReady();
-  MP_SEL.chg.clear(); MP_SEL.chg.add(p.player_id);
+  MP_SEL.chg.clear(); group.forEach(g=>MP_SEL.chg.add(g.player_id));
   mpRender('chg');
   document.getElementById('chgDate').value=p.date;
   document.getElementById('chgDuree').value=p.duree_prevue_min||'';
@@ -5319,8 +5335,12 @@ async function markPrescDone(){
     document.getElementById('chgSecteur').value=best.secteur; fillChgActions();
     document.getElementById('chgAction').value=best.id;
   }
-  document.getElementById('qaTitle').textContent='Valider la séance réalisée';
-  document.getElementById('qaHint').style.display='block';
+  document.getElementById('qaTitle').textContent=group.length>1?`Valider ${group.length} séances réalisées`:'Valider la séance réalisée';
+  const hint=document.getElementById('qaHint');
+  hint.innerHTML=group.length>1
+    ?'Tout le groupe initialement sélectionné est déjà coché ci-dessous. <b>Décoche uniquement les joueurs qui n\'ont pas fait la séance.</b>'
+    :'Renseigne le <b>volume réellement effectué</b> et l\'action correspondante : sans volume, la séance n\'apparaîtrait pas dans les analyses.';
+  hint.style.display='block';
   document.getElementById('qaOverlay').classList.add('on');
 }
 /* ═══════ DASHBOARD INDIVIDUALISATION — SUIVI DE CHARGE ═══════
@@ -5648,8 +5668,8 @@ async function addChargeSession(){
   if(error){alert('Erreur : '+error.message);return;}
   (data||[]).forEach(d=>CHG_SESSIONS.unshift(d));
   const doneIds=[];
-  if(pendingPresc)doneIds.push(pendingPresc.id);
-  if(pendingPrescBulk)pendingPrescBulk.forEach(x=>doneIds.push(x.id));
+  if(pendingPresc&&MP_SEL.chg.has(pendingPresc.player_id))doneIds.push(pendingPresc.id);
+  if(pendingPrescBulk)pendingPrescBulk.forEach(x=>{if(MP_SEL.chg.has(x.player_id))doneIds.push(x.id)});
   if(doneIds.length){
     const {error:ep}=await supa.from('presc_sessions').update({statut:'fait',done_at:new Date().toISOString()}).in('id',doneIds);
     if(ep)alert('Séance(s) enregistrée(s), mais statut non mis à jour : '+ep.message);
