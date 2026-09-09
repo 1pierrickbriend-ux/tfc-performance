@@ -748,6 +748,7 @@ th:hover>.pctPop, td:hover>.pctPop, .pctPop:hover{display:flex}
 .stBtn{border:1px solid var(--line);background:rgba(0,0,0,.2);color:var(--muted);border-radius:7px;padding:3px 8px;font-size:10.5px;font-weight:600}
 .stBtn.on-ok{background:var(--ok);border-color:var(--ok);color:#0e2b1c}
 .stBtn.on-bad{background:var(--bad);border-color:var(--bad);color:#3a0e0e}
+.stBtn.on-indispo{background:#b0a8c9;border-color:#b0a8c9;color:#241a3d}
 .stBtn.on-info{background:var(--info);border-color:var(--info);color:#0e1f3a}
 .stBtn.on-warn{background:var(--warn);border-color:var(--warn);color:#3a260e}
 .stBtn.on-neutral{background:var(--panel3);border-color:var(--accent);color:var(--ink)}
@@ -1019,6 +1020,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   <div class="dispoBar" onclick="goTab('joueurs')" id="headerDispo">
 
   </div>
+  <div id="headerAvailScore" onclick="goTab('joueurs')" style="cursor:pointer;display:flex;align-items:center"></div>
   <div class="userPill"><span id="userEmail"></span><button onclick="doLogout()">Déconnexion</button></div>
 </header>
 
@@ -2935,6 +2937,21 @@ function gaugeSVG(level,emoji){
     <line x1="28" y1="28" x2="${nx}" y2="${ny}" stroke="#f4f2fb" stroke-width="2.4" stroke-linecap="round"/>
     <circle cx="28" cy="28" r="3" fill="#f4f2fb"/></svg><span class="gl">${emoji}</span></div>`;
 }
+/* Score de disponibilité de l'effectif (bandeau supérieur) : dispo / (dispo+blessés).
+   Les indisponibles pour raison hors football n'entrent ni au numérateur ni
+   au dénominateur — ils ne comptent pas comme un manque lié au football. */
+function availScoreColor(score){
+  return score>=85?'#4fd191':score>=75?'#ffd93d':'#ff6a6a';
+}
+function availScoreSVG(score){
+  const color=availScoreColor(score),r=15,c=2*Math.PI*r,off=c*(1-Math.max(0,Math.min(100,score))/100);
+  return `<svg width="40" height="40" viewBox="0 0 40 40" style="flex:none" title="Disponibilité de l'effectif (hors indisponibilités non liées au football)">
+    <circle cx="20" cy="20" r="${r}" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="4"/>
+    <circle cx="20" cy="20" r="${r}" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}" transform="rotate(-90 20 20)"/>
+    <text x="20" y="24" text-anchor="middle" font-size="10.5" font-weight="800" fill="${color}" font-family="var(--font-display)">${score}%</text>
+  </svg>`;
+}
 /* Jauge manuelle glissable (utilisée en Vue d'ensemble) — position libre, indépendante des GPS */
 let WEEK_GAUGES={}; // {weekN:{coeur:pct,sprint:pct}}
 function gaugePct(weekN,key){return WEEK_GAUGES[weekN]?.[key]??0.5}
@@ -3782,20 +3799,27 @@ const IMG_PLAYERBG='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEB
 function renderPlayers(){
   const list=IPLAYERS.filter(p=>p.actif!==false);
   const nDispo=list.filter(p=>p.dispo!==false).length;
-  const nBlesse=list.filter(p=>p.dispo===false).length;
+  const nBlesse=list.filter(p=>p.dispo===false&&!p.hors_football).length;
+  const nIndispo=list.filter(p=>p.dispo===false&&p.hors_football).length;
   const nU18=list.filter(p=>p.affectation==='u18').length;
   const nPro=list.filter(p=>p.affectation==='pro').length;
+  const scoreDenom=nDispo+nBlesse;
+  const score=scoreDenom>0?Math.round(nDispo/scoreDenom*100):100;
   document.getElementById('playerStats').innerHTML=`
     <div class="statCard"><div class="n" style="color:var(--ok)">${nDispo}</div><div class="l">Disponibles</div></div>
     <div class="statCard"><div class="n" style="color:var(--bad)">${nBlesse}</div><div class="l">Blessés</div></div>
+    <div class="statCard"><div class="n" style="color:#b0a8c9">${nIndispo}</div><div class="l">Indisponibles</div></div>
     <div class="statCard"><div class="n" style="color:var(--info)">${nU18}</div><div class="l">Avec U18</div></div>
     <div class="statCard"><div class="n" style="color:var(--warn)">${nPro}</div><div class="l">Avec les Pros</div></div>`;
   const hd=document.getElementById('headerDispo');
   if(hd)hd.innerHTML=`
     <span class="pill"><span class="dot" style="background:var(--ok)"></span>${nDispo} dispo</span>
     <span class="pill"><span class="dot" style="background:var(--bad)"></span>${nBlesse} blessé${nBlesse>1?'s':''}</span>
+    <span class="pill"><span class="dot" style="background:#b0a8c9"></span>${nIndispo} indispo</span>
     <span class="pill"><span class="dot" style="background:var(--info)"></span>${nU18} U18</span>
     <span class="pill"><span class="dot" style="background:var(--warn)"></span>${nPro} Pro</span>`;
+  const hs=document.getElementById('headerAvailScore');
+  if(hs)hs.innerHTML=availScoreSVG(score);
   document.getElementById('playerGrid').innerHTML=list.map(p=>{
     const n=p.name;
     const initials=n.split(' ').map(x=>x[0]).join('');
@@ -3813,8 +3837,9 @@ function renderPlayers(){
           <button class="rmPlayer" title="Retirer de l'effectif" onclick="removePlayer('${p.id}','${n.replace(/'/g,"\\'")}')">×</button>
         </div>
         <div class="stToggle">
-          <button class="stBtn ${p.dispo!==false?'on-ok':''}" onclick="setPlayerDispo('${p.id}',true)">Dispo</button>
-          <button class="stBtn ${p.dispo===false?'on-bad':''}" onclick="setPlayerDispo('${p.id}',false)">Blessé</button>
+          <button class="stBtn ${p.dispo!==false?'on-ok':''}" onclick="setPlayerAvailability('${p.id}','dispo')">Dispo</button>
+          <button class="stBtn ${p.dispo===false&&!p.hors_football?'on-bad':''}" onclick="setPlayerAvailability('${p.id}','blesse')">Blessé</button>
+          <button class="stBtn ${p.dispo===false&&p.hors_football?'on-indispo':''}" onclick="setPlayerAvailability('${p.id}','indispo')" title="Indisponible pour une raison autre qu'une blessure liée au football">Indispo</button>
         </div>
         <div class="stToggle">
           <button class="stBtn ${!p.affectation?'on-neutral':''}" onclick="setPlayerAffectation('${p.id}',null)">Réserve</button>
@@ -3826,23 +3851,27 @@ function renderPlayers(){
     </div>`;
   }).join('');
 }
-async function setPlayerDispo(id,val){
+async function setPlayerAvailability(id,status){
   const p=IPLAYERS.find(x=>x.id===id); if(!p)return;
-  const prev=p.dispo;
-  p.dispo=val; renderPlayers(); renderIndiv();
-  const {error}=await supa.from('indiv_players').update({dispo:val}).eq('id',id);
-  if(error){alert('Erreur de sauvegarde : '+error.message);p.dispo=prev;renderPlayers();return;}
+  const prevDispo=p.dispo,prevHF=p.hors_football;
+  const dispo=status==='dispo', hors_football=status==='indispo';
+  p.dispo=dispo; p.hors_football=hors_football; renderPlayers(); renderIndiv();
+  const {error}=await supa.from('indiv_players').update({dispo,hors_football}).eq('id',id);
+  if(error){alert('Erreur de sauvegarde : '+error.message);p.dispo=prevDispo;p.hors_football=prevHF;renderPlayers();return;}
   // Historise la période : sans cela, impossible de savoir plus tard qu'un
   // joueur était indisponible à une date donnée, donc impossible de
   // neutraliser équitablement son absence dans les comparaisons.
   const today=new Date().toISOString().slice(0,10);
-  if(val===false){
+  if(!dispo){
     const open=UNAVAIL.find(u=>u.player_id===id&&!u.date_fin);
     if(!open){
       const {data,error:e2}=await supa.from('player_unavail')
-        .insert({player_id:id,statut:'blesse',date_debut:today,created_by:CURRENT_USER_LABEL})
+        .insert({player_id:id,statut:status,date_debut:today,created_by:CURRENT_USER_LABEL})
         .select().single();
       if(e2)console.error(e2); else UNAVAIL.push(data);
+    }else if(open.statut!==status){
+      const {error:e4}=await supa.from('player_unavail').update({statut:status}).eq('id',open.id);
+      if(e4)console.error(e4); else open.statut=status;
     }
   }else{
     const open=UNAVAIL.filter(u=>u.player_id===id&&!u.date_fin);
@@ -3909,7 +3938,7 @@ function addPlayer(){
   const name=prompt('Nom du joueur à ajouter (ex : P. Nom) :'); if(!name||!name.trim())return;
   const base=slugify(name);
   const id=base+'-'+Math.random().toString(36).slice(2,6);
-  const row={id,name:name.trim(),statut:'V?',zones:[],contra:{},actif:true,dispo:true,affectation:null};
+  const row={id,name:name.trim(),statut:'V?',zones:[],contra:{},actif:true,dispo:true,hors_football:false,affectation:null};
   supa.from('indiv_players').insert(row).then(({error})=>{
     if(error){alert('Erreur d\'ajout : '+error.message);return;}
     IPLAYERS.push(row); renderPlayers(); renderIndiv();
