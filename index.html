@@ -663,6 +663,10 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .addMatchBtn{position:absolute;top:3px;left:3px;right:3px;background:none;border:1px dashed rgba(255,255,255,.25);color:var(--muted);border-radius:5px;padding:2px 0;font-size:8.5px;cursor:pointer}
 .addMatchBtn:hover{border-color:var(--accent);color:var(--ink)}
 .rmMatch{position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;font-size:10px;line-height:16px;cursor:pointer;padding:0}
+.editMatchDate{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;font-size:9px;line-height:16px;cursor:pointer;padding:0}
+.matchIn{cursor:grab}
+.matchIn:active{cursor:grabbing}
+.barZone.dragOver{outline:2px dashed var(--accent);outline-offset:-2px;background:rgba(139,123,255,.14)}
 .daySel{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:5px;font-size:10.5px}
 .rpeRow{display:flex;align-items:center;gap:5px;font-size:9.5px;color:var(--muted)}
 .rpeRow input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
@@ -1750,9 +1754,15 @@ const MATCHES_STATIC=[
    à l'identique des matchs N2/CE (badge JDM, logo, J+/J-), sans jamais toucher
    le type de jour déjà planifié (Pierrick le change lui-même si besoin). */
 let MANUAL_MATCHES=[];
+let MATCH_OVERRIDES=[]; // reports manuels des matchs N2/CE statiques (table match_date_overrides)
 let MATCHES=[...MATCHES_STATIC];
 function rebuildMatches(){
-  MATCHES=[...MATCHES_STATIC,...MANUAL_MATCHES].sort((a,b)=>a.d.localeCompare(b.d));
+  const withManual=[...MATCHES_STATIC,...MANUAL_MATCHES];
+  MATCHES=withManual.map(m=>{
+    if(m._manualId)return m; // les matchs manuels se modifient directement sur leur ligne, pas d'override
+    const ov=MATCH_OVERRIDES.find(o=>o.team===m.team&&o.orig_date===m.d);
+    return ov?{...m,_origDate:m.d,d:ov.new_date,time:ov.new_time,_rescheduled:true}:m;
+  }).sort((a,b)=>a.d.localeCompare(b.d));
   refreshWeekMatches();
 }
 function refreshWeekMatches(){
@@ -2724,20 +2734,23 @@ function sortBlocks(key){DAY_BLOCKS[key].sort((a,b)=>timeToMin(a.time)-timeToMin
 
 /* ═══════ SUPABASE : lecture initiale ═══════ */
 async function loadAll(){
-  const [{data:types,error:e1},{data:wdays,error:e2},{data:blocks,error:e3},{data:gps,error:e4},{data:logoFiles,error:e5},{data:manualMatches,error:e6}]=await Promise.all([
+  const [{data:types,error:e1},{data:wdays,error:e2},{data:blocks,error:e3},{data:gps,error:e4},{data:logoFiles,error:e5},{data:manualMatches,error:e6},{data:matchOv,error:e7}]=await Promise.all([
     supa.from('day_types').select('*'),
     supa.from('week_days').select('*').gte('week_n',WMIN).lte('week_n',WMAX),
     supa.from('day_blocks').select('*').gte('week_n',WMIN).lte('week_n',WMAX).order('sort_order'),
     supa.from('gps_data').select('*').gte('week_n',WMIN).lte('week_n',WMAX),
     supa.storage.from('logos').list(),
     supa.from('manual_matches').select('*'),
+    supa.from('match_date_overrides').select('*'),
   ]);
   if(e1||e2||e3||e4){
     alert('Erreur de connexion à la base : '+((e1||e2||e3||e4).message)+'\\nVérifie que le script SQL a bien été exécuté.');
     throw e1||e2||e3||e4;
   }
   if(e6)console.error('manual_matches',e6);
+  if(e7)console.error('match_date_overrides',e7);
   MANUAL_MATCHES=(manualMatches||[]).map(r=>({d:r.date,team:r.team,dom:r.dom,time:r.time,comp:r.comp||'amical',_manualId:r.id}));
+  MATCH_OVERRIDES=matchOv||[];
   rebuildMatches();
   (types||[]).forEach(t=>{TYPES[t.key]={nom:t.nom,color:t.color,rpe:Number(t.rpe),repos:t.is_repos,stripes:t.stripe_color2?[t.color,t.stripe_color2]:null}});
   WEEKS.filter(w=>w.n>=WMIN&&w.n<=WMAX).forEach(w=>{ if(!WEEK_TYPES[w.n]) WEEK_TYPES[w.n]=defaultTypesFor(w.n); GPS[w.n]=emptyGpsWeek(); });
@@ -3006,7 +3019,8 @@ function renderWeek(){
     const h=Math.max(8,(rpe/10)*100);
     const bg=T.stripes?`repeating-linear-gradient(0deg,${T.stripes[0]} 0 12px,${T.stripes[1]} 12px 24px)`:T.color;
     const md=matchOnDay(wk,d); const isMatch=!!md;
-    const barHTML=isMatch?`<div class="matchIn" style="background:${COMP_COLOR[compOf(md)]}">${logoHTML(md.team)}<span style="font-size:9px;font-weight:700;color:#fff">${md.dom?'🏠 DOM':'✈️ EXT'}</span><span style="font-size:8px;font-weight:700;color:#fff;opacity:.85">${COMP_LABEL[compOf(md)]}</span>${md._manualId?`<button class="rmMatch" onclick="deleteManualMatch(${md._manualId})" title="Supprimer ce match">×</button>`:''}</div>`
+    const dragKey=isMatch?(md._manualId?`manual::${md._manualId}`:`static::${md.team}||${md._origDate||md.d}`):null;
+    const barHTML=isMatch?`<div class="matchIn" draggable="true" ondragstart="matchDragStart('${dragKey}')" ondragend="matchDragEnd()" title="Glisser pour reporter sur un autre jour de la semaine" style="background:${COMP_COLOR[compOf(md)]}">${logoHTML(md.team)}<span style="font-size:9px;font-weight:700;color:#fff">${md.dom?'🏠 DOM':'✈️ EXT'}</span><span style="font-size:8px;font-weight:700;color:#fff;opacity:.85">${COMP_LABEL[compOf(md)]}${md._rescheduled?' · reporté':''}</span><button class="editMatchDate" onclick="event.stopPropagation();openMatchDateEdit('${dragKey}')" title="Changer la date (autre semaine)">✏️</button>${md._manualId?`<button class="rmMatch" onclick="event.stopPropagation();deleteManualMatch(${md._manualId})" title="Supprimer ce match">×</button>`:''}</div>`
       :T.repos?`<div class="bar repos" style="height:24%">😴</div><button class="addMatchBtn" onclick="openMatchModal('${iso(d)}')">⚽ + Match</button>`
       :`<div class="bar" style="height:${h}%;background:${bg}"><span class="rpeTip">RPE ${rpe}</span></div><button class="addMatchBtn" onclick="openMatchModal('${iso(d)}')">⚽ + Match</button>`;
     const blocks=blocksFor(wk,i);
@@ -3022,7 +3036,7 @@ function renderWeek(){
     cols.push(`
       <div class="dayCol${iso(d)===iso(TODAY)?' today':''}">
         <div class="dayLabel"><div class="rel">${dayLabel(d,wk)}</div><div class="cal">${DAYN[i]} ${d.getDate()} ${MOIS[d.getMonth()].slice(0,4)}.</div></div>
-        <div class="barZone">${barHTML}</div>
+        <div class="barZone" ondragover="event.preventDefault();this.classList.add('dragOver')" ondragleave="this.classList.remove('dragOver')" ondrop="this.classList.remove('dragOver');matchDropOn('${iso(d)}',event)">${barHTML}</div>
         <select class="daySel" onchange="setDayType(${i},this.value)">
           ${Object.entries(TYPES).map(([k,v])=>`<option value="${k}" ${k===tKey?'selected':''}>${v.nom}</option>`).join('')}
         </select>
@@ -3079,6 +3093,70 @@ async function deleteManualMatch(id){
   MANUAL_MATCHES=MANUAL_MATCHES.filter(m=>m._manualId!==id);
   rebuildMatches();
   renderWeek();renderMonth();
+}
+
+/* ═══════ REPORT DE MATCH (glisser-déposer + édition manuelle de date) ═══════
+   Un match manuel se modifie directement sur sa ligne (manual_matches).
+   Un match statique N2/CE n'a pas de ligne éditable — le report est stocké
+   à part (match_date_overrides, clé team+date d'origine) et vient se
+   superposer au calendrier codé en dur à chaque rebuildMatches(), sans
+   jamais modifier ce calendrier lui-même. */
+async function rescheduleMatch(matchRef,newDateIso,newTime){
+  if(matchRef._manualId){
+    const {error}=await supa.from('manual_matches').update({date:newDateIso}).eq('id',matchRef._manualId);
+    if(error){alert('Erreur : '+error.message);return;}
+    const m=MANUAL_MATCHES.find(x=>x._manualId===matchRef._manualId);
+    if(m)m.d=newDateIso;
+  }else{
+    const origDate=matchRef._origDate||matchRef.d;
+    const row={team:matchRef.team,orig_date:origDate,new_date:newDateIso,new_time:newTime!==undefined?newTime:matchRef.time};
+    const {error}=await supa.from('match_date_overrides').upsert(row);
+    if(error){alert('Erreur : '+error.message);return;}
+    const i=MATCH_OVERRIDES.findIndex(o=>o.team===matchRef.team&&o.orig_date===origDate);
+    if(i>=0)MATCH_OVERRIDES[i]=row; else MATCH_OVERRIDES.push(row);
+  }
+  rebuildMatches();
+  renderWeek();renderMonth();
+}
+let DRAGGED_MATCH_KEY=null;
+function matchDragStart(key){DRAGGED_MATCH_KEY=key;}
+function matchDragEnd(){DRAGGED_MATCH_KEY=null;}
+function matchDropOn(dateIso,ev){
+  ev.preventDefault();
+  const key=DRAGGED_MATCH_KEY; DRAGGED_MATCH_KEY=null;
+  if(!key)return;
+  const [type,ref]=key.split('::');
+  let matchRef,curDate;
+  if(type==='manual'){
+    const id=Number(ref); const m=MANUAL_MATCHES.find(x=>x._manualId===id);
+    if(!m)return; matchRef={_manualId:id}; curDate=m.d;
+  }else{
+    const sep=ref.lastIndexOf('||'); const team=ref.slice(0,sep); const origDate=ref.slice(sep+2);
+    const m=MATCHES.find(x=>x.team===team&&(x._origDate||x.d)===origDate);
+    matchRef={team,_origDate:origDate,time:m?m.time:null}; curDate=origDate;
+  }
+  if(dateIso===curDate)return;
+  const already=MATCHES.find(m=>m.d===dateIso);
+  if(already&&!confirm(`${fmtDateFR(new Date(dateIso+'T12:00:00'))} a déjà un match (${already.team}). Reporter quand même sur ce jour ?`))return;
+  rescheduleMatch(matchRef,dateIso);
+}
+function openMatchDateEdit(key){
+  const [type,ref]=key.split('::');
+  let cur,label;
+  if(type==='manual'){
+    const id=Number(ref); const m=MANUAL_MATCHES.find(x=>x._manualId===id); if(!m)return;
+    cur=m.d; label=m.team;
+  }else{
+    const sep=ref.lastIndexOf('||'); const team=ref.slice(0,sep); const origDate=ref.slice(sep+2);
+    const m=MATCHES.find(x=>x.team===team&&(x._origDate||x.d)===origDate); if(!m)return;
+    cur=m.d; label=team;
+  }
+  const input=prompt(`Nouvelle date pour le match contre ${label} (AAAA-MM-JJ) :`,cur);
+  if(!input)return;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(input.trim())){alert('Format attendu : AAAA-MM-JJ (ex : 2026-10-12)');return;}
+  const [t,r]=key.split('::');
+  const matchRef=t==='manual'?{_manualId:Number(r)}:{team:r.slice(0,r.lastIndexOf('||')),_origDate:r.slice(r.lastIndexOf('||')+2)};
+  rescheduleMatch(matchRef,input.trim());
 }
 
 /* ═══════ SCREEN INTELLIGENT : lecture OCR du tableau GPS prévisionnel ═══════
