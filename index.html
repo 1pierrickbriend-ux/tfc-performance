@@ -1034,8 +1034,8 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 </header>
 
 <nav class="tabs" id="tabs">
-  <button data-t="board">Board</button>
-  <button data-t="mois" class="on">Vue d'ensemble</button>
+  <button data-t="board" class="on">Board</button>
+  <button data-t="mois">Vue d'ensemble</button>
   <button data-t="semaine">Planification semaine</button>
   <button data-t="programmes">Bibliothèque</button>
   <button data-t="seances">Séances</button>
@@ -1047,7 +1047,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 
 <main>
 
-<section class="view on" id="v-mois">
+<section class="view" id="v-mois">
   <div class="rowHead">
     <h2>Vue d'ensemble — 2 mois glissants</h2>
     <span class="tag live">Données partagées Supabase</span>
@@ -1055,7 +1055,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   <div id="monthRows"></div>
 </section>
 
-<section class="view" id="v-board">
+<section class="view on" id="v-board">
   <div class="rowHead">
     <h2>Board</h2>
     <span class="tag live" id="boardSyncTag">Synchronisé en temps réel</span>
