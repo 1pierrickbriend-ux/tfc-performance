@@ -649,6 +649,9 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 #smartScreenZone.drag{border-color:var(--accent);color:var(--ink);background:rgba(139,123,255,.12)}
 #smartScreenModal{position:fixed;inset:0;background:rgba(15,10,30,.7);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
 #smartScreenModal.on{display:flex}
+#pasteGpsZone{background:var(--panel2);border:1px dashed var(--line);color:var(--muted);border-radius:10px;padding:9px 12px;font-size:13px;cursor:pointer;user-select:none}
+#pasteGpsModal{position:fixed;inset:0;background:rgba(15,10,30,.7);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+#pasteGpsModal.on{display:flex}
 #smartScreenTable th,#smartScreenTable td{padding:4px 6px;text-align:center;border:1px solid var(--line)}
 #smartScreenTable input{width:56px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:5px;padding:3px;font-size:11px;text-align:center}
 #smartScreenTable input.ocrMiss{border-color:rgba(255,107,107,.6)}
@@ -1181,6 +1184,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
       <button class="btn ghost" style="font-size:11px" onclick="copyPatronToCurrent()" title="Reprend les 11 colonnes de la semaine patron dans la semaine en cours, pour partir de vrais chiffres au lieu de zéros">📋 Copier la semaine patron</button>
       <div id="smartScreenZone" tabindex="0" title="Glisse, colle (Ctrl+V) ou clique pour importer une capture des données GPS prescrites">📷 Screen intelligent</div>
       <input type="file" id="smartScreenFile" accept="image/*" style="display:none">
+      <div id="pasteGpsZone" tabindex="0" onclick="openPasteGpsModal()" title="Colle directement le texte du tableau copié depuis ton fichier original">📋 Coller le tableau</div>
     </div>
     <div class="gpsScroll"><table class="gpsTable" id="gpsTable"><thead></thead><tbody></tbody></table></div>
     <div class="cycleBox">
@@ -1670,6 +1674,18 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="modalFoot">
       <button class="btn primary" onclick="confirmSmartScreenImport()">Importer</button>
       <button class="btn modalClose" onclick="closeSmartScreenModal()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div id="pasteGpsModal">
+  <div class="modalCard" style="max-width:520px">
+    <h3>Coller le tableau GPS</h3>
+    <div class="sub">Copie le tableau depuis ton fichier original (les 7 jours), puis colle-le ici avec Ctrl+V (ou Cmd+V sur Mac). L'analyse se fait automatiquement dès le collage.</div>
+    <textarea id="pasteGpsArea" placeholder="Colle ici…" rows="8" style="width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:10px;font-size:12px;font-family:monospace"></textarea>
+    <div class="modalFoot">
+      <button class="btn primary" onclick="parseGpsPasteAndReview()">Analyser</button>
+      <button class="btn modalClose" onclick="closePasteGpsModal()">Fermer</button>
     </div>
   </div>
 </div>
@@ -3313,6 +3329,60 @@ function parseGpsScreenshot(ocrData){
   });
   return {weekGuess,rows};
 }
+/* ═══════ COLLER LE TABLEAU (texte copié depuis le fichier original) ═══════
+   Plus fiable que l'OCR : un copier-coller de tableau (Excel, Sheets, la
+   plupart des grilles web) donne du texte en colonnes séparées par des
+   tabulations — une donnée exacte à parser, pas une image à deviner.
+   Repérage par nom de jour si présent dans la ligne (comme Screen intelligent) ;
+   à défaut, on prend les lignes dans l'ordre où elles arrivent en supposant
+   Lundi→Dimanche, en ignorant tout ce qui dépasse 7 lignes utiles. */
+function parseGpsPaste(text){
+  const lines=(text||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+  let weekGuess=null;const rawRows=[];
+  lines.forEach(line=>{
+    const sem=line.match(/semaine\s*(\d+)/i);
+    if(sem)weekGuess=parseInt(sem[1],10);
+    const cells=line.split('\t');
+    let dayIndex=-1;
+    for(let ci=0;ci<Math.min(cells.length,2);ci++){
+      const idx=DAY_RE.findIndex(re=>re.test(cells[ci]));
+      if(idx>=0){dayIndex=idx;break;}
+    }
+    const nums=cells
+      .map(c=>c.replace(/[^\d,.-]/g,'').replace(',','.'))
+      .filter(t=>t.length>0&&/^-?\d+(\.\d+)?$/.test(t))
+      .map(t=>Math.round(parseFloat(t)));
+    if(!nums.length)return; // ligne d'en-tête, ligne vide, etc. — ignorée
+    rawRows.push({dayIndex,values:nums.slice(0,11)});
+  });
+  if(rawRows.every(r=>r.dayIndex<0)){
+    rawRows.slice(0,7).forEach((r,i)=>{r.dayIndex=i;});
+  }
+  const rows=rawRows.filter(r=>r.dayIndex>=0&&r.dayIndex<7).map(r=>{
+    const values=Array(11).fill(null);
+    r.values.forEach((v,i)=>{if(i<11)values[i]=v;});
+    return {dayIndex:r.dayIndex,values};
+  });
+  return {weekGuess,rows};
+}
+function openPasteGpsModal(){
+  document.getElementById('pasteGpsArea').value='';
+  document.getElementById('pasteGpsModal').classList.add('on');
+  setTimeout(()=>document.getElementById('pasteGpsArea').focus(),50);
+}
+function closePasteGpsModal(){document.getElementById('pasteGpsModal').classList.remove('on')}
+function parseGpsPasteAndReview(){
+  const text=document.getElementById('pasteGpsArea').value;
+  if(!text.trim()){alert("Colle d'abord le tableau (Ctrl+V) avant d'analyser.");return;}
+  const parsed=parseGpsPaste(text);
+  if(!parsed.rows.length){alert("Aucune ligne exploitable trouvée dans le texte collé. Vérifie que c'est bien le tableau (colonnes séparées par tabulations) qui a été copié.");return;}
+  closePasteGpsModal();
+  openSmartScreenReview(parsed);
+}
+(function(){
+  const ta=document.getElementById('pasteGpsArea');
+  if(ta)ta.addEventListener('paste',()=>setTimeout(parseGpsPasteAndReview,30));
+})();
 function openSmartScreenReview(parsed){
   const sel=document.getElementById('smartScreenWeek');
   sel.innerHTML=WEEKS.filter(w=>w.n>=WMIN&&w.n<=WMAX).map(w=>`<option value="${w.n}">Semaine ${w.n}${w.n===curWeek?' (en cours)':''}</option>`).join('');
