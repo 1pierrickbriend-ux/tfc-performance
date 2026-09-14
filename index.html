@@ -656,6 +656,8 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 #customConfirmModal.on{display:flex}
 #customPromptModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:95;padding:20px}
 #customPromptModal.on{display:flex}
+#blockDureeModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:95;padding:20px}
+#blockDureeModal.on{display:flex}
 #smartScreenTable th,#smartScreenTable td{padding:4px 6px;text-align:center;border:1px solid var(--line)}
 #smartScreenTable input{width:56px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:5px;padding:3px;font-size:11px;text-align:center}
 #smartScreenTable input.ocrMiss{border-color:rgba(255,107,107,.6)}
@@ -688,9 +690,7 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .blk{border-radius:7px;padding:3px 5px;font-size:10px;line-height:1.3;display:flex;flex-direction:column;gap:3px}
 .blkMain{display:flex;gap:5px;align-items:center}
 .blk .lbl{flex:1;min-width:0;overflow-wrap:break-word}
-.blkDur{display:flex;align-items:center;gap:4px;font-size:8.5px;opacity:.75;padding-left:47px}
 .blk input.t{width:42px;flex:none;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.2);color:inherit;border-radius:4px;padding:2px 3px;font-family:'Spline Sans Mono';font-size:9px;text-align:center}
-.blk input.dur{width:34px;flex:none;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:2px 3px;font-family:'Spline Sans Mono';font-size:8.5px;text-align:center}
 .blk span.lbl{flex:1}
 .blk .rmBlk{flex:none;background:none;border:none;color:inherit;opacity:.5;font-size:12px;padding:0 2px}
 .blk .rmBlk:hover{opacity:1}
@@ -1632,7 +1632,6 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="freeActionRow">
       <input id="freeActionEmoji" placeholder="emoji" maxlength="4">
       <input id="freeActionText" placeholder="Écris ce que tu veux…">
-      <input type="number" id="freeActionDuree" placeholder="min" min="0" step="5" title="Durée en minutes — fait varier la taille du bloc" style="width:52px">
       <input type="color" id="freeActionColor" value="#8b7bff" title="Couleur de fond">
       <button class="btn primary" onclick="addFreeActionBlock()">Ajouter</button>
     </div>
@@ -1706,6 +1705,20 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     <div class="modalFoot">
       <button class="btn primary" onclick="cpResolve(true)">OK</button>
       <button class="btn modalClose" onclick="cpResolve(false)">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div id="blockDureeModal">
+  <div class="modalCard" style="max-width:340px">
+    <h3 id="bdTitle">Horaires</h3>
+    <div class="seanceForm">
+      <label>De<input type="time" id="bdFrom"></label>
+      <label>À<input type="time" id="bdTo"></label>
+    </div>
+    <div class="modalFoot">
+      <button class="btn primary" onclick="saveBlockDuree()">Valider</button>
+      <button class="btn modalClose" onclick="closeBlockDureeModal()">Fermer</button>
     </div>
   </div>
 </div>
@@ -3188,10 +3201,9 @@ function renderWeek(){
       <div class="blk ${b.kind}" style="padding-top:${pad}px;padding-bottom:${pad}px;${b.c?`background:${b.c}${tc?`;color:${tc}`:''}`:''}">
         <div class="blkMain">
           <input class="t" value="${b.time}" onchange="setBlockTime('${key}',${bi},this.value)">
-          <span class="lbl">${b.ic||''} ${isMatch?(b.dom?'🏠 ':'✈️ ')+"Coup d'envoi — "+b.n+(b.approx?' (h. à confirmer)':''):b.n}</span>
+          <span class="lbl"${isMatch?'':` onclick="openBlockDureeEditor('${key}',${bi})" style="cursor:pointer" title="Cliquer pour régler les horaires (de... à...)"`}>${b.ic||''} ${isMatch?(b.dom?'🏠 ':'✈️ ')+"Coup d'envoi — "+b.n+(b.approx?' (h. à confirmer)':''):b.n}</span>
           <button class="rmBlk" onclick="removeBlock('${key}',${bi})">×</button>
         </div>
-        ${isMatch?'':`<div class="blkDur"><span>⏱</span><input class="dur" type="number" min="0" step="5" value="${b.duree||''}" placeholder="min" title="Durée en minutes — fait varier la taille du bloc" onchange="setBlockDuree('${key}',${bi},this.value)"></div>`}
       </div>`;
     }).join('');
     cols.push(`
@@ -3522,7 +3534,33 @@ function applyProfil(p){
   renderWeek();
 }
 function setBlockTime(key,bi,v){DAY_BLOCKS[key][bi].time=v;sortBlocks(key);renderWeek();const[wn,di]=key.split('-').map(Number);saveBlocks(wn,di);}
-function setBlockDuree(key,bi,v){DAY_BLOCKS[key][bi].duree=v===''?null:Math.max(0,parseInt(v,10)||0);renderWeek();const[wn,di]=key.split('-').map(Number);saveBlocks(wn,di);}
+let bdKey=null,bdBi=null;
+function openBlockDureeEditor(key,bi){
+  bdKey=key;bdBi=bi;
+  const b=DAY_BLOCKS[key][bi];
+  document.getElementById('bdTitle').textContent=(b.ic||'')+' '+b.n;
+  const startMin=timeToMin(b.time)===9999?720:timeToMin(b.time);
+  const endMin=startMin+(b.duree||30);
+  const fmt=m=>String(Math.floor((m%1440)/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  document.getElementById('bdFrom').value=b.time||fmt(startMin);
+  document.getElementById('bdTo').value=fmt(endMin);
+  document.getElementById('blockDureeModal').classList.add('on');
+}
+function closeBlockDureeModal(){document.getElementById('blockDureeModal').classList.remove('on')}
+function saveBlockDuree(){
+  const from=document.getElementById('bdFrom').value;
+  const to=document.getElementById('bdTo').value;
+  if(!from||!to){alert('Renseigne les deux heures.');return;}
+  const fromMin=timeToMin(from),toMin=timeToMin(to);
+  let duree=toMin-fromMin;
+  if(duree<=0)duree+=24*60; // passe minuit — cas rare, géré proprement plutôt que de planter
+  DAY_BLOCKS[bdKey][bdBi].time=from;
+  DAY_BLOCKS[bdKey][bdBi].duree=duree;
+  sortBlocks(bdKey);
+  closeBlockDureeModal();
+  renderWeek();
+  const[wn,di]=bdKey.split('-').map(Number);saveBlocks(wn,di);
+}
 function removeBlock(key,bi){DAY_BLOCKS[key].splice(bi,1);renderWeek();const[wn,di]=key.split('-').map(Number);saveBlocks(wn,di);}
 
 /* ═══════ MODAL AJOUT BLOC ═══════ */
@@ -3537,7 +3575,6 @@ function openModal(key){
       <span class="cdot" style="background:#888"></span><span>${s.ic} ${s.n}</span></div>`).join('');
   document.getElementById('freeActionEmoji').value='';
   document.getElementById('freeActionText').value='';
-  document.getElementById('freeActionDuree').value='';
   document.getElementById('freeActionColor').value='#8b7bff';
   document.getElementById('modal').classList.add('on');
 }
@@ -3551,11 +3588,9 @@ function addFreeActionBlock(){
   const emoji=document.getElementById('freeActionEmoji').value.trim();
   const text=document.getElementById('freeActionText').value.trim();
   const color=document.getElementById('freeActionColor').value;
-  const dureeRaw=document.getElementById('freeActionDuree').value;
-  const duree=dureeRaw===''?30:Math.max(0,parseInt(dureeRaw,10)||0);
   if(!text){alert('Écris un texte pour ton action.');return;}
   const key=modalDayKey;
-  DAY_BLOCKS[key].push({kind:'action',n:text,ic:emoji,c:color,time:'12:00',duree});
+  DAY_BLOCKS[key].push({kind:'action',n:text,ic:emoji,c:color,time:'12:00',duree:30});
   sortBlocks(key);closeModal();renderWeek();
   const[wn,di]=key.split('-').map(Number);saveBlocks(wn,di);
 }
@@ -6283,9 +6318,11 @@ function weekSchedPage(){
       ? blocks.map(b=>{
           const nm=b.kind==='match'?(b.dom?'Coup d\'envoi — ':'Coup d\'envoi — ')+b.n:b.n;
           const bg=b.c?`background:${b.c}22`:'';
-          return `<div class="it">
+          const endTime=(b.kind!=='match'&&b.duree)?(()=>{const m=timeToMin(b.time)+b.duree;return String(Math.floor((m%1440)/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');})():null;
+          const pad=(b.kind==='match')?2:Math.max(1,Math.min(6,1+((b.duree||30)/20)));
+          return `<div class="it" style="padding-top:${pad}mm;padding-bottom:${pad}mm">
             <span class="wdIc" style="${bg}">${b.ic||'•'}</span>
-            <span class="wdTxt"><span class="h">${b.time}</span><span class="n">${nm}</span></span>
+            <span class="wdTxt"><span class="h">${b.time}${endTime?'–'+endTime:''}</span><span class="n">${nm}</span></span>
           </div>`;
         }).join('')
       : `<div class="rest">REPOS</div>`;
