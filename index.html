@@ -6346,7 +6346,7 @@ function monthPage(monthOffset){
         inner=`<span class="venue">${md.dom?'🏠':'✈️'}</span>${pdfLogo(md.team,'mLogo')}
                <div class="mLab">${md.team}</div>`;
       }else if(T.repos){
-        inner=`<div class="mLab">Repos</div>`;
+        inner=`<div class="mLab">😴 Repos</div>`;
       }else{
         inner=`<div class="mBar" style="height:${h}%;background:${barBg(T)}"><span class="rp">${rpe}</span></div>
                <div class="mLab">${T.nom}</div>`;
@@ -6377,7 +6377,7 @@ function weekSchedPage(){
         <div class="tName">${md.team}</div>
         <div class="tVenue">${md.dom?'🏠':'✈️'}</div></div>`;
     }else if(T.repos){
-      top=`<div class="wdTop"><div class="tZone"></div><div class="tName" style="color:#a49ab5">Repos</div></div>`;
+      top=`<div class="wdTop"><div class="tZone"></div><div class="tName" style="color:#a49ab5">😴 Repos</div></div>`;
     }else{
       top=`<div class="wdTop">
         <div class="tZone"><div class="tBarV" style="height:${Math.max(14,(rpe/10)*100)}%;background:${barBg(T)}"><span class="rp">${rpe}</span></div></div>
