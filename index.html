@@ -637,6 +637,8 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .matchLineSm b{font-size:9px}
 .gaugesBox{background:var(--panel);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px 4px}
 .miniBars{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;align-items:flex-end;gap:7px;cursor:pointer}
+.weekBanner{background:#1a2f5c;color:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:13px;letter-spacing:.6px;text-transform:uppercase;cursor:pointer;padding:10px}
+.bannerBtn{margin-top:8px;width:100%;font-size:10px}
 .miniBars:hover{border-color:var(--accent)}
 .miniCol{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:112px;justify-content:flex-end;border-radius:8px;padding:3px}
 .miniCol.today{outline:2px solid var(--accent);outline-offset:1px;background:rgba(139,123,255,.10)}
@@ -939,6 +941,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   .mCell.wkHi{background:#efe9f5;border:.5mm solid #745990}
   .mCell.wkHi.isMatch{background:#0f3d18;border:.5mm solid #745990}
   .mWkBanner{grid-column:1/-1;font-size:6.8pt;font-weight:800;color:#745990;letter-spacing:1.5px;text-transform:uppercase;padding:.6mm 0 .2mm;display:flex;align-items:center;gap:2mm}
+  .mBreakBanner{grid-column:1/-1;height:30mm;background:#1a2f5c;color:#fff;border-radius:2mm;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:11pt;letter-spacing:1px;text-transform:uppercase;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .mWkBanner:after{content:'';flex:1;height:.25mm;background:#d8cfe4}
 
   .wGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2mm}
@@ -1809,6 +1812,13 @@ let currentAgendaWeek=null;
 
 /* ═══════ TYPES DE SÉANCE (planning, statique) ═══════ */
 let PRESET_CATEGORIES=[],ACTION_PRESETS=[];
+let WEEK_BANNERS={};
+async function loadWeekBanners(){
+  const {data,error}=await supa.from('week_banners').select('*');
+  if(error){console.error('week_banners',error);return;}
+  WEEK_BANNERS={};
+  (data||[]).forEach(r=>{WEEK_BANNERS[r.week_n]=r.text;});
+}
 async function loadPresets(){
   const [{data:cats,error:e1},{data:presets,error:e2}]=await Promise.all([
     supa.from('preset_categories').select('*'),
@@ -2981,6 +2991,7 @@ async function afterLogin(user){
   const steps=[
     ['données de planification',loadAll],
     ['menu des actions',loadPresets],
+    ['bandeaux de semaine',loadWeekBanners],
     ['individualisation',loadIndiv],
     ['séances',loadSeances],
     ['jauges',loadGauges],
@@ -3062,6 +3073,10 @@ function renderMonth(){
     const matchHTML=(w.matches&&w.matches.length)
       ? w.matches.map(m=>`<div class="matchLine" style="background:${COMP_COLOR[compOf(m)]}22;border-color:${COMP_COLOR[compOf(m)]}">${logoHTML(m.team,true)}<span><b style="color:${COMP_COLOR[compOf(m)]}">${COMP_LABEL[compOf(m)]}</b> · ${m.dom?'🏠':'✈️'} ${m.team}${m.j&&compOf(m)!=='amical'?' ('+m.j+')':''} — ${DAYN[(new Date(m.d+'T12:00:00').getDay()+6)%7]} ${matchTimeLabel(m)}</span></div>`).join('')
       : `<div class="matchLine none">Pas de match cette semaine</div>`;
+    const banner=WEEK_BANNERS[w.n];
+    const barsZone=banner
+      ? `<div class="weekBanner" onclick="editWeekBanner(${w.n})" title="Cliquer pour modifier le bandeau">${banner}</div>`
+      : `<div class="miniBars" onclick="setWeek(${w.n});goTab('semaine')">${bars}</div>`;
     box.insertAdjacentHTML('beforeend',`
       <div class="monthWeek">
         <div class="monthMeta">
@@ -3069,11 +3084,29 @@ function renderMonth(){
           <div class="prof">${w.n===5?'Décharge (2-4) · fin de préparation':(w.matches&&w.matches.length>1)?'⚠️ Double match cette semaine':w.match?'Normale (1-5)':'Cycle long (sans match)'}</div>
           ${matchHTML}
           <div class="extRow">${extMatchCardHTML('pro',w)}${extMatchCardHTML('u18',w)}</div>
+          <button class="btn ghost bannerBtn" onclick="editWeekBanner(${w.n})">${banner?'✏️ Modifier le bandeau':'🚩 Ajouter un bandeau'}</button>
         </div>
         <div class="gaugesBox">${gaugeSVGManual(w.n,'coeur','❤️')}${gaugeSVGManual(w.n,'sprint','⚡')}</div>
-        <div class="miniBars" onclick="setWeek(${w.n});goTab('semaine')">${bars}</div>
+        ${barsZone}
       </div>`);
   });
+}
+async function editWeekBanner(weekN){
+  const current=WEEK_BANNERS[weekN]||'';
+  const text=await customPrompt(`Texte du bandeau pour la semaine ${weekN} (ex : TRÊVE INTERNATIONALE / SÉLECTIONS JEUNES) — laisse vide pour le retirer :`,current);
+  if(text===null)return;
+  const trimmed=text.trim();
+  if(!trimmed){
+    if(!current)return;
+    const {error}=await supa.from('week_banners').delete().eq('week_n',weekN);
+    if(error){alert('Erreur : '+error.message);return;}
+    delete WEEK_BANNERS[weekN];
+  }else{
+    const {error}=await supa.from('week_banners').upsert({week_n:weekN,text:trimmed});
+    if(error){alert('Erreur : '+error.message);return;}
+    WEEK_BANNERS[weekN]=trimmed;
+  }
+  renderMonth();
 }
 const COEUR=[20000,25000,30000,35000],SPRINT=[275,350,425,500];
 const GCOL=['#3fbf4e','#9ed13f','#f2d23a','#f29b3a','#e5473c'];
@@ -6337,6 +6370,9 @@ function monthPage(monthOffset){
     const types=WEEK_TYPES[w.n];
     const hi=(w.n===curWeek);
     if(hi)cells+=`<div class="mWkBanner">Semaine ${w.n} — en cours</div>`;
+    if(WEEK_BANNERS[w.n]){
+      cells+=`<div class="mBreakBanner">${WEEK_BANNERS[w.n]}</div>`;
+    }else{
     cells+=w.days.map((d,i)=>{
       const T=TYPES[types[i]],md=matchOnDay(w,d),isM=!!md;
       const rpe=rpeOf(w.n,i,T);
@@ -6354,6 +6390,7 @@ function monthPage(monthOffset){
       const cls='mCell'+(isM?' isMatch':'')+(T.repos?' isRepos':'')+(hi?' wkHi':'');
       return `<div class="${cls}"><span class="dNum">${d.getDate()}</span>${inner}</div>`;
     }).join('');
+    }
   });
   return `<div class="pg">
     ${pdfHead(MOIS[base.getMonth()]+' '+base.getFullYear(),'')}
