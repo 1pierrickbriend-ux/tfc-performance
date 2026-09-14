@@ -6530,10 +6530,21 @@ function printPrescSheet(){
   document.getElementById('printSheet').innerHTML=prescSheetPage();
   window.print();
 }
+function waitForImages(container){
+  const imgs=[...container.querySelectorAll('img')];
+  if(!imgs.length)return Promise.resolve();
+  return Promise.all(imgs.map(img=>{
+    if(img.complete)return Promise.resolve();
+    return new Promise(resolve=>{
+      img.addEventListener('load',resolve,{once:true});
+      img.addEventListener('error',resolve,{once:true}); // un logo manquant ne doit pas bloquer l'impression indéfiniment
+    });
+  }));
+}
 function genererPDF(){
-  document.getElementById('printSheet').innerHTML=
-    coverPage()+monthPage(0)+monthPage(1)+weekSchedPage()+macroGpsPage();
-  window.print();
+  const sheet=document.getElementById('printSheet');
+  sheet.innerHTML=coverPage()+monthPage(0)+monthPage(1)+weekSchedPage()+macroGpsPage();
+  waitForImages(sheet).then(()=>window.print());
 }
 </script>
 </body>
