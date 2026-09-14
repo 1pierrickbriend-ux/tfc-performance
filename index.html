@@ -655,9 +655,9 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 #pasteGpsZone{background:var(--panel2);border:1px dashed var(--line);color:var(--muted);border-radius:10px;padding:9px 12px;font-size:13px;cursor:pointer;user-select:none}
 #pasteGpsModal{position:fixed;inset:0;background:rgba(15,10,30,.7);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
 #pasteGpsModal.on{display:flex}
-#customConfirmModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:95;padding:20px}
+#customConfirmModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:120;padding:20px}
 #customConfirmModal.on{display:flex}
-#customPromptModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:95;padding:20px}
+#customPromptModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:120;padding:20px}
 #customPromptModal.on{display:flex}
 #blockDureeModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:95;padding:20px}
 #blockDureeModal.on{display:flex}
@@ -1741,13 +1741,19 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 </div>
 
 <div id="dateBannerModal">
-  <div class="modalCard" style="max-width:380px">
+  <div class="modalCard" style="max-width:420px">
     <h3 id="dbTitle">Ajouter un bandeau</h3>
     <div class="sub">S'affiche en plus des cases du jour, sans les cacher — les couleurs et types de séance restent visibles normalement.</div>
+    <div class="modalSec">Bandeaux fixes</div>
+    <div id="bannerPresetList"></div>
     <div class="seanceForm">
       <label>Du<input type="date" id="dbFrom"></label>
       <label>Au<input type="date" id="dbTo"></label>
       <label>Texte<input type="text" id="dbText" placeholder="Ex : Trêve internationale"></label>
+      <label>Couleur<input type="color" id="dbColor" value="#1a2f5c"></label>
+    </div>
+    <div class="modalFoot">
+      <button class="btn ghost" onclick="fixBannerPreset()" title="Enregistre ce texte et cette couleur comme bandeau fixe, réutilisable en un clic">📌 Fixer ce bandeau</button>
     </div>
     <div class="modalFoot">
       <button class="btn primary" onclick="saveDateBanner()">Enregistrer</button>
@@ -1834,10 +1840,16 @@ let currentAgendaWeek=null;
 /* ═══════ TYPES DE SÉANCE (planning, statique) ═══════ */
 let PRESET_CATEGORIES=[],ACTION_PRESETS=[];
 let DATE_BANNERS=[];
+let BANNER_PRESETS=[];
 async function loadDateBanners(){
-  const {data,error}=await supa.from('date_banners').select('*');
-  if(error){console.error('date_banners',error);return;}
-  DATE_BANNERS=data||[];
+  const [{data:banners,error:e1},{data:presets,error:e2}]=await Promise.all([
+    supa.from('date_banners').select('*'),
+    supa.from('banner_presets').select('*'),
+  ]);
+  if(e1)console.error('date_banners',e1);
+  if(e2)console.error('banner_presets',e2);
+  DATE_BANNERS=banners||[];
+  BANNER_PRESETS=presets||[];
 }
 async function loadPresets(){
   const [{data:cats,error:e1},{data:presets,error:e2}]=await Promise.all([
@@ -3124,18 +3136,51 @@ function miniBannerRowHTML(w){
   const tags=overlapping.map(b=>{
     let startIdx=days.findIndex(d=>d>=b.date_start); if(startIdx<0)startIdx=0;
     let endIdx=6; for(let i=6;i>=0;i--){if(days[i]<=b.date_end){endIdx=i;break;}}
-    return `<div class="miniBanner" style="grid-column:${startIdx+1}/${endIdx+2}" onclick="event.stopPropagation();editDateBanner(${b.id})" title="Cliquer pour modifier ce bandeau">${b.text}</div>`;
+    return `<div class="miniBanner" style="grid-column:${startIdx+1}/${endIdx+2};background:${b.color||'#1a2f5c'}" onclick="event.stopPropagation();editDateBanner(${b.id})" title="Cliquer pour modifier ce bandeau">${b.text}</div>`;
   }).join('');
   return `<div class="miniBannerRow">${tags}</div>`;
 }
 let editingBannerId=null;
+function renderBannerPresetList(){
+  const box=document.getElementById('bannerPresetList');
+  if(!box)return;
+  box.innerHTML=BANNER_PRESETS.map(p=>
+    `<div class="pickRow" onclick='applyBannerPreset(${JSON.stringify({t:p.text,c:p.color}).replace(/'/g,"&apos;")})'>
+      <span class="cdot" style="background:${p.color}"></span><span style="flex:1">${p.text}</span>
+      <button class="rmPreset" onclick="event.stopPropagation();deleteBannerPreset(${p.id})" title="Supprimer ce bandeau fixe">×</button>
+    </div>`).join('')||'<div class="note" style="padding:4px 0">Aucun bandeau fixe pour l\'instant — tape un texte ci-dessous puis « Fixer ce bandeau »</div>';
+}
+function applyBannerPreset(data){
+  document.getElementById('dbText').value=data.t;
+  document.getElementById('dbColor').value=data.c;
+}
+async function fixBannerPreset(){
+  const text=document.getElementById('dbText').value.trim();
+  const color=document.getElementById('dbColor').value;
+  if(!text){alert('Écris le texte du bandeau avant de le fixer.');return;}
+  const maxOrder=Math.max(0,...BANNER_PRESETS.map(p=>p.sort_order),-1);
+  const {data,error}=await supa.from('banner_presets').insert({text,color,sort_order:maxOrder+1}).select().single();
+  if(error){alert('Erreur : '+error.message);return;}
+  BANNER_PRESETS.push(data);
+  renderBannerPresetList();
+  alert(`"${text}" fixé — tu pourras le reprendre en un clic la prochaine fois, il ne restera qu'à choisir les dates.`);
+}
+async function deleteBannerPreset(id){
+  if(!await customConfirm('Supprimer ce bandeau fixe du menu ?'))return;
+  const {error}=await supa.from('banner_presets').delete().eq('id',id);
+  if(error){alert('Erreur : '+error.message);return;}
+  BANNER_PRESETS=BANNER_PRESETS.filter(p=>p.id!==id);
+  renderBannerPresetList();
+}
 function openDateBannerModal(){
   editingBannerId=null;
   document.getElementById('dbTitle').textContent='Ajouter un bandeau';
   document.getElementById('dbFrom').value='';
   document.getElementById('dbTo').value='';
   document.getElementById('dbText').value='';
+  document.getElementById('dbColor').value='#1a2f5c';
   document.getElementById('dbDeleteBtn').style.display='none';
+  renderBannerPresetList();
   document.getElementById('dateBannerModal').classList.add('on');
 }
 function editDateBanner(id){
@@ -3145,7 +3190,9 @@ function editDateBanner(id){
   document.getElementById('dbFrom').value=b.date_start;
   document.getElementById('dbTo').value=b.date_end;
   document.getElementById('dbText').value=b.text;
+  document.getElementById('dbColor').value=b.color||'#1a2f5c';
   document.getElementById('dbDeleteBtn').style.display='inline-block';
+  renderBannerPresetList();
   document.getElementById('dateBannerModal').classList.add('on');
 }
 function closeDateBannerModal(){document.getElementById('dateBannerModal').classList.remove('on')}
@@ -3153,15 +3200,21 @@ async function saveDateBanner(){
   const from=document.getElementById('dbFrom').value;
   const to=document.getElementById('dbTo').value;
   const text=document.getElementById('dbText').value.trim();
+  const color=document.getElementById('dbColor').value;
   if(!from||!to||!text){alert('Renseigne la date de début, la date de fin, et le texte du bandeau.');return;}
   if(to<from){alert('La date de fin doit être après la date de début.');return;}
+  // Un chevauchement avec un bandeau déjà existant produit deux bandes empilées
+  // sans espace visible, qui donnent l'impression d'un seul gros bloc opaque —
+  // mieux vaut prévenir que de laisser ça se reproduire silencieusement.
+  const overlap=DATE_BANNERS.find(b=>b.id!==editingBannerId&&b.date_start<=to&&b.date_end>=from);
+  if(overlap&&!await customConfirm(`Un bandeau existe déjà sur une partie de cette période ("${overlap.text}", du ${overlap.date_start} au ${overlap.date_end}).\nCréer quand même un second bandeau superposé ? (si tu voulais le modifier, ferme cette fenêtre et clique directement sur le bandeau existant à la place)`))return;
   if(editingBannerId){
-    const {error}=await supa.from('date_banners').update({date_start:from,date_end:to,text}).eq('id',editingBannerId);
+    const {error}=await supa.from('date_banners').update({date_start:from,date_end:to,text,color}).eq('id',editingBannerId);
     if(error){alert('Erreur : '+error.message);return;}
     const b=DATE_BANNERS.find(x=>x.id===editingBannerId);
-    if(b){b.date_start=from;b.date_end=to;b.text=text;}
+    if(b){b.date_start=from;b.date_end=to;b.text=text;b.color=color;}
   }else{
-    const {data,error}=await supa.from('date_banners').insert({date_start:from,date_end:to,text}).select().single();
+    const {data,error}=await supa.from('date_banners').insert({date_start:from,date_end:to,text,color}).select().single();
     if(error){alert('Erreur : '+error.message);return;}
     DATE_BANNERS.push(data);
   }
@@ -6443,7 +6496,7 @@ function monthPage(monthOffset){
     bannersOverlappingWeek(w).forEach(b=>{
       let startIdx=days.findIndex(dd=>dd>=b.date_start); if(startIdx<0)startIdx=0;
       let endIdx=6; for(let i=6;i>=0;i--){if(days[i]<=b.date_end){endIdx=i;break;}}
-      cells+=`<div class="mMiniBanner" style="grid-column:${startIdx+1}/${endIdx+2}">${b.text}</div>`;
+      cells+=`<div class="mMiniBanner" style="grid-column:${startIdx+1}/${endIdx+2};background:${b.color||'#1a2f5c'}">${b.text}</div>`;
     });
     cells+=w.days.map((d,i)=>{
       const T=TYPES[types[i]],md=matchOnDay(w,d),isM=!!md;
