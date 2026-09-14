@@ -2914,9 +2914,13 @@ function saveBlocks(weekN,dayIndex){
   // instantané plus ancien de DAY_BLOCKS — perte silencieuse d'un bloc.
   const prev=_blockSaveQueue[key]||Promise.resolve();
   const next=prev.then(async()=>{
-    await supa.from('day_blocks').delete().eq('week_n',weekN).eq('day_index',dayIndex);
+    const {error:delErr}=await supa.from('day_blocks').delete().eq('week_n',weekN).eq('day_index',dayIndex);
+    if(delErr){alert('⚠️ La sauvegarde du planning a échoué (semaine '+weekN+', jour '+dayIndex+') : '+delErr.message+'\\nRecharge la page pour vérifier ce qui est vraiment enregistré avant de continuer.');return;}
     const rows=(DAY_BLOCKS[key]||[]).map((b,i)=>({week_n:weekN,day_index:dayIndex,kind:b.kind,label:b.n,icon:b.ic||null,color:b.c||null,block_time:b.time,sort_order:i}));
-    if(rows.length){const {error}=await supa.from('day_blocks').insert(rows);if(error)console.error('saveBlocks',error);}
+    if(rows.length){
+      const {error}=await supa.from('day_blocks').insert(rows);
+      if(error){alert("⚠️ La sauvegarde du planning a échoué (semaine "+weekN+", jour "+dayIndex+") : "+error.message+"\nCe qui est affiché à l'écran n'est probablement PAS enregistré — recharge la page pour vérifier avant de continuer.");}
+    }
   }).catch(e=>console.error('saveBlocks queue',e));
   _blockSaveQueue[key]=next;
   return next;
