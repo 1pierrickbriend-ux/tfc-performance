@@ -827,7 +827,9 @@ th:hover>.pctPop, td:hover>.pctPop, .pctPop:hover{display:flex}
 .modalCard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:520px;width:100%;max-height:80vh;overflow:auto}
 .modalCard h3{font-size:14.5px;margin-bottom:4px}
 .modalCard .sub{font-size:12px;color:var(--muted);margin-bottom:13px}
-.pickRow{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:7px;cursor:pointer}
+.pickRow{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:7px;cursor:grab}
+.presetCatBox{min-height:12px}
+.presetCatBox.dragOver{outline:2px dashed var(--accent);outline-offset:2px;border-radius:10px}
 .pickRow:hover{border-color:var(--accent);background:var(--panel2)}
 .pickRow .cdot{width:9px;height:9px;border-radius:50%;flex:none}
 .pickRow span{font-size:13px;font-weight:600}
@@ -1628,16 +1630,18 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 <div id="modal">
   <div class="modalCard">
     <h3 id="modalTitle">Ajouter un bloc</h3>
-    <div class="modalSec">Séances</div>
-    <div id="modalSeances"></div>
-    <div class="modalSec">Blocs fixes</div>
-    <div id="modalFixes"></div>
+    <div id="modalCategories"></div>
+    <button class="btn ghost" style="font-size:11px;margin-top:4px" onclick="createPresetCategory()">+ Nouvelle catégorie</button>
     <div class="modalSec">Action libre</div>
     <div class="freeActionRow">
       <input id="freeActionEmoji" placeholder="emoji" maxlength="4">
       <input id="freeActionText" placeholder="Écris ce que tu veux…">
       <input type="color" id="freeActionColor" value="#8b7bff" title="Couleur de fond">
       <button class="btn primary" onclick="addFreeActionBlock()">Ajouter</button>
+    </div>
+    <div class="freeActionRow" style="margin-top:6px">
+      <select id="freeActionCategory" style="flex:1"></select>
+      <button class="btn ghost" onclick="fixNewPreset()" title="Enregistre cette action dans le menu, pour la réutiliser en un clic sans repasser par Action libre">📌 Fixer dans le menu</button>
     </div>
     <button class="btn modalClose" onclick="closeModal()">Fermer</button>
   </div>
@@ -1802,23 +1806,17 @@ let PIERRICK_STATUS=[];
 let currentAgendaWeek=null;
 
 /* ═══════ TYPES DE SÉANCE (planning, statique) ═══════ */
-const SEANCE_TYPES=[
-  {k:'terrain',n:'Terrain',c:'#4caf50',ic:'⚽'},
-  {k:'prevention',n:'Prévention',c:'#6db3ff',ic:'🛡'},
-  {k:'muscuHaut',n:'Muscu haut du corps',c:'#2438f0',ic:'💪'},
-  {k:'muscuBas',n:'Muscu bas du corps',c:'#1c2ba8',ic:'🦵'},
-  {k:'activation',n:'Activation libre',c:'#f2dfae',ic:'🔥'},
-  {k:'relaxation',n:'Relaxation',c:'#cfc9d4',ic:'🧘'},
-  {k:'video',n:'Séance vidéo',c:'#8b7bff',ic:'🎥'},
-  {k:'causerie',n:'Causerie',c:'#ffb04d',ic:'🗣'},
-  {k:'trajectoire',n:'Trajectoire',c:'#e0555a',ic:'🎓'},
-];
-const FIXED_TYPES=[
-  {k:'dej',n:'Petit déjeuner',ic:'🍽',t:'07:30'},
-  {k:'wellness',n:'Wellness',ic:'📱',t:'08:30'},
-  {k:'repas',n:'Repas',ic:'🍽',t:'12:30'},
-  {k:'test',n:'Test physique',ic:'🧪',t:'09:00'},
-];
+let PRESET_CATEGORIES=[],ACTION_PRESETS=[];
+async function loadPresets(){
+  const [{data:cats,error:e1},{data:presets,error:e2}]=await Promise.all([
+    supa.from('preset_categories').select('*'),
+    supa.from('action_presets').select('*'),
+  ]);
+  if(e1)console.error('preset_categories',e1);
+  if(e2)console.error('action_presets',e2);
+  PRESET_CATEGORIES=cats||[];
+  ACTION_PRESETS=presets||[];
+}
 
 /* ═══════ CALENDRIER RÉEL (statique, pas confidentiel, pas en base) ═══════ */
 const MATCHES_STATIC=[
@@ -2980,6 +2978,7 @@ async function afterLogin(user){
   // table manquante n'empêche pas le reste de se charger.
   const steps=[
     ['données de planification',loadAll],
+    ['menu des actions',loadPresets],
     ['individualisation',loadIndiv],
     ['séances',loadSeances],
     ['jauges',loadGauges],
@@ -3582,20 +3581,66 @@ function removeBlock(key,bi){DAY_BLOCKS[key].splice(bi,1);renderWeek();const[wn,
 let modalDayKey=null;
 function openModal(key){
   modalDayKey=key;
-  document.getElementById('modalSeances').innerHTML=SEANCE_TYPES.map(s=>
-    `<div class="pickRow" onclick='addBlock(${JSON.stringify(s).replace(/'/g,"&apos;")})'>
-      <span class="cdot" style="background:${s.c}"></span><span>${s.ic} ${s.n}</span></div>`).join('');
-  document.getElementById('modalFixes').innerHTML=FIXED_TYPES.map(s=>
-    `<div class="pickRow" onclick='addBlock(${JSON.stringify(s).replace(/'/g,"&apos;")})'>
-      <span class="cdot" style="background:#888"></span><span>${s.ic} ${s.n}</span></div>`).join('');
+  renderPresetMenu();
   document.getElementById('freeActionEmoji').value='';
   document.getElementById('freeActionText').value='';
   document.getElementById('freeActionColor').value='#8b7bff';
   document.getElementById('modal').classList.add('on');
 }
+function renderPresetMenu(){
+  const cats=[...PRESET_CATEGORIES].sort((a,b)=>a.sort_order-b.sort_order);
+  document.getElementById('modalCategories').innerHTML=cats.map(cat=>{
+    const items=ACTION_PRESETS.filter(p=>p.category_id===cat.id).sort((a,b)=>a.sort_order-b.sort_order);
+    const rows=items.map(p=>
+      `<div class="pickRow" draggable="true" ondragstart="presetDragStart(${p.id})" title="Glisser pour déplacer vers une autre catégorie"
+        onclick='addBlock(${JSON.stringify({n:p.name,ic:p.icon,c:p.color,kind:cat.kind}).replace(/'/g,"&apos;")})'>
+        <span class="cdot" style="background:${p.color||'#888'}"></span><span>${p.icon||''} ${p.name}</span>
+      </div>`).join('')||'<div class="note" style="padding:4px 0">Glisse une action ici</div>';
+    return `<div class="modalSec">${cat.name}</div>
+      <div class="presetCatBox" ondragover="event.preventDefault();this.classList.add('dragOver')" ondragleave="this.classList.remove('dragOver')" ondrop="this.classList.remove('dragOver');presetDropOnCategory(${cat.id},event)">${rows}</div>`;
+  }).join('');
+  const sel=document.getElementById('freeActionCategory');
+  if(sel)sel.innerHTML=cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+let draggedPresetId=null;
+function presetDragStart(id){draggedPresetId=id;}
+async function presetDropOnCategory(categoryId,ev){
+  ev.preventDefault();
+  const id=draggedPresetId; draggedPresetId=null;
+  if(!id)return;
+  const preset=ACTION_PRESETS.find(p=>p.id===id); if(!preset||preset.category_id===categoryId)return;
+  const newOrder=Math.max(0,...ACTION_PRESETS.filter(p=>p.category_id===categoryId).map(p=>p.sort_order),-1)+1;
+  const {error}=await supa.from('action_presets').update({category_id:categoryId,sort_order:newOrder}).eq('id',id);
+  if(error){alert('Erreur : '+error.message);return;}
+  preset.category_id=categoryId; preset.sort_order=newOrder;
+  renderPresetMenu();
+}
+async function fixNewPreset(){
+  const emoji=document.getElementById('freeActionEmoji').value.trim();
+  const text=document.getElementById('freeActionText').value.trim();
+  const color=document.getElementById('freeActionColor').value;
+  const categoryId=parseInt(document.getElementById('freeActionCategory').value,10);
+  if(!text){alert("Écris le texte de l'action avant de la fixer dans le menu.");return;}
+  if(!categoryId){alert("Choisis d'abord une catégorie, ou crée-en une avec « + Nouvelle catégorie ».");return;}
+  const newOrder=Math.max(0,...ACTION_PRESETS.filter(p=>p.category_id===categoryId).map(p=>p.sort_order),-1)+1;
+  const {data,error}=await supa.from('action_presets').insert({category_id:categoryId,name:text,icon:emoji||null,color,sort_order:newOrder}).select().single();
+  if(error){alert('Erreur : '+error.message);return;}
+  ACTION_PRESETS.push(data);
+  renderPresetMenu();
+  alert(`"${text}" ajouté au menu — tu pourras le reprendre en un clic la prochaine fois, plus besoin de retaper "Action libre".`);
+}
+async function createPresetCategory(){
+  const name=await customPrompt('Nom de la nouvelle catégorie :');
+  if(!name||!name.trim())return;
+  const newOrder=Math.max(0,...PRESET_CATEGORIES.map(c=>c.sort_order),-1)+1;
+  const {data,error}=await supa.from('preset_categories').insert({name:name.trim(),kind:'seance',sort_order:newOrder}).select().single();
+  if(error){alert('Erreur : '+error.message);return;}
+  PRESET_CATEGORIES.push(data);
+  renderPresetMenu();
+}
 function addBlock(data){
   const key=modalDayKey;
-  DAY_BLOCKS[key].push({kind:data.k==='dej'||data.k==='wellness'||data.k==='repas'||data.k==='test'?'fixe':'seance',n:data.n,ic:data.ic,c:data.c,time:data.t||'12:00',duree:30});
+  DAY_BLOCKS[key].push({kind:data.kind||'seance',n:data.n,ic:data.ic,c:data.c,time:'12:00',duree:30});
   sortBlocks(key);closeModal();renderWeek();
   const[wn,di]=key.split('-').map(Number);saveBlocks(wn,di);
 }
