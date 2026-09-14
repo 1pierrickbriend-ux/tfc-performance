@@ -652,6 +652,10 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 #pasteGpsZone{background:var(--panel2);border:1px dashed var(--line);color:var(--muted);border-radius:10px;padding:9px 12px;font-size:13px;cursor:pointer;user-select:none}
 #pasteGpsModal{position:fixed;inset:0;background:rgba(15,10,30,.7);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
 #pasteGpsModal.on{display:flex}
+#customConfirmModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:95;padding:20px}
+#customConfirmModal.on{display:flex}
+#customPromptModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:95;padding:20px}
+#customPromptModal.on{display:flex}
 #smartScreenTable th,#smartScreenTable td{padding:4px 6px;text-align:center;border:1px solid var(--line)}
 #smartScreenTable input{width:56px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:5px;padding:3px;font-size:11px;text-align:center}
 #smartScreenTable input.ocrMiss{border-color:rgba(255,107,107,.6)}
@@ -1678,6 +1682,29 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   </div>
 </div>
 
+<div id="customConfirmModal">
+  <div class="modalCard" style="max-width:420px">
+    <h3>Confirmer</h3>
+    <div class="sub" id="ccMsg"></div>
+    <div class="modalFoot">
+      <button class="btn danger" onclick="ccResolve(true)">Confirmer</button>
+      <button class="btn modalClose" onclick="ccResolve(false)">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div id="customPromptModal">
+  <div class="modalCard" style="max-width:420px">
+    <h3>Saisie</h3>
+    <div class="sub" id="cpMsg"></div>
+    <input type="text" id="cpInput" onkeydown="if(event.key==='Enter')cpResolve(true)" style="width:100%;margin-top:8px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 10px;font-size:13px">
+    <div class="modalFoot">
+      <button class="btn primary" onclick="cpResolve(true)">OK</button>
+      <button class="btn modalClose" onclick="cpResolve(false)">Annuler</button>
+    </div>
+  </div>
+</div>
+
 <div id="pasteGpsModal">
   <div class="modalCard" style="max-width:520px">
     <h3>Coller le tableau GPS</h3>
@@ -1709,6 +1736,40 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
 const SUPA_URL='https://ocoifvpcqgvijkrhpxfi.supabase.co';
 const SUPA_KEY='sb_publishable_eNi3PGhtpvpPLbFsqTHXUw_g9RhRmUP';
 const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+/* Confirmation maison, pas la boîte native du navigateur : si quelqu'un
+   coche un jour "Ne plus afficher" sur une confirm() native, TOUTES les
+   confirm() suivantes de l'onglet répondent silencieusement "annulé" sans
+   jamais rien afficher — plus aucune suppression n'est alors possible,
+   sans message d'erreur pour comprendre pourquoi. Une fenêtre à nous ne
+   peut pas être désactivée de cette façon. */
+let __ccResolve=null;
+function customConfirm(message){
+  return new Promise(resolve=>{
+    __ccResolve=resolve;
+    document.getElementById('ccMsg').innerHTML=String(message).replace(/\n/g,'<br>');
+    document.getElementById('customConfirmModal').classList.add('on');
+  });
+}
+function ccResolve(val){
+  document.getElementById('customConfirmModal').classList.remove('on');
+  if(__ccResolve){const r=__ccResolve;__ccResolve=null;r(val);}
+}
+let __cpResolve=null;
+function customPrompt(message,defaultValue){
+  return new Promise(resolve=>{
+    __cpResolve=resolve;
+    document.getElementById('cpMsg').textContent=message;
+    const inp=document.getElementById('cpInput');
+    inp.value=defaultValue||'';
+    document.getElementById('customPromptModal').classList.add('on');
+    setTimeout(()=>{inp.focus();inp.select();},50);
+  });
+}
+function cpResolve(ok){
+  document.getElementById('customPromptModal').classList.remove('on');
+  const val=ok?document.getElementById('cpInput').value:null;
+  if(__cpResolve){const r=__cpResolve;__cpResolve=null;r(val);}
+}
 
 /* ═══════ BOARD (communication rapide Pierrick / Julien) ═══════ */
 let BOARD_ITEMS=[];
@@ -1911,7 +1972,7 @@ async function toggleSeen(id){
   if(error){console.error(error);alert('Erreur : '+error.message);}
 }
 async function deleteBoardItem(id){
-  if(!confirm('Supprimer cet élément ? Cette action est définitive.'))return;
+  if(!await customConfirm('Supprimer cet élément ? Cette action est définitive.'))return;
   const {error}=await supa.from('board_items').delete().eq('id',id);
   if(error){console.error(error);alert('Erreur : '+error.message);}
 }
@@ -1980,9 +2041,9 @@ async function setPierrickStatus(weekN,dayI,status,timeFrom){
   const {error}=await supa.from('pierrick_day_status').upsert(row,{onConflict:'week_n,day_i'});
   if(error)alert('Erreur : '+error.message);
 }
-function pkAskTime(weekN,dayI){
+async function pkAskTime(weekN,dayI){
   const cur=pierrickStatusFor(weekN,dayI);
-  const input=prompt('À partir de quelle heure es-tu présent ce jour-là ? (HH:MM)',cur.time_from||'14:00');
+  const input=await customPrompt('À partir de quelle heure es-tu présent ce jour-là ? (HH:MM)',cur.time_from||'14:00');
   if(!input)return;
   if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(input.trim())){alert('Format attendu : HH:MM (ex : 14:30)');return;}
   setPierrickStatus(weekN,dayI,'present_at',input.trim());
@@ -2155,7 +2216,7 @@ async function createProgrammeFromSheet(){
   openSheetBuilder(data.id);
 }
 async function deleteProgramme(id){
-  if(!confirm('Supprimer ce programme ? Cette action est définitive (le PDF et le contenu structuré associés seront aussi supprimés).'))return;
+  if(!await customConfirm('Supprimer ce programme ? Cette action est définitive (le PDF et le contenu structuré associés seront aussi supprimés).'))return;
   const p=PROGRAMMES.find(x=>x.id===id);
   const {error}=await supa.from('programmes').delete().eq('id',id);
   if(error){alert('Erreur : '+error.message);return;}
@@ -2224,7 +2285,7 @@ async function addExerciseToProgramme(){
   }
 }
 async function removeProgEx(peId){
-  if(!confirm('Retirer cet exercice du programme ?'))return;
+  if(!await customConfirm('Retirer cet exercice du programme ?'))return;
   const {error}=await supa.from('programme_exercises').delete().eq('id',peId);
   if(error){alert('Erreur : '+error.message);return;}
   PROG_EX=PROG_EX.filter(p=>p.id!==peId);
@@ -2656,7 +2717,7 @@ async function addExercise(){
   await loadProgrammes();renderProgrammes();
 }
 async function deleteExercise(id){
-  if(!confirm('Supprimer cet exercice de la banque ? Il sera aussi retiré des programmes qui l\'utilisent.'))return;
+  if(!await customConfirm('Supprimer cet exercice de la banque ? Il sera aussi retiré des programmes qui l\'utilisent.'))return;
   const e=EXBANK.find(x=>x.id===id);
   const {error}=await supa.from('exercise_bank').delete().eq('id',id);
   if(error){alert('Erreur : '+error.message);return;}
@@ -2843,11 +2904,22 @@ async function saveWeekDay(weekN,dayIndex){
   const {error}=await supa.from('week_days').upsert({week_n:weekN,day_index:dayIndex,type_key,rpe_override});
   if(error)console.error('saveWeekDay',error);
 }
-async function saveBlocks(weekN,dayIndex){
+const _blockSaveQueue={};
+function saveBlocks(weekN,dayIndex){
   const key=weekN+'-'+dayIndex;
-  await supa.from('day_blocks').delete().eq('week_n',weekN).eq('day_index',dayIndex);
-  const rows=(DAY_BLOCKS[key]||[]).map((b,i)=>({week_n:weekN,day_index:dayIndex,kind:b.kind,label:b.n,icon:b.ic||null,color:b.c||null,block_time:b.time,sort_order:i}));
-  if(rows.length){const {error}=await supa.from('day_blocks').insert(rows);if(error)console.error('saveBlocks',error);}
+  // Les appels successifs sur le même jour sont enchaînés au lieu de partir
+  // en parallèle : sans ça, deux sauvegardes presque simultanées (ex. deux
+  // clics rapprochés sur "+ Ajouter") pouvaient se doubler sur le réseau,
+  // et celle qui arrivait en dernier au serveur écrasait l'autre avec un
+  // instantané plus ancien de DAY_BLOCKS — perte silencieuse d'un bloc.
+  const prev=_blockSaveQueue[key]||Promise.resolve();
+  const next=prev.then(async()=>{
+    await supa.from('day_blocks').delete().eq('week_n',weekN).eq('day_index',dayIndex);
+    const rows=(DAY_BLOCKS[key]||[]).map((b,i)=>({week_n:weekN,day_index:dayIndex,kind:b.kind,label:b.n,icon:b.ic||null,color:b.c||null,block_time:b.time,sort_order:i}));
+    if(rows.length){const {error}=await supa.from('day_blocks').insert(rows);if(error)console.error('saveBlocks',error);}
+  }).catch(e=>console.error('saveBlocks queue',e));
+  _blockSaveQueue[key]=next;
+  return next;
 }
 async function saveGpsCell(weekN,dayIndex){
   const v=GPS[weekN][dayIndex];
@@ -2937,6 +3009,7 @@ document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>goTab(b.datas
 function goTab(t){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+t));
+  if(t==='mois')renderMonth();
 }
 
 /* ═══════ VUE D'ENSEMBLE ═══════ */
@@ -3096,7 +3169,7 @@ function renderWeek(){
     const dragKey=isMatch?(md._manualId?`manual::${md._manualId}`:`static::${md.team}||${md._origDate||md.d}`):null;
     const barHTML=isMatch?`<div class="matchIn" draggable="true" ondragstart="matchDragStart('${dragKey}')" ondragend="matchDragEnd()" title="Glisser pour reporter sur un autre jour de la semaine" style="background:${COMP_COLOR[compOf(md)]}">${logoHTML(md.team)}<span style="font-size:9px;font-weight:700;color:#fff">${md.dom?'🏠 DOM':'✈️ EXT'}</span><span style="font-size:8px;font-weight:700;color:#fff;opacity:.85">${COMP_LABEL[compOf(md)]}${md._rescheduled?' · reporté':''}</span><button class="editMatchDate" onclick="event.stopPropagation();openMatchDateEdit('${dragKey}')" title="Changer la date (autre semaine)">✏️</button>${md._manualId?`<button class="rmMatch" onclick="event.stopPropagation();deleteManualMatch(${md._manualId})" title="Supprimer ce match">×</button>`:''}</div>`
       :T.repos?`<div class="bar repos" style="height:24%">😴</div><button class="addMatchBtn" onclick="openMatchModal('${iso(d)}')">⚽ + Match</button>`
-      :`<div class="bar" style="height:${h}%;background:${bg}"><span class="rpeTip">RPE ${rpe}</span></div><button class="addMatchBtn" onclick="openMatchModal('${iso(d)}')">⚽ + Match</button>`;
+      :`<div class="bar" id="bar-${i}" style="height:${h}%;background:${bg}"><span class="rpeTip" id="rpeTip-${i}">RPE ${rpe}</span></div><button class="addMatchBtn" onclick="openMatchModal('${iso(d)}')">⚽ + Match</button>`;
     const blocks=blocksFor(wk,i);
     const schedHTML=blocks.map((b,bi)=>{
       const tc=(b.kind==='action'&&b.c)?jTextOn(b.c):b.tc;
@@ -3114,7 +3187,7 @@ function renderWeek(){
         <select class="daySel" onchange="setDayType(${i},this.value)">
           ${Object.entries(TYPES).map(([k,v])=>`<option value="${k}" ${k===tKey?'selected':''}>${v.nom}</option>`).join('')}
         </select>
-        ${(T.repos||isMatch)?'':`<div class="rpeRow">RPE <input type="range" min="0" max="10" step="0.5" value="${rpe}" oninput="setDayRpe(${i},this.value)"><span class="rpeVal">${rpe}</span></div>`}
+        ${(T.repos||isMatch)?'':`<div class="rpeRow">RPE <input type="range" min="0" max="10" step="0.5" value="${rpe}" oninput="liveRpePreview(${i},this.value)" onchange="setDayRpe(${i},this.value)"><span class="rpeVal" id="rpeVal-${i}">${rpe}</span></div>`}
         <div class="sched">${schedHTML}${T.repos?'':`<button class="addSeance" onclick="openModal('${key}')">+ Ajouter</button>`}</div>
       </div>`);
   });
@@ -3161,7 +3234,7 @@ async function submitManualMatch(){
   closeMatchModal();renderWeek();renderMonth();
 }
 async function deleteManualMatch(id){
-  if(!confirm('Supprimer ce match ?'))return;
+  if(!await customConfirm('Supprimer ce match ?'))return;
   const {error}=await supa.from('manual_matches').delete().eq('id',id);
   if(error){alert('Erreur : '+error.message);return;}
   MANUAL_MATCHES=MANUAL_MATCHES.filter(m=>m._manualId!==id);
@@ -3195,7 +3268,7 @@ async function rescheduleMatch(matchRef,newDateIso,newTime){
 let DRAGGED_MATCH_KEY=null;
 function matchDragStart(key){DRAGGED_MATCH_KEY=key;}
 function matchDragEnd(){DRAGGED_MATCH_KEY=null;}
-function matchDropOn(dateIso,ev){
+async function matchDropOn(dateIso,ev){
   ev.preventDefault();
   const key=DRAGGED_MATCH_KEY; DRAGGED_MATCH_KEY=null;
   if(!key)return;
@@ -3211,10 +3284,10 @@ function matchDropOn(dateIso,ev){
   }
   if(dateIso===curDate)return;
   const already=MATCHES.find(m=>m.d===dateIso);
-  if(already&&!confirm(`${fmtDateFR(new Date(dateIso+'T12:00:00'))} a déjà un match (${already.team}). Reporter quand même sur ce jour ?`))return;
+  if(already&&!await customConfirm(`${fmtDateFR(new Date(dateIso+'T12:00:00'))} a déjà un match (${already.team}). Reporter quand même sur ce jour ?`))return;
   rescheduleMatch(matchRef,dateIso);
 }
-function openMatchDateEdit(key){
+async function openMatchDateEdit(key){
   const [type,ref]=key.split('::');
   let cur,label;
   if(type==='manual'){
@@ -3225,7 +3298,7 @@ function openMatchDateEdit(key){
     const m=MATCHES.find(x=>x.team===team&&(x._origDate||x.d)===origDate); if(!m)return;
     cur=m.d; label=team;
   }
-  const input=prompt(`Nouvelle date pour le match contre ${label} (AAAA-MM-JJ) :`,cur);
+  const input=await customPrompt(`Nouvelle date pour le match contre ${label} (AAAA-MM-JJ) :`,cur);
   if(!input)return;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(input.trim())){alert('Format attendu : AAAA-MM-JJ (ex : 2026-10-12)');return;}
   const [t,r]=key.split('::');
@@ -3421,6 +3494,13 @@ function setDayType(i,t){
   WEEK_TYPES[curWeek][i]=t;if(RPE_OVR[curWeek])delete RPE_OVR[curWeek][i];delete DAY_BLOCKS[curWeek+'-'+i];
   renderWeek();saveWeekDay(curWeek,i);saveBlocks(curWeek,i);
 }
+function liveRpePreview(i,v){
+  const rpe=parseFloat(v);
+  const h=Math.max(8,(rpe/10)*100);
+  const bar=document.getElementById('bar-'+i); if(bar)bar.style.height=h+'%';
+  const tip=document.getElementById('rpeTip-'+i); if(tip)tip.textContent='RPE '+rpe;
+  const val=document.getElementById('rpeVal-'+i); if(val)val.textContent=rpe;
+}
 function setDayRpe(i,v){(RPE_OVR[curWeek]??={})[i]=parseFloat(v);renderWeek();saveWeekDay(curWeek,i);}
 function applyProfil(p){
   if(!p)return;WEEK_TYPES[curWeek]=[...PROFILS[p]];delete RPE_OVR[curWeek];
@@ -3489,12 +3569,12 @@ function renderGps(){
   });
   tb.insertAdjacentHTML('beforeend',`<tr class="total"><td>Total semaine</td>${tot.map(v=>`<td>${v.toLocaleString('fr')}</td>`).join('')}</tr>`);
 }
-function copyPatronToCurrent(){
+async function copyPatronToCurrent(){
   const pat=parseInt(document.getElementById('patronSel').value)||curWeek-1;
   const patW=GPS[pat];
   if(!patW){alert('Aucune donnée trouvée pour la semaine patron sélectionnée.');return;}
   const hasData=GPS[curWeek].some(row=>row.some(v=>v));
-  if(hasData&&!confirm(`La semaine en cours contient déjà des valeurs non nulles. Les remplacer par celles de la semaine ${pat} ?`))return;
+  if(hasData&&!await customConfirm(`La semaine en cours contient déjà des valeurs non nulles. Les remplacer par celles de la semaine ${pat} ?`))return;
   GPS[curWeek]=patW.map(row=>[...row]);
   for(let di=0;di<7;di++){delete (CELL_MOD[curWeek+'-'+di]);saveGpsCell(curWeek,di);}
   delete COL_PCT[curWeek]; delete ROW_PCT[curWeek];
@@ -3696,7 +3776,7 @@ function renderSeances(){
   }).join('');
 }
 async function deleteSeance(id,nom){
-  if(!confirm(`Supprimer définitivement la séance « ${nom} » ?\n\nSa feuille de présence sera supprimée avec elle.`))return;
+  if(!await customConfirm(`Supprimer définitivement la séance « ${nom} » ?\n\nSa feuille de présence sera supprimée avec elle.`))return;
   // les présences d'abord : on ne dépend pas d'un ON DELETE CASCADE
   const {error:e1}=await supa.from('seance_presences').delete().eq('seance_id',id);
   if(e1){alert('Erreur : '+e1.message);return;}
@@ -3719,7 +3799,7 @@ function jPick(kind,id,ev){
 }
 async function deleteJSelection(){
   if(!jSel.size)return;
-  if(!confirm(`Supprimer définitivement ${jSel.size} séance${jSel.size>1?'s':''} ?`))return;
+  if(!await customConfirm(`Supprimer définitivement ${jSel.size} séance${jSel.size>1?'s':''} ?`))return;
   const colls=[...jSel].filter(k=>k.startsWith('coll|')).map(k=>k.slice(5));
   const inds =[...jSel].filter(k=>k.startsWith('ind|')).map(k=>k.slice(4));
   for(const id of colls){
@@ -3739,7 +3819,7 @@ async function deleteJSelection(){
   if(typeof renderCharge==='function')renderCharge();
 }
 async function deleteChargeGroup(ids){
-  if(!confirm(`Supprimer cette sollicitation pour ${ids.length} joueur${ids.length>1?'s':''} ?`))return;
+  if(!await customConfirm(`Supprimer cette sollicitation pour ${ids.length} joueur${ids.length>1?'s':''} ?`))return;
   const {error}=await supa.from('charge_sessions').delete().in('id',ids);
   if(error){alert('Erreur : '+error.message);return;}
   CHG_SESSIONS=CHG_SESSIONS.filter(s=>!ids.includes(s.id));
@@ -3893,14 +3973,20 @@ function renderTypes(){
     const bg=T.stripes?`repeating-linear-gradient(0deg,${T.stripes[0]} 0 12px,${T.stripes[1]} 12px 24px)`:T.color;
     l.insertAdjacentHTML('beforeend',`
       <div class="typeCard">
-        <div class="typePrev">${T.repos?`<div class="bar repos" style="height:24%">😴</div>`:`<div class="bar" style="height:${h}%;background:${bg}"></div>`}</div>
+        <div class="typePrev">${T.repos?`<div class="bar repos" style="height:24%">😴</div>`:`<div class="bar" id="typeBar-${k}" style="height:${h}%;background:${bg}"></div>`}</div>
         <div style="flex:1"><h3>${T.nom}</h3>
           ${T.stripes?'<span class="note">Type mixte</span>':T.repos?'<span class="note">Jour sans charge</span>':`Couleur <input type="color" value="${T.color}" onchange="TYPES['${k}'].color=this.value;renderAll();saveType('${k}')">`}
-          ${T.repos?'':`<label>RPE cible : <span class="mono">${T.rpe}</span></label>
-          <input type="range" min="0" max="10" step="0.5" value="${T.rpe}" oninput="TYPES['${k}'].rpe=parseFloat(this.value);renderAll()" onchange="saveType('${k}')">
+          ${T.repos?'':`<label>RPE cible : <span class="mono" id="typeRpeVal-${k}">${T.rpe}</span></label>
+          <input type="range" min="0" max="10" step="0.5" value="${T.rpe}" oninput="liveTypeRpePreview('${k}',this.value)" onchange="TYPES['${k}'].rpe=parseFloat(this.value);renderAll();saveType('${k}')">
           <div class="manualRow"><input type="checkbox"> Hauteur manuelle</div>`}
         </div></div>`);
   });
+}
+function liveTypeRpePreview(k,v){
+  const rpe=parseFloat(v);
+  const h=Math.max(8,(rpe/10)*100);
+  const bar=document.getElementById('typeBar-'+k); if(bar)bar.style.height=h+'%';
+  const val=document.getElementById('typeRpeVal-'+k); if(val)val.textContent=rpe;
 }
 function renderAll(){renderTypes();renderWeek();renderMonth()}
 
@@ -4044,8 +4130,8 @@ async function uploadPlayerPhoto(ev,id){
 function slugify(s){
   return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 }
-function addPlayer(){
-  const name=prompt('Nom du joueur à ajouter (ex : P. Nom) :'); if(!name||!name.trim())return;
+async function addPlayer(){
+  const name=await customPrompt('Nom du joueur à ajouter (ex : P. Nom) :'); if(!name||!name.trim())return;
   const base=slugify(name);
   const id=base+'-'+Math.random().toString(36).slice(2,6);
   const row={id,name:name.trim(),statut:'V?',zones:[],contra:{},actif:true,dispo:true,hors_football:false,affectation:null};
@@ -4054,8 +4140,8 @@ function addPlayer(){
     IPLAYERS.push(row); renderPlayers(); renderIndiv();
   });
 }
-function removePlayer(id,name){
-  if(!confirm('Retirer '+name+' de l\'effectif ?\n\nSon historique d\'individualisation est conservé, il peut être réactivé plus tard si besoin.'))return;
+async function removePlayer(id,name){
+  if(!await customConfirm('Retirer '+name+' de l\'effectif ?\n\nSon historique d\'individualisation est conservé, il peut être réactivé plus tard si besoin.'))return;
   supa.from('indiv_players').update({actif:false}).eq('id',id).then(({error})=>{
     if(error){alert('Erreur : '+error.message);return;}
     const p=IPLAYERS.find(x=>x.id===id); if(p)p.actif=false;
@@ -4256,7 +4342,7 @@ async function commitIndivSession(){
   renderIndiv();
 }
 async function resetIndivHistory(){
-  if(!confirm("Réinitialiser tout l'historique de rotation ? Cette action est irréversible et affecte aussi Julien."))return;
+  if(!await customConfirm("Réinitialiser tout l'historique de rotation ? Cette action est irréversible et affecte aussi Julien."))return;
   const {error}=await supa.from('indiv_history').delete().neq('id',-1);
   if(error){alert("Erreur : "+error.message);return;}
   await supa.from('indiv_state').upsert({id:1,counter:-1,last_validated_date:null,last_validated_absents:[]});
@@ -5322,7 +5408,7 @@ function togglePSel(){pSelMode=!pSelMode;pSel.clear();renderPrescList()}
 function pPick(id,ev){ev.stopPropagation();pSel.has(id)?pSel.delete(id):pSel.add(id);renderPrescList()}
 async function deletePSelection(){
   if(!pSel.size)return;
-  if(!confirm(`Supprimer définitivement ${pSel.size} prescription${pSel.size>1?'s':''} et leur contenu ?`))return;
+  if(!await customConfirm(`Supprimer définitivement ${pSel.size} prescription${pSel.size>1?'s':''} et leur contenu ?`))return;
   const ids=[...pSel];
   await supa.from('charge_sessions').delete().in('presc_session_id',ids);
   await supa.from('presc_items').delete().in('session_id',ids);
@@ -5337,12 +5423,12 @@ async function deletePSelection(){
   if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
   renderCharge();
 }
-function markPSelectionDone(){
+async function markPSelectionDone(){
   const ids=[...pSel]; if(!ids.length)return;
   const sessions=ids.map(id=>PRESC.find(p=>p.id===id)).filter(Boolean);
   if(!sessions.length)return;
   const already=sessions.filter(s=>s.statut==='fait');
-  if(already.length&&!confirm(`${already.length} des ${sessions.length} séances sélectionnées sont déjà marquées réalisées. Continuer quand même ?`))return;
+  if(already.length&&!await customConfirm(`${already.length} des ${sessions.length} séances sélectionnées sont déjà marquées réalisées. Continuer quand même ?`))return;
   pendingPrescBulk=sessions.map(p=>({id:p.id,player_id:p.player_id}));
   ensureChgFormReady();
   MP_SEL.chg.clear(); sessions.forEach(p=>MP_SEL.chg.add(p.player_id)); mpRender('chg');
@@ -5365,7 +5451,7 @@ function markPSelectionDone(){
 async function cancelPresc(id){
   const p=PRESC.find(x=>x.id===id); if(!p)return;
   const back=p.statut==='annule';
-  if(!confirm(back?'Réactiver cette prescription ?':'Annuler cette prescription ?\n\nElle reste visible mais sort du calcul d\'observance.'))return;
+  if(!await customConfirm(back?'Réactiver cette prescription ?':'Annuler cette prescription ?\n\nElle reste visible mais sort du calcul d\'observance.'))return;
   const st=back?'prevu':'annule';
   const {error}=await supa.from('presc_sessions').update({statut:st}).eq('id',id);
   if(error){alert('Erreur : '+error.message);return;}
@@ -5374,7 +5460,7 @@ async function cancelPresc(id){
   if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
 }
 async function deletePresc(id){
-  if(!confirm('Supprimer cette séance prescrite et son contenu ?'))return;
+  if(!await customConfirm('Supprimer cette séance prescrite et son contenu ?'))return;
   await supa.from('charge_sessions').delete().eq('presc_session_id',id);
   await supa.from('presc_items').delete().eq('session_id',id);
   await supa.from('presc_blocs').delete().eq('session_id',id);
@@ -5511,7 +5597,7 @@ async function updPrescItem(id,field,val){
   if(error)alert('Erreur de sauvegarde : '+error.message);
 }
 async function removePrescItem(id){
-  if(!confirm('Retirer cet exercice ?'))return;
+  if(!await customConfirm('Retirer cet exercice ?'))return;
   const {error}=await supa.from('presc_items').delete().eq('id',id);
   if(error){alert('Erreur : '+error.message);return;}
   PRESC_ITEMS=PRESC_ITEMS.filter(i=>i.id!==id);
@@ -5915,7 +6001,7 @@ async function addChargeSession(){
   if(ids.length>1)alert(`Sollicitation enregistrée pour ${ids.length} joueurs.`);
 }
 async function deleteChargeSession(id){
-  if(!confirm('Supprimer cette séance ?'))return;
+  if(!await customConfirm('Supprimer cette séance ?'))return;
   const {error}=await supa.from('charge_sessions').delete().eq('id',id);
   if(error){alert('Erreur : '+error.message);return;}
   CHG_SESSIONS=CHG_SESSIONS.filter(s=>s.id!==id);
