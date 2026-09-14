@@ -6542,8 +6542,13 @@ function waitForImages(container){
   }));
 }
 function genererPDF(){
+  const wk=WEEKS.find(w=>w.n===curWeek);
   const sheet=document.getElementById('printSheet');
   sheet.innerHTML=coverPage()+monthPage(0)+monthPage(1)+weekSchedPage()+macroGpsPage();
+  const prevTitle=document.title;
+  document.title='S'+(wk?wk.n:curWeek);
+  const restore=()=>{document.title=prevTitle;window.removeEventListener('afterprint',restore);};
+  window.addEventListener('afterprint',restore);
   waitForImages(sheet).then(()=>window.print());
 }
 </script>
