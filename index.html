@@ -6484,9 +6484,15 @@ function coverLogos(){
   const a=pdfAssets();
   return `${a.crest?`<img src="${a.crest}">`:''}${a.n2?`<img src="${a.n2}">`:''}`;
 }
-function monthPage(monthOffset){
-  const base=new Date(TODAY.getFullYear(),TODAY.getMonth()+monthOffset,1);
-  const weeks=WEEKS.filter(w=>w.mon.getMonth()===base.getMonth()&&w.mon.getFullYear()===base.getFullYear()&&WEEK_TYPES[w.n]);
+function monthPage(monthOffset,weeksOverride,yearOverride,monthOverride){
+  let base,weeks;
+  if(weeksOverride){
+    base=new Date(yearOverride,monthOverride,1);
+    weeks=weeksOverride;
+  }else{
+    base=new Date(TODAY.getFullYear(),TODAY.getMonth()+monthOffset,1);
+    weeks=WEEKS.filter(w=>w.mon.getMonth()===base.getMonth()&&w.mon.getFullYear()===base.getFullYear()&&WEEK_TYPES[w.n]);
+  }
   let gridRow=1;
   let cells=DAYFULL.map((d,i)=>`<div class="mHd" style="grid-row:${gridRow};grid-column:${i+1}">${d}</div>`).join('');
   weeks.forEach(w=>{
@@ -6714,10 +6720,29 @@ function waitForImages(container){
     });
   }));
 }
+function monthPagesForPdf(){
+  // Même calcul, au jour près, que renderMonth() dans Vue d'ensemble — pour
+  // que le PDF montre exactement la même fenêtre glissante (2 à 3 mois
+  // selon la date du jour), jamais 2 mois calendaires fixes.
+  const curMonday=addD(TODAY,-((TODAY.getDay()+6)%7));
+  const horizon=new Date(TODAY.getFullYear(),TODAY.getMonth()+2,1);
+  const visible=WEEKS.filter(w=>w.mon>=addD(curMonday,-1)&&w.mon<horizon&&WEEK_TYPES[w.n]);
+  const seen=new Set();
+  const monthKeys=[];
+  visible.forEach(w=>{
+    const key=w.mon.getFullYear()+'-'+w.mon.getMonth();
+    if(!seen.has(key)){seen.add(key);monthKeys.push(key);}
+  });
+  return monthKeys.map(key=>{
+    const [y,m]=key.split('-').map(Number);
+    const weeksInMonth=visible.filter(w=>w.mon.getFullYear()===y&&w.mon.getMonth()===m);
+    return monthPage(null,weeksInMonth,y,m);
+  }).join('');
+}
 function genererPDF(){
   const wk=WEEKS.find(w=>w.n===curWeek);
   const sheet=document.getElementById('printSheet');
-  sheet.innerHTML=coverPage()+monthPage(0)+monthPage(1)+weekSchedPage()+macroGpsPage();
+  sheet.innerHTML=coverPage()+monthPagesForPdf()+weekSchedPage()+macroGpsPage();
   const prevTitle=document.title;
   document.title='S'+(wk?wk.n:curWeek);
   const restore=()=>{document.title=prevTitle;window.removeEventListener('afterprint',restore);};
