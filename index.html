@@ -6487,16 +6487,28 @@ function coverLogos(){
 function monthPage(monthOffset){
   const base=new Date(TODAY.getFullYear(),TODAY.getMonth()+monthOffset,1);
   const weeks=WEEKS.filter(w=>w.mon.getMonth()===base.getMonth()&&w.mon.getFullYear()===base.getFullYear()&&WEEK_TYPES[w.n]);
-  let cells=DAYFULL.map(d=>`<div class="mHd">${d}</div>`).join('');
+  let gridRow=1;
+  let cells=DAYFULL.map((d,i)=>`<div class="mHd" style="grid-row:${gridRow};grid-column:${i+1}">${d}</div>`).join('');
   weeks.forEach(w=>{
     const types=WEEK_TYPES[w.n];
     const hi=(w.n===curWeek);
-    if(hi)cells+=`<div class="mWkBanner">Semaine ${w.n} — en cours</div>`;
+    gridRow++;
+    if(hi){
+      cells+=`<div class="mWkBanner" style="grid-row:${gridRow};grid-column:1/-1">Semaine ${w.n} — en cours</div>`;
+      gridRow++;
+    }
     const days=w.days.map(iso);
+    // Chaque bandeau et chaque case du jour reçoit une position de grille
+    // explicite (ligne ET colonne) — sans ça, un bandeau qui ne couvre pas
+    // toute la largeur "occupe" ses colonnes, et le placement automatique
+    // des cases suivantes saute ces colonnes déjà prises : les cases se
+    // décalent vers la droite et les derniers jours de la semaine
+    // disparaissent visuellement (poussés hors de la ligne).
     bannersOverlappingWeek(w).forEach(b=>{
       let startIdx=days.findIndex(dd=>dd>=b.date_start); if(startIdx<0)startIdx=0;
       let endIdx=6; for(let i=6;i>=0;i--){if(days[i]<=b.date_end){endIdx=i;break;}}
-      cells+=`<div class="mMiniBanner" style="grid-column:${startIdx+1}/${endIdx+2};background:${b.color||'#1a2f5c'}">${b.text}</div>`;
+      cells+=`<div class="mMiniBanner" style="grid-row:${gridRow};grid-column:${startIdx+1}/${endIdx+2};background:${b.color||'#1a2f5c'}">${b.text}</div>`;
+      gridRow++;
     });
     cells+=w.days.map((d,i)=>{
       const T=TYPES[types[i]],md=matchOnDay(w,d),isM=!!md;
@@ -6513,7 +6525,7 @@ function monthPage(monthOffset){
                <div class="mLab">${T.nom}</div>`;
       }
       const cls='mCell'+(isM?' isMatch':'')+(T.repos?' isRepos':'')+(hi?' wkHi':'');
-      return `<div class="${cls}"><span class="dNum">${d.getDate()}</span>${inner}</div>`;
+      return `<div class="${cls}" style="grid-row:${gridRow};grid-column:${i+1}"><span class="dNum">${d.getDate()}</span>${inner}</div>`;
     }).join('');
   });
   return `<div class="pg">
