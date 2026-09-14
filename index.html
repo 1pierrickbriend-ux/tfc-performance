@@ -693,6 +693,9 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .blk input.t{width:42px;flex:none;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.2);color:inherit;border-radius:4px;padding:2px 3px;font-family:'Spline Sans Mono';font-size:9px;text-align:center}
 .blk span.lbl{flex:1}
 .blk .rmBlk{flex:none;background:none;border:none;color:inherit;opacity:.5;font-size:12px;padding:0 2px}
+.blk .cmtBlk{flex:none;background:none;border:none;color:inherit;opacity:.5;font-size:10px;padding:0 1px;cursor:pointer}
+.blk .cmtBlk:hover{opacity:1}
+.blkComment{font-size:8.5px;opacity:.75;font-style:italic;padding-left:47px;overflow-wrap:break-word}
 .blk .rmBlk:hover{opacity:1}
 .blk.fixe{background:var(--panel2);border:1px solid var(--line);color:var(--muted)}
 .blk.test{background:rgba(255,107,107,.16);border:1px solid rgba(255,107,107,.5);color:#ffc2c2}
@@ -962,6 +965,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
   .wdTxt{flex:1;min-width:0}
   .wdTxt .h{display:block;font-size:7.4pt;font-weight:800;color:#9186a8;font-family:'Spline Sans Mono',monospace;letter-spacing:-.2px;line-height:1.1}
   .wdTxt .n{display:block;font-size:8.4pt;font-weight:700;color:#3d2c56;line-height:1.22;margin-top:.4mm}
+  .wdTxt .cmt{display:block;font-size:7pt;font-style:italic;color:#8a7fa0;line-height:1.2;margin-top:.2mm}
   .wDay .wdList .rest{font-size:9.5pt;font-weight:800;color:#c0b8cc;text-align:center;padding:16mm 0;letter-spacing:1.5px}
 
   .gRow{display:flex;gap:4mm;margin-bottom:9mm;align-items:stretch;justify-content:flex-start}
@@ -1807,6 +1811,7 @@ const SEANCE_TYPES=[
   {k:'relaxation',n:'Relaxation',c:'#cfc9d4',ic:'🧘'},
   {k:'video',n:'Séance vidéo',c:'#8b7bff',ic:'🎥'},
   {k:'causerie',n:'Causerie',c:'#ffb04d',ic:'🗣'},
+  {k:'trajectoire',n:'Trajectoire',c:'#e0555a',ic:'🎓'},
 ];
 const FIXED_TYPES=[
   {k:'dej',n:'Petit déjeuner',ic:'🍽',t:'07:30'},
@@ -2898,7 +2903,7 @@ async function loadAll(){
     if(r.rpe_override!=null)(RPE_OVR[r.week_n]??={})[r.day_index]=Number(r.rpe_override);
   });
   const byDay={};
-  (blocks||[]).forEach(r=>{const key=r.week_n+'-'+r.day_index;(byDay[key]??=[]).push({kind:r.kind,n:r.label,ic:r.icon,c:r.color,time:r.block_time,duree:r.duree_min||null});});
+  (blocks||[]).forEach(r=>{const key=r.week_n+'-'+r.day_index;(byDay[key]??=[]).push({kind:r.kind,n:r.label,ic:r.icon,c:r.color,time:r.block_time,duree:r.duree_min||null,comment:r.comment||null});});
   Object.keys(byDay).forEach(k=>DAY_BLOCKS[k]=byDay[k]);
   (gps||[]).forEach(r=>{
     if(!GPS[r.week_n])GPS[r.week_n]=emptyGpsWeek();
@@ -2934,7 +2939,7 @@ function saveBlocks(weekN,dayIndex){
   const next=prev.then(async()=>{
     const {error:delErr}=await supa.from('day_blocks').delete().eq('week_n',weekN).eq('day_index',dayIndex);
     if(delErr){alert('⚠️ La sauvegarde du planning a échoué (semaine '+weekN+', jour '+dayIndex+') : '+delErr.message+'\\nRecharge la page pour vérifier ce qui est vraiment enregistré avant de continuer.');return;}
-    const rows=(DAY_BLOCKS[key]||[]).map((b,i)=>({week_n:weekN,day_index:dayIndex,kind:b.kind,label:b.n,icon:b.ic||null,color:b.c||null,block_time:b.time,duree_min:b.duree||null,sort_order:i}));
+    const rows=(DAY_BLOCKS[key]||[]).map((b,i)=>({week_n:weekN,day_index:dayIndex,kind:b.kind,label:b.n,icon:b.ic||null,color:b.c||null,block_time:b.time,duree_min:b.duree||null,comment:b.comment||null,sort_order:i}));
     if(rows.length){
       const {error}=await supa.from('day_blocks').insert(rows);
       if(error){alert("⚠️ La sauvegarde du planning a échoué (semaine "+weekN+", jour "+dayIndex+") : "+error.message+"\nCe qui est affiché à l'écran n'est probablement PAS enregistré — recharge la page pour vérifier avant de continuer.");}
@@ -3202,8 +3207,10 @@ function renderWeek(){
         <div class="blkMain">
           <input class="t" value="${b.time}" onchange="setBlockTime('${key}',${bi},this.value)">
           <span class="lbl"${isMatch?'':` onclick="openBlockDureeEditor('${key}',${bi})" style="cursor:pointer" title="Cliquer pour régler les horaires (de... à...)"`}>${b.ic||''} ${isMatch?(b.dom?'🏠 ':'✈️ ')+"Coup d'envoi — "+b.n+(b.approx?' (h. à confirmer)':''):b.n}</span>
+          ${isMatch?'':`<button class="cmtBlk" onclick="editBlockComment('${key}',${bi})" title="Ajouter / modifier un commentaire">💬</button>`}
           <button class="rmBlk" onclick="removeBlock('${key}',${bi})">×</button>
         </div>
+        ${b.comment?`<div class="blkComment">${b.comment}</div>`:''}
       </div>`;
     }).join('');
     cols.push(`
@@ -3547,6 +3554,14 @@ function openBlockDureeEditor(key,bi){
   document.getElementById('blockDureeModal').classList.add('on');
 }
 function closeBlockDureeModal(){document.getElementById('blockDureeModal').classList.remove('on')}
+async function editBlockComment(key,bi){
+  const b=DAY_BLOCKS[key][bi];
+  const input=await customPrompt(`Commentaire pour "${b.n}" (ex : Anglais, Piscine, Flûte…) :`,b.comment||'');
+  if(input===null)return;
+  b.comment=input.trim()||null;
+  renderWeek();
+  const[wn,di]=key.split('-').map(Number);saveBlocks(wn,di);
+}
 function saveBlockDuree(){
   const from=document.getElementById('bdFrom').value;
   const to=document.getElementById('bdTo').value;
@@ -6322,7 +6337,7 @@ function weekSchedPage(){
           const pad=(b.kind==='match')?2:Math.max(1,Math.min(6,1+((b.duree||30)/20)));
           return `<div class="it" style="padding-top:${pad}mm;padding-bottom:${pad}mm">
             <span class="wdIc" style="${bg}">${b.ic||'•'}</span>
-            <span class="wdTxt"><span class="h">${b.time}${endTime?'–'+endTime:''}</span><span class="n">${nm}</span></span>
+            <span class="wdTxt"><span class="h">${b.time}${endTime?'–'+endTime:''}</span><span class="n">${nm}</span>${b.comment?`<span class="cmt">${b.comment}</span>`:''}</span>
           </div>`;
         }).join('')
       : `<div class="rest">REPOS</div>`;
