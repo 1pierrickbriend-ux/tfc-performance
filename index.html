@@ -6721,12 +6721,16 @@ function waitForImages(container){
   }));
 }
 function monthPagesForPdf(){
-  // Même calcul, au jour près, que renderMonth() dans Vue d'ensemble — pour
-  // que le PDF montre exactement la même fenêtre glissante (2 à 3 mois
-  // selon la date du jour), jamais 2 mois calendaires fixes.
-  const curMonday=addD(TODAY,-((TODAY.getDay()+6)%7));
-  const horizon=new Date(TODAY.getFullYear(),TODAY.getMonth()+2,1);
-  const visible=WEEKS.filter(w=>w.mon>=addD(curMonday,-1)&&w.mon<horizon&&WEEK_TYPES[w.n]);
+  // Même principe de fenêtre glissante (2 à 3 mois) que Vue d'ensemble,
+  // mais ancré sur la semaine SÉLECTIONNÉE dans Planification (curWeek),
+  // pas sur la date réelle du jour où le PDF est généré. Sans ça, générer
+  // le rapport de la semaine 10 un week-end où "aujourd'hui" tombe encore
+  // en semaine 9 affichait la semaine 9 en tête — l'ancre doit suivre ce
+  // que Pierrick regarde, pas l'horloge.
+  const selWeek=WEEKS.find(w=>w.n===curWeek);
+  const anchorMonday=selWeek?selWeek.mon:addD(TODAY,-((TODAY.getDay()+6)%7));
+  const horizon=new Date(anchorMonday.getFullYear(),anchorMonday.getMonth()+2,1);
+  const visible=WEEKS.filter(w=>w.mon>=addD(anchorMonday,-1)&&w.mon<horizon&&WEEK_TYPES[w.n]);
   const seen=new Set();
   const monthKeys=[];
   visible.forEach(w=>{
