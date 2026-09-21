@@ -6721,16 +6721,24 @@ function waitForImages(container){
   }));
 }
 function monthPagesForPdf(){
-  // Même principe de fenêtre glissante (2 à 3 mois) que Vue d'ensemble,
-  // mais ancré sur la semaine SÉLECTIONNÉE dans Planification (curWeek),
-  // pas sur la date réelle du jour où le PDF est généré. Sans ça, générer
-  // le rapport de la semaine 10 un week-end où "aujourd'hui" tombe encore
-  // en semaine 9 affichait la semaine 9 en tête — l'ancre doit suivre ce
-  // que Pierrick regarde, pas l'horloge.
+  // Fenêtre glissante ancrée sur la semaine SÉLECTIONNÉE dans Planification
+  // (curWeek), pas sur la date réelle du jour où le PDF est généré — sans ça,
+  // générer le rapport de la semaine 10 un week-end où "aujourd'hui" tombe
+  // encore en semaine 9 affichait la semaine 9 en tête.
+  //
+  // Le nombre total de semaines affichées est calé sur "2 mois calendaires
+  // pleins" (nb de semaines du mois de l'ancre + nb de semaines du mois
+  // suivant, comptées entières) — PAS sur une borne calendaire brute. Sans
+  // ça, sélectionner la dernière semaine d'un mois n'affichait qu'1 semaine
+  // de ce mois + le mois suivant (fenêtre tronquée, sans intérêt pour se
+  // projeter) ; ici, ce qui manque par rapport aux "2 mois pleins" est
+  // complété par les semaines suivantes du 3e mois.
   const selWeek=WEEKS.find(w=>w.n===curWeek);
   const anchorMonday=selWeek?selWeek.mon:addD(TODAY,-((TODAY.getDay()+6)%7));
-  const horizon=new Date(anchorMonday.getFullYear(),anchorMonday.getMonth()+2,1);
-  const visible=WEEKS.filter(w=>w.mon>=addD(anchorMonday,-1)&&w.mon<horizon&&WEEK_TYPES[w.n]);
+  const anchorY=anchorMonday.getFullYear(), anchorM=anchorMonday.getMonth();
+  const monthDiff=w=>(w.mon.getFullYear()-anchorY)*12+(w.mon.getMonth()-anchorM);
+  const targetCount=WEEKS.filter(w=>{const d=monthDiff(w);return d===0||d===1;}).length;
+  const visible=WEEKS.filter(w=>w.mon>=addD(anchorMonday,-1)&&WEEK_TYPES[w.n]).slice(0,targetCount);
   const seen=new Set();
   const monthKeys=[];
   visible.forEach(w=>{
