@@ -62,7 +62,7 @@ header.top small{display:block;font-family:'Archivo';font-weight:500;color:var(-
 nav.tabs{display:flex;gap:4px;padding:8px 22px 0;border-bottom:1px solid rgba(0,0,0,.08);flex-wrap:wrap}
 nav.tabs button{background:none;border:none;color:#5a4b74;font-size:13px;font-weight:600;padding:10px 15px;border-radius:10px 10px 0 0;border-bottom:2px solid transparent}
 nav.tabs button.on{color:#ffffff;border-bottom-color:var(--accent);background-image:var(--pattern-bg);background-size:400px 225px;background-repeat:repeat;text-shadow:0 1px 3px rgba(0,0,0,.55)}
-main{padding:20px 22px;max-width:1360px;margin:0 auto}
+main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .view{display:none}.view.on{display:block;background-color:var(--panel);background-image:var(--pattern-bg);background-size:800px 450px;background-repeat:repeat;background-position:center;border:1px solid var(--line);border-radius:16px;padding:16px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
 .boardCols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
@@ -667,6 +667,7 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 #smartScreenTable input{width:56px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:5px;padding:3px;font-size:11px;text-align:center}
 #smartScreenTable input.ocrMiss{border-color:rgba(255,107,107,.6)}
 .testHint{font-size:11.5px;color:var(--muted);margin:2px 0 14px}
+.weekWrapOuter{overflow-x:auto;overflow-y:visible;margin:0 -2px;padding:0 2px 4px}
 .weekWrap{display:grid;gap:8px;align-items:stretch}
 .dayCol{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 5px;display:flex;flex-direction:column;gap:7px;min-width:0}
 .dayCol.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -693,8 +694,8 @@ main{padding:20px 22px;max-width:1360px;margin:0 auto}
 .rpeVal{font-family:'Spline Sans Mono';font-weight:600;color:var(--ink);width:24px;text-align:right}
 .sched{display:flex;flex-direction:column;gap:4px;min-height:100px}
 .blk{border-radius:7px;padding:3px 4px;font-size:9.5px;line-height:1.25;display:flex;flex-direction:column;gap:2px}
-.blkMain{display:flex;gap:3px;align-items:center}
-.blk .lbl{flex:1;min-width:0;overflow-wrap:break-word}
+.blkMain{display:flex;gap:3px;align-items:flex-start}
+.blk .lbl{flex:1;min-width:0;overflow-wrap:break-word;padding-top:1px}
 .blk input.t{width:38px;flex:none;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.2);color:inherit;border-radius:4px;padding:2px 2px;font-family:'Spline Sans Mono';font-size:8.5px;text-align:center}
 .blk span.lbl{flex:1}
 .blk .rmBlk{flex:none;background:none;border:none;color:inherit;opacity:.5;font-size:12px;padding:0 2px}
@@ -1194,7 +1195,7 @@ table.sheet td.colPrio{white-space:normal;min-width:230px;font-size:11px;color:v
     </select>
   </div>
   <div class="testHint">🧪 Derniers tests physiques : Semaine 5 (force, vitesse, pesée) — prochaine fenêtre estimée vers la Semaine 10-11.</div>
-  <div class="weekWrap" id="weekGrid"></div>
+  <div class="weekWrapOuter"><div class="weekWrap" id="weekGrid"></div></div>
 
   <div class="panel gpsBlock">
     <div class="rowHead" style="margin-bottom:6px">
@@ -3381,7 +3382,17 @@ function renderWeek(){
       </div>`);
   });
   cols.push(edgeCol(next,'Match suivant'));
-  g.style.gridTemplateColumns=`0.62fr repeat(${cols.length-2},1fr) 0.62fr`;
+  // minmax() garantit une largeur minimale lisible par colonne : sur un
+  // écran étroit (téléphone), la grille dépasse alors la largeur visible et
+  // devient scrollable horizontalement (voir .weekWrapOuter) au lieu de
+  // comprimer les colonnes jusqu'à faire chevaucher le texte des séances et
+  // les boutons 💬/× — ce qui rendait les cartes illisibles (ex.
+  // "Individualisation technique" coupée lettre par lettre).
+  // 190px minimum : assez pour que des intitulés longs (« Individualisation
+  // technique ») tiennent sur une ou deux lignes sans se couper en plein
+  // milieu d'un mot, tout en laissant les boutons 💬/× toujours au-dessus,
+  // jamais au milieu du texte.
+  g.style.gridTemplateColumns=`minmax(78px,0.62fr) repeat(${cols.length-2},minmax(190px,1fr)) minmax(78px,0.62fr)`;
   g.innerHTML=cols.join('');
   document.getElementById('profilSel').value='';
   renderGps();
