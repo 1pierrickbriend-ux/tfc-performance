@@ -871,6 +871,26 @@ th:hover>.pctPop, td:hover>.pctPop, .pctPop:hover{display:flex}
 .pCard select,.pCard input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:5px 7px;font-size:11.5px}
 .pCard select.zoneSel{color:var(--accent);font-weight:600}
 .editHint{font-size:10.5px;color:var(--muted)}
+.modeSwitch{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-right:6px}
+.modeSwitch button{background:var(--panel2);color:var(--muted);border:none;padding:7px 13px;font-weight:700;font-size:12px;cursor:pointer}
+.modeSwitch button.on{background:var(--accent);color:#17122b}
+#indivControls input[type=date],#indivControls select{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 8px;font-size:12px}
+.exoCue{font-size:11px;color:var(--muted);font-style:italic;line-height:1.35}
+.exoAlert{font-size:11px;color:var(--warn);font-weight:700;line-height:1.35}
+.pcMode{font-size:11px;color:var(--muted);margin-top:-4px}
+/* Fiches individualisation imprimables (#printSheet, visible seulement à l'impression) */
+@page fiches{size:A4 portrait;margin:10mm}
+.ficheSheet{page:fiches;font-family:'Barlow',Arial,'Apple Color Emoji','Segoe UI Emoji',sans-serif;color:#111;background:#fff}
+.fHead{display:flex;justify-content:space-between;border-bottom:.5mm solid #2a1a4a;padding-bottom:2mm;margin-bottom:4mm;font-size:11pt;color:#2a1a4a}
+.fGrid{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.fCard{border:.3mm solid #d9d2e6;border-radius:2mm;padding:3mm 3.5mm;break-inside:avoid;page-break-inside:avoid}
+.fCard h3{font-size:12pt;margin:0 0 2mm;color:#2a1a4a}
+.fCard ol{margin:0;padding-left:5mm;display:flex;flex-direction:column;gap:2mm}
+.fRole{font-size:6.8pt;text-transform:uppercase;letter-spacing:.5px;color:#7a6f92;font-weight:700}
+.fNom{font-size:9.5pt;font-weight:700}
+.fDose{font-size:9pt;color:#4b2a86;font-weight:700}
+.fCue{font-size:8pt;font-style:italic;color:#444}
+.fAlert{font-size:8pt;color:#b3261e;font-weight:700}
 .legendMini{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);align-items:center}
 .legendMini i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:4px;vertical-align:-1px}
 .sev-R{background:#FF8A80}.sev-O{background:#FFD966}.sev-J{background:#FFF2CC}.sev-V{background:#C6EFCE}.sev-GRIS{background:#D9D9D9}
@@ -4552,7 +4572,8 @@ const ZONE_LABELS={
   M_THOMAS:"Mobilité — Fléchisseurs de hanche", M_HANCHE_ART:"Mobilité — Hanche (capsulaire)",
   M_ROT:"Mobilité — Rotations de hanche", M_FROG:"Mobilité — Adducteurs (ouverture)",
   M_CHPOST:"Mobilité — Chaîne postérieure", M_CHEVILLE:"Mobilité — Cheville",
-  M_GENOU:"Genou — vigilance", PREVENTION:"Entretien / prévention"
+  M_GENOU:"Genou — vigilance", PREVENTION:"Entretien — gainage / stabilité",
+  PREV_FOOT:"Prévention football", ACTIVATION:"Activation / mobilité générale", ACT_CIBLE:"Activation dynamique ciblée"
 };
 const ZONE_COLS=['F_ADD','F_ABD','F_IJ','F_Quad','M_THOMAS','M_HANCHE_ART','M_ROT','M_FROG','M_CHPOST','M_CHEVILLE','M_GENOU'];
 const ZONE_SHORT={F_ADD:'F. Add',F_ABD:'F. Abd',F_IJ:'F. Ischios',F_Quad:'F. Quad',M_THOMAS:'Flé. hanche',
@@ -4561,8 +4582,35 @@ const STATUT_COLOR={R:'#ff6b6b',O:'#ffb04d',J:'#f2d23a',V:'#5ad18a','V?':'#a79fc
 const STATUT_LABEL={R:'ROUGE',O:'ORANGE',J:'JAUNE',V:'VERT','V?':'VERT*'};
 const K_STATIONS=3, CYCLE_LEN=16;
 
-let IPLAYERS=[], IBANK={}, IZONES={}, IHIST={}, ISTATE={counter:-1,last_validated_date:null,last_validated_absents:[]};
-let ILAST=null, IPREVIEW=null, IPRESENT=null, indivLoaded=false;
+/* ── Deux modes de séance (v38) ──────────────────────────────────────────
+   · Prévention encadrée : 3 zones ciblées (rotation) + prévention football + activation générale.
+   · Activation autonome : 3 mobilités + 2 préventions si une zone de force est en orange/rouge,
+     sinon 1 prévention + 1 activation dynamique ciblée (région de la zone la plus déficitaire,
+     orientation réactive/profonde selon le type de jour). En autonomie, les exercices à
+     partenaire ou de niveau 3 ne sont jamais proposés automatiquement, mais restent
+     sélectionnables à la main (présence du prépa).
+   · Deux exercices d'une même famille de mouvement ne tombent jamais dans la même séance. */
+const IMOB_ZONES=['M_THOMAS','M_HANCHE_ART','M_ROT','M_FROG','M_CHPOST','M_CHEVILLE'];
+const IFORCE_ZONES=['F_ADD','F_ABD','F_IJ','F_Quad','M_GENOU'];
+const IZONE_REGION={F_ADD:'ADD',M_FROG:'ADD',F_ABD:'FES',M_ROT:'FES',M_HANCHE_ART:'FES',F_IJ:'IJ',M_CHPOST:'IJ',
+  F_Quad:'QUA',M_GENOU:'QUA',M_THOMAS:'FLE',M_CHEVILLE:'CHE'};
+const IREGION_LABEL={ADD:'Adducteurs',FES:'Fessiers / rotateurs',IJ:'Ischios / chaîne postérieure',QUA:'Quadriceps / genou',FLE:'Fléchisseurs de hanche',CHE:'Cheville / pied'};
+const IDAY_ORIENT={vitesse:'R',veille:'R',mixVJ:'R',ge:'P',mixBV:'P',force:'P',reprise:'P'};
+const IORIENT_LABEL={R:'Réactive',P:'Profonde'};
+const IMODE_LABEL={encadree:'Prévention encadrée',autonome:'Activation autonome'};
+const IROLE_LABEL={cible:'Zone ciblée',prevfoot:'Prévention football',activation:'Activation',mob:'Mobilité',prev:'Prévention',act:'Activation ciblée'};
+const ISEV_RANK={R:3,O:2,J:1,V:0};
+
+let IPLAYERS=[], IBANK={}, IZONES={}, IHIST={};
+const iEmptyState=()=>({counter:-1,last_validated_date:null,last_validated_absents:[]});
+let IMODES={encadree:{state:iEmptyState(),last:null},autonome:{state:iEmptyState(),last:null}};
+let IMODE='encadree', IAUTO_DATE=null, IAUTO_ORIENT='auto', IMODES_READY=false;
+let ISTATE=IMODES.encadree.state, ILAST=null, IPREVIEW=null, IPRESENT=null, indivLoaded=false;
+
+function iParseArr(v){ if(Array.isArray(v))return v; if(typeof v==='string'){try{return JSON.parse(v)||[]}catch(_){return[]}} return []; }
+function iSyncMode(){ ISTATE=IMODES[IMODE].state; ILAST=IMODES[IMODE].last; }
+function iFindEx(id){ for(const z in IBANK){const e=IBANK[z].find(x=>x.id===id); if(e)return e;} return null; }
+function iExObj(e){ return {id:e.id,nom:e.nom,dose:e.dose,tag:e.tag,consigne:e.consigne||'',alerte:e.alerte||'',seul:e.seul!==false,niv:e.niv}; }
 
 async function loadIndiv(){
   const [{data:pl,error:e1},{data:ex,error:e2},{data:zn,error:e3},{data:st,error:e4},{data:hi,error:e5}]=await Promise.all([
@@ -4576,96 +4624,196 @@ async function loadIndiv(){
   IPLAYERS=pl||[];
   IPLAYERS.forEach(p=>{ if(typeof p.zones==='string')p.zones=JSON.parse(p.zones); if(typeof p.contra==='string')p.contra=JSON.parse(p.contra); });
   IBANK={};
-  (ex||[]).forEach(e=>{ (IBANK[e.zone]??=[]).push({id:e.id,nom:e.nom,dose:e.dose,niv:e.niveau,tag:e.tag}); });
-  Object.values(IBANK).forEach(arr=>arr.sort((a,b)=>(a.niv-b.niv)||a.id.localeCompare(b.id)));
+  (ex||[]).forEach(e=>{ (IBANK[e.zone]??=[]).push({id:e.id,nom:e.nom,dose:e.dose,niv:e.niveau,tag:e.tag,
+    mod:e.modalite||null,famille:e.famille||null,consigne:e.consigne||'',duree:e.duree_min!=null?Number(e.duree_min):null,
+    seul:e.seul!==false,region:e.region||null,orient:e.orientation||null,alerte:e.alerte||''}); });
+  Object.values(IBANK).forEach(arr=>arr.sort((a,b)=>(a.niv-b.niv)||String(a.id).localeCompare(String(b.id))));
   IZONES={};
   (zn||[]).forEach(z=>{ (IZONES[z.player_id]??={})[z.zone]={sev:z.severite,detail:z.detail}; });
-  if(st)ISTATE={counter:st.counter,last_validated_date:st.last_validated_date,
-    last_validated_absents:typeof st.last_validated_absents==='string'?JSON.parse(st.last_validated_absents):(st.last_validated_absents||[])};
-  IHIST={}; ILAST=null;
-  const lastIdx=ISTATE.counter;
-  const lastSess={};
+  IMODES.encadree.state=st?{counter:st.counter,last_validated_date:st.last_validated_date,
+    last_validated_absents:iParseArr(st.last_validated_absents)}:iEmptyState();
+  // Compteur de l'activation autonome : table du script v38, chargée à part pour que
+  // le reste du module fonctionne même si ce script n'a pas encore été exécuté.
+  IMODES.autonome.state=iEmptyState(); IMODES_READY=false;
+  try{
+    const {data:sm,error:e6}=await supa.from('indiv_state_modes').select('*').eq('mode','autonome').maybeSingle();
+    if(!e6){ IMODES_READY=true;
+      if(sm)IMODES.autonome.state={counter:sm.counter,last_validated_date:sm.last_validated_date,last_validated_absents:iParseArr(sm.last_validated_absents)}; }
+  }catch(_){}
+  IHIST={};
+  const lastSess={encadree:{},autonome:{}};
   (hi||[]).forEach(h=>{
     ((IHIST[h.player_id]??={})[h.zone_key]??=[]).push(h.exercise_id);
-    if(h.session_idx===lastIdx){
-      (lastSess[h.player_id]??=[]).push({zone:h.zone_key.split('#')[0],key:h.zone_key,
-        ex:{id:h.exercise_id,nom:h.exercise_nom,dose:h.exercise_dose},restricted:h.restricted,custom:String(h.exercise_id).startsWith('custom:')});
+    const m=h.mode==='autonome'?'autonome':'encadree';
+    if(h.session_idx===IMODES[m].state.counter){
+      const b=iFindEx(h.exercise_id);
+      (lastSess[m][h.player_id]??=[]).push({zone:h.zone_key.split('#')[0],key:h.zone_key,
+        ex:{id:h.exercise_id,nom:h.exercise_nom,dose:h.exercise_dose,consigne:b?b.consigne:'',alerte:b?b.alerte:'',seul:b?b.seul:true,niv:b?b.niv:1},
+        restricted:h.restricted,custom:String(h.exercise_id).startsWith('custom:')});
     }
   });
-  if(Object.keys(lastSess).length)ILAST=lastSess;
+  IMODES.encadree.last=Object.keys(lastSess.encadree).length?lastSess.encadree:null;
+  IMODES.autonome.last=Object.keys(lastSess.autonome).length?lastSess.autonome:null;
+  iSyncMode();
   indivLoaded=true;
   return {error:null};
 }
 
 function exerciseAllowed(tag,contra){
   if(!tag)return true;
+  contra=contra||{};
   if(tag==='avoid_if_add_pain')return !contra.addPain;
   if(tag==='avoid_if_genou')return !contra.genou;
   if(tag==='avoid_fadir_R')return contra.fadir!=='R';
   if(tag==='avoid_fadir_RO')return contra.fadir!=='R'&&contra.fadir!=='O';
   return true;
 }
-function stationsForSession(player,idx){
-  const flagged=player.zones||[];
-  if(flagged.length===0)return [0,1,2].map(i=>({zone:'PREVENTION',key:'PREVENTION#'+i}));
-  if(flagged.length<=K_STATIONS){
-    const s=flagged.map(z=>({zone:z,key:z}));
-    let i=0; while(s.length<K_STATIONS){s.push({zone:'PREVENTION',key:'PREVENTION#fill'+i});i++;}
-    return s;
-  }
-  const nChunks=Math.ceil(flagged.length/K_STATIONS);
-  const chunk=idx%nChunks;
-  let sel=flagged.slice(chunk*K_STATIONS,chunk*K_STATIONS+K_STATIONS);
-  if(sel.length<K_STATIONS)sel=sel.concat(flagged.slice(0,K_STATIONS-sel.length));
-  return sel.map(z=>({zone:z,key:z}));
+/* Zones signalées d'un joueur, les plus sévères d'abord. Source : la Cartographie
+   (indiv_player_zones), mise à jour à chaque import de tests. Avant, le générateur lisait
+   indiv_players.zones, figée depuis juillet : un nouvel import ne changeait rien aux séances. */
+function iSev(p,z){ return IZONES[p.id]&&IZONES[p.id][z]?IZONES[p.id][z].sev:null; }
+function iFlagged(p,zones,levels){
+  const hasCarto=IZONES[p.id]&&Object.keys(IZONES[p.id]).length>0;
+  const list=hasCarto?zones.filter(z=>levels.includes(iSev(p,z)))
+    :(levels.includes('R')||levels.includes('O')?(p.zones||[]).filter(z=>zones.includes(z)):[]);
+  return list.slice().sort((a,b)=>(ISEV_RANK[iSev(p,b)]||0)-(ISEV_RANK[iSev(p,a)]||0));
 }
-function pickExercise(zone,contra,histList,extraExclude){
-  extraExclude=extraExclude||new Set();
-  const fullPool=IBANK[zone]||[];
-  if(!fullPool.length)return {ex:{id:'none',nom:'(aucun exercice en banque pour cette zone)',dose:''},restricted:false};
-  const allowed=fullPool.filter(e=>exerciseAllowed(e.tag,contra));
-  const pool=allowed.length?allowed:fullPool;
-  const restricted=allowed.length<fullPool.length;
-  const win=Math.min(3,pool.length-1);
-  const exclude=new Set(win>0?histList.slice(-win):[]);
-  extraExclude.forEach(id=>exclude.add(id));
-  let cand=pool.filter(e=>!exclude.has(e.id));
-  if(!cand.length)cand=pool.filter(e=>!extraExclude.has(e.id));
-  if(!cand.length)cand=pool;
+function iRotate(lst,k,idx){
+  if(lst.length<=k)return lst.slice();
+  const n=Math.ceil(lst.length/k), c=idx%n;
+  let sel=lst.slice(c*k,c*k+k);
+  if(sel.length<k)sel=sel.concat(lst.slice(0,k-sel.length));
+  return sel;
+}
+function iHist(p,key){ return (IHIST[p.id]&&IHIST[p.id][key])||[]; }
+/* Choix d'un exercice : contre-indications, autonomie (faisable seul, niveau ≤ 2),
+   pas deux fois le même exercice ni la même famille dans la séance, anti-répétition
+   sur les 3 derniers exercices de la zone, puis le moins récemment utilisé. */
+function pickEx(zone,player,histList,o){
+  o=o||{};
+  const full=(IBANK[zone]||[]).filter(e=>!o.filter||o.filter(e));
+  if(!full.length)return null;
+  const contra=player.contra||{};
+  const safe=full.filter(e=>exerciseAllowed(e.tag,contra));
+  let pool=safe.filter(e=>!o.auto||(e.seul&&e.niv<=2));
+  if(!pool.length){ if(o.strict)return null; pool=safe.length?safe:full; }
+  const restricted=safe.length<full.length;
+  const ex=o.exclude||new Set(), fam=o.fam||new Set();
+  let base=pool.filter(e=>!ex.has(e.id)&&!(e.famille&&fam.has(e.famille)));
+  if(!base.length){ if(o.strict)return null; base=pool.filter(e=>!ex.has(e.id)); if(!base.length)base=pool; }
+  const win=Math.min(3,base.length-1);
+  const recent=new Set(win>0?histList.slice(-win):[]);
+  let cand=base.filter(e=>!recent.has(e.id)); if(!cand.length)cand=base;
   const lastIdx=id=>{for(let i=histList.length-1;i>=0;i--)if(histList[i]===id)return i;return -1;};
   cand=cand.slice().sort((a,b)=>lastIdx(a.id)-lastIdx(b.id));
-  return {ex:{id:cand[0].id,nom:cand[0].nom,dose:cand[0].dose,tag:cand[0].tag},restricted};
+  const e=cand[0];
+  ex.add(e.id); if(e.famille)fam.add(e.famille);
+  return {ex:iExObj(e),restricted};
 }
-function computeIndivSession(idx){
+function pickExercise(zone,contra,histList,extraExclude){
+  const r=pickEx(zone,{contra},histList,{exclude:new Set(extraExclude||[])});
+  return r||{ex:{id:'none',nom:'(aucun exercice en banque pour cette zone)',dose:'',consigne:'',alerte:''},restricted:false};
+}
+function iSlot(role,zone,key,r){ return {role,zone,key,ex:r.ex,restricted:r.restricted,custom:false}; }
+
+function computeEncadree(idx){
   const session={};
   for(const player of IPLAYERS){
-    const stations=stationsForSession(player,idx);
-    const used={};
-    session[player.id]=stations.map(st=>{
-      const histList=(IHIST[player.id]&&IHIST[player.id][st.key])||[];
-      const extra=used[st.zone]||new Set();
-      const {ex,restricted}=pickExercise(st.zone,player.contra,histList,extra);
-      (used[st.zone]??=new Set()).add(ex.id);
-      return {zone:st.zone,key:st.key,ex,restricted,custom:false};
+    const ids=new Set(), fam=new Set(), out=[], O={exclude:ids,fam};
+    const flagged=iFlagged(player,ZONE_COLS,['R','O']);
+    iRotate(flagged,K_STATIONS,idx).forEach(z=>{ const r=pickEx(z,player,iHist(player,z),O); if(r)out.push(iSlot('cible',z,z,r)); });
+    for(let f=0;out.length<K_STATIONS&&f<6;f++){
+      const key='PREVENTION#'+(flagged.length?'fill':'')+f;
+      const r=pickEx('PREVENTION',player,iHist(player,key),O); if(!r)break;
+      out.push(iSlot('cible','PREVENTION',key,r));
+    }
+    const pf=pickEx('PREV_FOOT',player,iHist(player,'PREV_FOOT'),O); if(pf)out.push(iSlot('prevfoot','PREV_FOOT','PREV_FOOT',pf));
+    const ac=pickEx('ACTIVATION',player,iHist(player,'ACTIVATION'),O); if(ac)out.push(iSlot('activation','ACTIVATION','ACTIVATION',ac));
+    session[player.id]=out;
+  }
+  return session;
+}
+const computeIndivSession=computeEncadree;
+
+function iAutoPlayers(){ return IPLAYERS.filter(p=>p.dispo!==false&&!p.affectation); }
+function iAutoContext(){
+  const d=IAUTO_DATE||TODAY;
+  const n=weekNumFor(d), i=(d.getDay()+6)%7;
+  const type=WEEK_TYPES[n]?WEEK_TYPES[n][i]:null;
+  const wk=WEEKS.find(w=>w.n===n);
+  const isMatch=!!(wk&&matchOnDay(wk,d));
+  const dayOrient=(isMatch||!type)?null:(IDAY_ORIENT[type]||null);
+  const orient=IAUTO_ORIENT!=='auto'?IAUTO_ORIENT:dayOrient;
+  return {date:d,type,isMatch,dayOrient,orient};
+}
+/* Zone la plus déficitaire : la plus sévère ; à égalité la force passe avant la
+   mobilité, sauf si la mobilité est en rouge (décision de Pierrick, 30/09). */
+function iWorstZone(p){
+  const zs=ZONE_COLS.filter(z=>{const s=iSev(p,z);return s&&s!=='V'&&ISEV_RANK[s]!=null;});
+  if(!zs.length)return null;
+  return zs.slice().sort((a,b)=>{
+    const d=ISEV_RANK[iSev(p,b)]-ISEV_RANK[iSev(p,a)]; if(d)return d;
+    const fa=IFORCE_ZONES.includes(a), fb=IFORCE_ZONES.includes(b);
+    if(fa===fb)return 0;
+    return iSev(p,a)==='R'?(fa?1:-1):(fa?-1:1);
+  })[0];
+}
+function computeAutonome(idx,orient){
+  const session={};
+  for(const player of iAutoPlayers()){
+    const ids=new Set(), fam=new Set(), out=[], A={exclude:ids,fam,auto:true};
+    // créneaux 1-3 : mobilité (rouge/orange en rotation, puis jaune, puis mobilité générale)
+    let mz=iRotate(iFlagged(player,IMOB_ZONES,['R','O']),3,idx);
+    if(mz.length<3)mz=mz.concat(iFlagged(player,IMOB_ZONES,['J']).filter(z=>!mz.includes(z))).slice(0,3);
+    mz.slice(0,3).forEach(z=>{ const r=pickEx(z,player,iHist(player,z),A); if(r)out.push(iSlot('mob',z,z,r)); });
+    for(let g=1;out.length<3&&g<=5;g++){
+      const key='ACTIVATION#mob'+g;
+      const r=pickEx('ACTIVATION',player,iHist(player,key),{...A,filter:e=>e.mod==='MOB_ACT'}); if(!r)break;
+      out.push(iSlot('mob','ACTIVATION',key,r));
+    }
+    // créneaux 4-5 : prévention
+    const fz=iFlagged(player,IFORCE_ZONES,['R','O']);
+    const two=fz.length>=1;
+    let pz;
+    if(two)pz=fz.length>=2?iRotate(fz,2,idx).slice(0,2):[fz[0],fz[0]];
+    else{ const j=iFlagged(player,IFORCE_ZONES,['J']); pz=[j[0]||'PREV_FOOT']; }
+    pz.forEach((z,k)=>{
+      const key=(k===1&&pz[0]===z)?z+'#2':z;
+      let r=pickEx(z,player,iHist(player,key),A), zone=z, kk=key;
+      if(!r){ r=pickEx('PREV_FOOT',player,iHist(player,'PREV_FOOT'),A); zone='PREV_FOOT'; kk='PREV_FOOT'; }
+      if(r)out.push(iSlot('prev',zone,kk,r));
     });
+    if(!two){
+      const reg=IZONE_REGION[iWorstZone(player)]||'FES', ori=orient||'P';
+      let r=pickEx('ACT_CIBLE',player,iHist(player,'ACT_CIBLE'),{...A,strict:true,filter:e=>e.region===reg&&e.orient===ori});
+      if(!r)r=pickEx('ACT_CIBLE',player,iHist(player,'ACT_CIBLE'),{...A,filter:e=>e.region===reg});
+      if(r){ const s=iSlot('act','ACT_CIBLE','ACT_CIBLE',r); s.region=reg; s.orient=ori; out.push(s); }
+    }
+    session[player.id]=out;
   }
   return session;
 }
 
 async function commitIndivSession(){
   if(!IPRESENT||IPRESENT.size===0){alert("Aucun joueur présent sélectionné — rien à valider.");return;}
-  const idx=IPREVIEW.idx, rows=[], absents=[];
-  for(const player of IPLAYERS){
+  const mode=IPREVIEW.mode||'encadree', idx=IPREVIEW.idx, rows=[], absents=[];
+  if(mode==='autonome'&&!IMODES_READY){alert("Le script schema_supabase_v38_banque_prevention.sql n'a pas encore été exécuté dans Supabase : l'activation autonome ne peut pas être enregistrée.");return;}
+  const roster=mode==='autonome'?iAutoPlayers():IPLAYERS;
+  for(const player of roster){
     if(!IPRESENT.has(player.id)){absents.push(player.name);continue;}
-    for(const p of IPREVIEW.session[player.id]){
-      rows.push({session_idx:idx,player_id:player.id,zone_key:p.key,exercise_id:p.ex.id,
-        exercise_nom:p.ex.nom,exercise_dose:p.ex.dose,restricted:!!p.restricted});
+    for(const p of (IPREVIEW.session[player.id]||[])){
+      const row={session_idx:idx,player_id:player.id,zone_key:p.key,exercise_id:p.ex.id,
+        exercise_nom:p.ex.nom,exercise_dose:p.ex.dose,restricted:!!p.restricted};
+      if(mode==='autonome')row.mode='autonome';
+      rows.push(row);
     }
   }
   const date=new Date().toLocaleString('fr-FR');
   const {error:e1}=await supa.from('indiv_history').insert(rows);
   if(e1){alert("Erreur d'enregistrement de la séance : "+e1.message);return;}
-  const {error:e2}=await supa.from('indiv_state').upsert({id:1,counter:idx,last_validated_date:date,last_validated_absents:absents});
+  const {error:e2}=mode==='autonome'
+    ?await supa.from('indiv_state_modes').upsert({mode:'autonome',counter:idx,last_validated_date:date,last_validated_absents:absents})
+    :await supa.from('indiv_state').upsert({id:1,counter:idx,last_validated_date:date,last_validated_absents:absents});
   if(e2){alert("Séance enregistrée mais compteur non mis à jour : "+e2.message);}
   IPREVIEW=null; IPRESENT=null;
   await loadIndiv();
@@ -4676,29 +4824,35 @@ async function resetIndivHistory(){
   const {error}=await supa.from('indiv_history').delete().neq('id',-1);
   if(error){alert("Erreur : "+error.message);return;}
   await supa.from('indiv_state').upsert({id:1,counter:-1,last_validated_date:null,last_validated_absents:[]});
+  if(IMODES_READY)await supa.from('indiv_state_modes').upsert({mode:'autonome',counter:-1,last_validated_date:null,last_validated_absents:[]});
   IPREVIEW=null;
   await loadIndiv();
   renderIndiv();
 }
 
 /* ---------- Édition de l'aperçu ---------- */
+function iRoster(){ const m=IPREVIEW?IPREVIEW.mode:IMODE; return m==='autonome'?iAutoPlayers():IPLAYERS; }
 function iZoneChange(pIdx,sIdx,newZone){
-  const player=IPLAYERS[pIdx];
-  const histList=(IHIST[player.id]&&IHIST[player.id][newZone])||[];
-  const {ex,restricted}=pickExercise(newZone,player.contra,histList,new Set());
-  IPREVIEW.session[player.id][sIdx]={zone:newZone,key:newZone,ex,restricted,custom:false};
+  const player=IPLAYERS[pIdx], old=IPREVIEW.session[player.id][sIdx];
+  const others=IPREVIEW.session[player.id].filter((_,k)=>k!==sIdx);
+  const ids=new Set(others.map(s=>s.ex.id));
+  const fam=new Set(others.map(s=>(iFindEx(s.ex.id)||{}).famille).filter(Boolean));
+  const r=pickEx(newZone,player,iHist(player,newZone),{exclude:ids,fam,auto:IPREVIEW.mode==='autonome'})
+        ||pickExercise(newZone,player.contra,[],[]);
+  IPREVIEW.session[player.id][sIdx]={role:old.role,zone:newZone,key:newZone,ex:r.ex,restricted:r.restricted,custom:false};
   renderIndivMain();
 }
 function iExChange(pIdx,sIdx,val){
   const player=IPLAYERS[pIdx], st=IPREVIEW.session[player.id][sIdx];
   if(val==='__custom__'){
     st.custom=true; st.restricted=false;
-    st.ex={id:'custom:'+Date.now(),nom:'',dose:st.ex.dose||'',tag:null};
+    st.ex={id:'custom:'+Date.now(),nom:'',dose:st.ex.dose||'',tag:null,consigne:'',alerte:'',seul:true,niv:1};
   } else {
     const found=(IBANK[st.zone]||[]).find(e=>e.id===val);
     if(!found)return;
-    st.custom=false; st.key=st.zone;
-    st.ex={id:found.id,nom:found.nom,dose:found.dose,tag:found.tag};
+    st.custom=false;
+    if(!st.key||st.key.split('#')[0]!==st.zone)st.key=st.zone;
+    st.ex=iExObj(found);
     st.restricted=!exerciseAllowed(found.tag,player.contra);
   }
   renderIndivMain();
@@ -4709,7 +4863,10 @@ function iCustomName(pIdx,sIdx,val){
 }
 function iDose(pIdx,sIdx,val){ IPREVIEW.session[IPLAYERS[pIdx].id][sIdx].ex.dose=val; }
 function iTogglePresent(id){ IPRESENT.has(id)?IPRESENT.delete(id):IPRESENT.add(id); renderIndivMain(); }
-function iSetAll(v){ IPRESENT=v?new Set(IPLAYERS.map(p=>p.id)):new Set(); renderIndivMain(); }
+function iSetAll(v){ IPRESENT=v?new Set(iRoster().map(p=>p.id)):new Set(); renderIndivMain(); }
+function iSetMode(m){ if(IMODE===m)return; IMODE=m; IPREVIEW=null; IPRESENT=null; iSyncMode(); renderIndivControls(); renderIndivMain(); }
+function iSetAutoDate(v){ IAUTO_DATE=v?new Date(v+'T12:00:00'):null; renderIndivControls(); }
+function iSetAutoOrient(v){ IAUTO_ORIENT=v; renderIndivControls(); }
 
 /* ---------- Rendu ---------- */
 function indivTab(btn,name){
@@ -6339,88 +6496,176 @@ async function deleteChargeSession(id){
 }
 
 function iZoneOptions(sel){return Object.keys(ZONE_LABELS).map(z=>`<option value="${z}" ${z===sel?'selected':''}>${ZONE_LABELS[z]}</option>`).join('')}
-function iExOptions(zone,contra,st){
+function iExOptions(zone,contra,st,auto){
   const pool=IBANK[zone]||[];
   return pool.map(e=>{
-    const warn=exerciseAllowed(e.tag,contra)?'':'⚠ ';
+    const marks=(exerciseAllowed(e.tag,contra)?'':'⚠ ')+(auto&&!e.seul?'👤 ':'')+(auto&&e.niv>2?'③ ':'');
     const sel=(!st.custom&&e.id===st.ex.id)?'selected':'';
-    return `<option value="${e.id}" ${sel}>${warn}${e.nom} — ${e.dose}</option>`;
+    return `<option value="${e.id}" ${sel}>${marks}${e.nom} — ${e.dose}</option>`;
   }).join('')+`<option value="__custom__" ${st.custom?'selected':''}>✎ Personnalisé…</option>`;
+}
+function iEsc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+/* Rôle d'un exercice dans la séance. Pour une séance relue depuis l'historique, le rôle
+   n'est pas stocké : il se déduit de la zone (et de l'exercice pour l'activation ciblée). */
+function iRoleOf(p,mode){
+  if(p.role)return p;
+  const r={...p};
+  if(mode==='autonome'){
+    r.role=p.zone==='ACT_CIBLE'?'act':((IMOB_ZONES.includes(p.zone)||p.zone==='ACTIVATION')?'mob':'prev');
+    if(r.role==='act'){ const b=iFindEx(p.ex.id); if(b){r.region=b.region;r.orient=b.orient;} }
+  }
+  return r;
+}
+function iRoleTag(p,mode){
+  const z=ZONE_LABELS[p.zone]||p.zone;
+  if(mode!=='autonome')return z;
+  if(p.role==='act')return `${IROLE_LABEL.act} — ${IREGION_LABEL[p.region]||''}${p.orient?' · '+IORIENT_LABEL[p.orient]:''}`;
+  if(p.role==='mob')return p.zone==='ACTIVATION'?'Mobilité générale':z;
+  if(p.role==='prev')return 'Prévention — '+z.replace(/^Force — /,'');
+  return z;
+}
+function iExExtra(p,auto){
+  const presence=auto&&!p.custom&&(p.ex.seul===false||p.ex.niv>2);
+  return (p.ex.consigne?`<span class="exoCue">${iEsc(p.ex.consigne)}</span>`:'')
+    +(p.ex.alerte?`<span class="exoAlert">⚠ ${iEsc(p.ex.alerte)}</span>`:'')
+    +(presence?'<span class="flagManual">👤 Présence du prépa requise (partenaire ou niveau 3)</span>':'');
 }
 function iCardHTML(pIdx,editable){
   const player=IPLAYERS[pIdx];
+  const mode=editable?IPREVIEW.mode:IMODE, auto=mode==='autonome';
   const picks=editable?IPREVIEW.session[player.id]:(ILAST?ILAST[player.id]:null);
   if(!picks)return '';
-  const items=picks.map((p,sIdx)=>{
+  const items=picks.map((p0,sIdx)=>{
+    const p=iRoleOf(p0,mode);
     if(editable)return `<li>
+      ${auto?`<span class="zTag">${iEsc(iRoleTag(p,mode))}</span>`:''}
       <select class="zoneSel" onchange="iZoneChange(${pIdx},${sIdx},this.value)">${iZoneOptions(p.zone)}</select>
-      <select onchange="iExChange(${pIdx},${sIdx},this.value)">${iExOptions(p.zone,player.contra,p)}</select>
-      ${p.custom?`<input type="text" placeholder="Nom de l'exercice personnalisé" value="${(p.ex.nom||'').replace(/"/g,'&quot;')}" oninput="iCustomName(${pIdx},${sIdx},this.value)">`:''}
-      <input type="text" value="${(p.ex.dose||'').replace(/"/g,'&quot;')}" oninput="iDose(${pIdx},${sIdx},this.value)">
+      <select onchange="iExChange(${pIdx},${sIdx},this.value)">${iExOptions(p.zone,player.contra,p,auto)}</select>
+      ${p.custom?`<input type="text" placeholder="Nom de l'exercice personnalisé" value="${iEsc(p.ex.nom)}" oninput="iCustomName(${pIdx},${sIdx},this.value)">`:''}
+      <input type="text" value="${iEsc(p.ex.dose)}" oninput="iDose(${pIdx},${sIdx},this.value)">
       <span class="editHint">dose / répétitions</span>
+      ${iExExtra(p,auto)}
       ${p.restricted?`<div class="${p.custom?'flagManual':'flagWarn'}">⚑ ${p.custom?'':'Sélection non standard pour ce joueur (contre-indication) — vérifiée et assumée'}</div>`:''}
     </li>`;
     return `<li>
-      <span class="zTag">${ZONE_LABELS[p.zone]||p.zone}</span>
-      <span class="exoNom">${p.ex.nom}</span>
-      <span class="exoDose">${p.ex.dose||''}</span>
+      <span class="zTag">${iEsc(iRoleTag(p,mode))}</span>
+      <span class="exoNom">${iEsc(p.ex.nom)}</span>
+      <span class="exoDose">${iEsc(p.ex.dose||'')}</span>
+      ${iExExtra(p,auto)}
       ${p.restricted?'<div class="flagWarn">⚑ variante sécurisée (contre-indication appliquée)</div>':''}
     </li>`;
   }).join('');
+  let sub='';
+  if(auto){
+    const nPrev=picks.filter(p=>iRoleOf(p,mode).role==='prev').length;
+    sub=`<div class="pcMode">${nPrev>=2?'Asymétrie de force : 2 préventions':'1 prévention + activation ciblée'}</div>`;
+  }
   return `<article class="pCard">
-    <h3><span class="sdot" style="background:${STATUT_COLOR[player.statut]||'#888'}"></span>${player.name}</h3>
-    <ol>${items}</ol></article>`;
+    <h3><span class="sdot" style="background:${STATUT_COLOR[player.statut]||'#888'}"></span>${iEsc(player.name)}</h3>
+    ${sub}<ol>${items}</ol></article>`;
 }
 function iPresenceHTML(){
-  const chips=IPLAYERS.map(p=>{
+  const roster=iRoster();
+  const chips=roster.map(p=>{
     const on=IPRESENT.has(p.id);
-    return `<button class="chip ${on?'chipOn':'chipOff'}" onclick="iTogglePresent('${p.id.replace(/'/g,"\\\\'")}')">${on?'✓ ':'✕ '}${p.name}</button>`;
+    return `<button class="chip ${on?'chipOn':'chipOff'}" onclick="iTogglePresent('${p.id.replace(/'/g,"\\\\'")}')">${on?'✓ ':'✕ '}${iEsc(p.name)}</button>`;
   }).join('');
   return `<div class="presenceBar">
     <div class="presenceHead">
-      <span class="tag">Présents : ${IPRESENT.size}/${IPLAYERS.length}</span>
+      <span class="tag">Présents : ${IPRESENT.size}/${roster.length}</span>
       <button class="btn" onclick="iSetAll(true)">Full team</button>
       <button class="btn" onclick="iSetAll(false)">Tout décocher</button>
-      <span class="editHint">Clique un nom pour basculer présent/absent — seuls les présents sont enregistrés.</span>
+      <span class="editHint">Clique un nom pour basculer présent/absent — seuls les présents sont enregistrés.${IPREVIEW&&IPREVIEW.mode==='autonome'?' Effectif : joueurs disponibles de la Réserve.':''}</span>
     </div>
     <div class="presenceChips">${chips}</div></div>`;
 }
 function renderIndivControls(){
   const c=document.getElementById('indivControls');
-  const nextIdx=ISTATE.counter+1;
-  let h=`<button class="btn primary" onclick="iPreview(${nextIdx})">Prévisualiser la séance n°${nextIdx+1}</button>`;
-  if(ILAST)h+=`<button class="btn" onclick="IPREVIEW=null;renderIndivMain()">Revoir la dernière séance validée</button>`;
+  const st=IMODES[IMODE].state, nextIdx=st.counter+1;
+  let h=`<div class="modeSwitch">${['encadree','autonome'].map(m=>`<button class="${IMODE===m?'on':''}" onclick="iSetMode('${m}')">${IMODE_LABEL[m]}</button>`).join('')}</div>`;
+  if(IMODE==='autonome'){
+    const ctx=iAutoContext();
+    const typeLbl=ctx.isMatch?'Jour de match':(ctx.type&&TYPES[ctx.type]?TYPES[ctx.type].nom:'Type de jour non défini');
+    h+=`<label class="note" for="iAutoDate">Jour :</label><input type="date" id="iAutoDate" value="${iso(ctx.date)}" onchange="iSetAutoDate(this.value)">
+      <label class="note" for="iAutoOrient">Activation :</label>
+      <select id="iAutoOrient" onchange="iSetAutoOrient(this.value)">
+        <option value="auto" ${IAUTO_ORIENT==='auto'?'selected':''}>Selon le jour${ctx.dayOrient?' ('+IORIENT_LABEL[ctx.dayOrient].toLowerCase()+')':''}</option>
+        <option value="R" ${IAUTO_ORIENT==='R'?'selected':''}>Réactive</option>
+        <option value="P" ${IAUTO_ORIENT==='P'?'selected':''}>Profonde</option>
+      </select>
+      <span class="note">${iEsc(typeLbl)} → ${ctx.orient?'activation '+IORIENT_LABEL[ctx.orient].toLowerCase():"pas d'activation autonome prévue"}</span>`;
+  }
+  h+=`<button class="btn primary" onclick="iPreview(${nextIdx})">Prévisualiser ${IMODE==='autonome'?"l'activation":'la séance'} n°${nextIdx+1}</button>`;
+  if(ILAST)h+=`<button class="btn" onclick="IPREVIEW=null;renderIndivMain()">Revoir la dernière ${IMODE==='autonome'?'activation validée':'séance validée'}</button>`;
   c.innerHTML=h;
-  const done=ISTATE.counter+1;
-  const over=done>CYCLE_LEN;
-  document.getElementById('indivStatus').innerHTML=
-    `${over?'⚠️ ':''}Séance n°${done} sur ~${CYCLE_LEN} avant mise à jour des tests`+
-    (over?' — pense à faire remonter de nouvelles données':'')+
-    (ISTATE.last_validated_date?` · dernière validation : ${ISTATE.last_validated_date}`:' · aucune séance validée');
+  const done=st.counter+1, s=document.getElementById('indivStatus');
+  if(IMODE==='autonome'){
+    s.innerHTML=(IMODES_READY?'':'⚠️ Script v38 non exécuté dans Supabase — activation autonome non enregistrable · ')
+      +`Activations autonomes validées : ${done}`
+      +(st.last_validated_date?` · dernière : ${st.last_validated_date}`:' · aucune pour l’instant');
+  } else {
+    const over=done>CYCLE_LEN;
+    s.innerHTML=`${over?'⚠️ ':''}Séance n°${done} sur ~${CYCLE_LEN} avant mise à jour des tests`+
+      (over?' — pense à faire remonter de nouvelles données':'')+
+      (st.last_validated_date?` · dernière validation : ${st.last_validated_date}`:' · aucune séance validée');
+  }
 }
-function iPreview(idx){ IPREVIEW={idx,session:computeIndivSession(idx)}; IPRESENT=new Set(IPLAYERS.map(p=>p.id)); renderIndivMain(); }
+function iPreview(idx){
+  if(IMODE==='autonome'){
+    const ctx=iAutoContext();
+    if(!ctx.orient){
+      document.getElementById('indivMain').innerHTML=`<div class="placeholder"><h3>Pas d'activation autonome prévue ce jour</h3>
+        <p>${ctx.isMatch?'Jour de match':'Jour de repos ou type de jour non défini'}. Pour générer quand même, choisis l'orientation (réactive ou profonde) dans le menu « Activation ».</p></div>`;
+      return;
+    }
+    IPREVIEW={idx,mode:'autonome',orient:ctx.orient,session:computeAutonome(idx,ctx.orient)};
+    IPRESENT=new Set(iAutoPlayers().map(p=>p.id));
+  } else {
+    IPREVIEW={idx,mode:'encadree',session:computeEncadree(idx)};
+    IPRESENT=new Set(IPLAYERS.map(p=>p.id));
+  }
+  renderIndivMain();
+}
 function renderIndivMain(){
   const m=document.getElementById('indivMain');
   if(IPREVIEW){
-    const cards=IPLAYERS.map((p,i)=>IPRESENT.has(p.id)?iCardHTML(i,true):'').join('');
+    const inR=new Set(iRoster().map(p=>p.id));
+    const cards=IPLAYERS.map((p,i)=>inR.has(p.id)&&IPRESENT.has(p.id)?iCardHTML(i,true):'').join('');
+    const auto=IPREVIEW.mode==='autonome';
+    const lbl=auto?`Aperçu — activation autonome n°${IPREVIEW.idx+1} (${IORIENT_LABEL[IPREVIEW.orient].toLowerCase()})`:`Aperçu — séance n°${IPREVIEW.idx+1}`;
     m.innerHTML=`<div class="indivCtrls">
-        <span class="badgeState badgePreview">Aperçu — séance n°${IPREVIEW.idx+1} non enregistrée, modifiable</span>
+        <span class="badgeState badgePreview">${lbl} non enregistrée, modifiable</span>
         <button class="btn primary" onclick="commitIndivSession()">Valider et enregistrer pour les présents</button>
         <button class="btn" onclick="IPREVIEW=null;IPRESENT=null;renderIndivMain()">Annuler</button>
-      </div>${iPresenceHTML()}<div class="indivGrid">${cards}</div>`;
+      </div>${auto?'<p class="editHint" style="margin:0 0 8px">⚠ contre-indiqué · 👤 partenaire · ③ niveau 3 : jamais proposés automatiquement en autonomie, sélectionnables si tu es présent.</p>':''}${iPresenceHTML()}<div class="indivGrid">${cards}</div>`;
   } else if(ILAST){
     const ids=new Set(Object.keys(ILAST));
     const cards=IPLAYERS.map((p,i)=>ids.has(p.id)?iCardHTML(i,false):'').join('');
     const abs=ISTATE.last_validated_absents||[];
     m.innerHTML=`<div class="indivCtrls">
-        <span class="badgeState badgeValid">Séance n°${ISTATE.counter+1} validée — ${ISTATE.last_validated_date||''} (${ids.size}/${IPLAYERS.length} présents)</span>
-        <button class="btn" onclick="window.print()">Imprimer les fiches</button>
+        <span class="badgeState badgeValid">${IMODE==='autonome'?'Activation autonome':'Séance'} n°${ISTATE.counter+1} validée — ${ISTATE.last_validated_date||''} (${ids.size} présents)</span>
+        <button class="btn" onclick="iPrintFiches()">Imprimer les fiches</button>
       </div>
-      ${abs.length?`<p class="note" style="margin-bottom:10px">Absents ce jour-là, non enregistrés : ${abs.join(', ')}</p>`:''}
+      ${abs.length?`<p class="note" style="margin-bottom:10px">Absents ce jour-là, non enregistrés : ${abs.map(iEsc).join(', ')}</p>`:''}
       <div class="indivGrid">${cards}</div>`;
   } else {
-    m.innerHTML=`<div class="placeholder"><h3>Aucune séance validée pour l'instant</h3></div>`;
+    m.innerHTML=`<div class="placeholder"><h3>Aucune ${IMODE==='autonome'?'activation autonome':'séance'} validée pour l'instant</h3></div>`;
   }
+}
+/* Fiches imprimables. Avant, le bouton appelait window.print() directement : or
+   l'impression n'affiche que #printSheet (réservé aux PDF), donc on imprimait une
+   page vide ou le dernier PDF semaine généré, jamais les fiches. */
+function iPrintFiches(){
+  if(!ILAST)return;
+  const mode=IMODE, st=ISTATE;
+  const cards=IPLAYERS.filter(p=>ILAST[p.id]).map(p=>{
+    const items=ILAST[p.id].map(p0=>{ const x=iRoleOf(p0,mode);
+      return `<li><div class="fRole">${iEsc(iRoleTag(x,mode))}</div><div class="fNom">${iEsc(x.ex.nom)}</div><div class="fDose">${iEsc(x.ex.dose||'')}</div>${x.ex.consigne?`<div class="fCue">${iEsc(x.ex.consigne)}</div>`:''}${x.ex.alerte?`<div class="fAlert">⚠ ${iEsc(x.ex.alerte)}</div>`:''}</li>`;
+    }).join('');
+    return `<div class="fCard"><h3>${iEsc(p.name)}</h3><ol>${items}</ol></div>`;
+  }).join('');
+  document.getElementById('printSheet').innerHTML=`<div class="ficheSheet"><div class="fHead"><b>${IMODE_LABEL[mode]} — n°${st.counter+1}</b><span>${iEsc(st.last_validated_date||'')}</span></div><div class="fGrid">${cards}</div></div>`;
+  window.print();
 }
 function renderCarto(){
   const t=document.getElementById('cartoTable');
