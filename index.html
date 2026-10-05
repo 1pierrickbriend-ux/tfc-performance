@@ -1493,9 +1493,10 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 .loginCard button:hover{background:var(--xt-vio)}
 #loadingScreen>div{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;font-family:'DM Sans',sans-serif;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:11px;color:var(--xt-mag)}
 #loadingScreen>div::before{content:'';width:72px;height:72px;background:var(--xt-crest) center/contain no-repeat}
-.psBilan{background:#fff;color:var(--id-ink);border:1px solid rgba(42,26,74,.22)}
+.psBilan{align-self:center;margin-bottom:10px;margin-right:-6px;background:#fff;color:var(--id-ink);border:1px solid #2a1a4a}   /* même calage que « ＋ Séance réalisée », les deux boutons forment une paire */
 .psBilan:hover{background:var(--id-line)}
-@media(max-width:600px){.psBilan{order:3;flex:1 1 100%;margin:0 0 10px}}
+.psHead .psAdd,.psHead .psBilan{height:38px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;line-height:1;box-sizing:border-box}
+@media(max-width:600px){.psHead .psId{flex:1 1 calc(100% - 86px)}.psHead .psBilan,.psHead .psAdd{order:3;flex:1 1 calc(50% - 6px);margin:0 0 10px;padding:0 10px}}
 </style>
 </head>
 <body>
