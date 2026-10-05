@@ -597,6 +597,17 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .qaDurRow small{color:var(--muted);font-size:10.5px}
 .qaDurRow.ovr input{border-color:var(--warn);color:var(--warn);font-weight:700}
 .qaGo{width:100%;margin-top:18px;padding:12px;font-size:14px}
+.qaType small{font-weight:500;color:var(--muted);font-size:10.5px}
+.qaSegs2{grid-template-columns:repeat(2,1fr)}
+.qaRegWrap.need .qaSegs{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn)}
+.qaRegWrap.need .qaStep{color:var(--warn)}
+.psReg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.psRegI{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;display:grid;grid-template-columns:auto 1fr;gap:2px 8px;align-items:baseline}
+.psRegV{font-size:20px;font-weight:800;grid-row:span 2}
+.psRegL{font-size:11.5px;font-weight:700}
+.psRegM{font-size:10.5px;color:var(--muted)}
+.psRegB{grid-column:1/-1;height:4px;border-radius:2px;background:var(--panel3);overflow:hidden;margin-top:5px}
+.psRegB i{display:block;height:100%}
 .dashEmpty{grid-column:1/-1;padding:34px;text-align:center;color:var(--muted);font-size:13px;background:var(--panel);border:1px dashed var(--line);border-radius:14px}
 .hmWrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:18px}
 .hmHead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -1732,6 +1743,7 @@ body.plNoScroll{overflow:hidden}
         <div class="qaSegs" id="qaPrBox"></div>
         <div class="qaStep"><span class="qaNum">3</span>Type de séance</div>
         <div class="qaTypes" id="qaTypeBox"></div>
+        <div class="qaRegWrap" id="qaRegWrap"><div class="qaStep"><span class="qaNum">3b</span>Zone</div><div class="qaSegs qaSegs2" id="qaRegBox"></div></div>
         <div class="qaStep"><span class="qaNum">4</span>Durée<span class="qaDurIn"><input type="number" id="chgDuree" min="0" placeholder="60" oninput="qaRenderDur()"> min</span><span class="qaSub">pour tous les joueurs cochés</span></div>
         <div class="qaStep"><span class="qaNum">5</span>Joueurs présents <span class="mpCount" id="chgPlayerCount">0 sélectionné</span></div>
         <div class="mpBox" id="chgPlayerBox"></div>
@@ -4466,7 +4478,7 @@ function plEvents(pid){
     if(s.player_id!==pid)return;
     const a=CHG_ACTIONS.find(x=>x.id===s.action_id);
     ev.push({kind:plKindOfAction(a),chg:true,id:s.id,date:plDate(s.date),label:a?a.nom:'Séance',min:s.duree_min||0,
-      fam:a?(a.famille||CHG_SECTEURS[a.secteur]||'Autre'):'Autre',series:s.series,reps:s.reps,kg:s.charge_kg,note:s.commentaire});
+      fam:a?(a.famille||CHG_SECTEURS[a.secteur]||'Autre'):'Autre',groupe:a?(a.groupe||a.nom):'Séance',region:a?a.region||null:null,series:s.series,reps:s.reps,kg:s.charge_kg,note:s.commentaire});
   });
   plPrevSessions(pid).forEach(x=>ev.push(x));
   return ev.sort((a,b)=>(b.date?b.date.getTime():-1)-(a.date?a.date.getTime():-1));
@@ -4628,7 +4640,10 @@ function renderPlayerSheet(){
   const typeCol=k=>k==='_'?'var(--muted)':(TYPES[k].stripes?TYPES[k].stripes[0]:TYPES[k].color);
   // qualités travaillées (sollicitations individuelles, 90 j)
   const byFam={};
-  plWindow(ev,90).filter(e=>e.chg&&e.kind==='phys').forEach(e=>{ byFam[e.fam]=(byFam[e.fam]||0)+(e.min||0); });
+  const phys90=plWindow(ev,90).filter(e=>e.chg&&e.kind==='phys');
+  phys90.forEach(e=>{ byFam[e.groupe]=(byFam[e.groupe]||0)+(e.min||0); });
+  const regMin={bas:0,haut:0,nd:0}; phys90.forEach(e=>{ regMin[e.region==='bas'||e.region==='haut'?e.region:'nd']+=(e.min||0); });
+  const regTot=regMin.bas+regMin.haut+regMin.nd;
   const famRows=Object.entries(byFam).sort((a,b)=>b[1]-a[1]);
   const famTot=famRows.reduce((t,[,v])=>t+v,0)||1;
   // tests, cartographie, individualisation
@@ -4648,9 +4663,11 @@ function renderPlayerSheet(){
     :empty('Aucune séance datée sur 28 jours.');
   const typeBody=typeRows.length?`<div class="psRows">${typeRows.map(([k,v])=>`<div class="psRow psRowBar"><span class="nm">${k==='_'?'Hors planification':plEsc(TYPES[k].nom)}</span><span class="psBar"><i style="width:${v/typeMax*100}%;background:${typeCol(k)}"></i></span><span class="vl">${v}</span></div>`).join('')}</div>`
     :empty('Aucune séance datée sur 90 jours.');
-  const famBody=famRows.length?`<div class="famBar">${famRows.map(([k,v],i)=>`<i style="width:${v/famTot*100}%;background:${FAM_COLORS[i%FAM_COLORS.length]}" title="${plEsc(k)}"></i>`).join('')}</div>
+  const regBody=regTot?`<div class="psReg">${[['bas','Bas du corps','#8a6fd6'],['haut','Haut du corps','#4fd191'],['nd','Zone non précisée','#7d7891']].filter(([k])=>regMin[k]).map(([k,l,c])=>
+      `<div class="psRegI"><span class="psRegV" style="color:${c}">${Math.round(regMin[k]/regTot*100)} %</span><span class="psRegL">${l}</span><span class="psRegM">${hrs(regMin[k])}</span><span class="psRegB"><i style="width:${regMin[k]/regTot*100}%;background:${c}"></i></span></div>`).join('')}</div>`:'';
+  const famBody=regBody+(famRows.length?`<div class="famBar">${famRows.map(([k,v],i)=>`<i style="width:${v/famTot*100}%;background:${FAM_COLORS[i%FAM_COLORS.length]}" title="${plEsc(k)}"></i>`).join('')}</div>
       <div class="psRows">${famRows.map(([k,v],i)=>`<div class="psRow"><span class="dot" style="background:${FAM_COLORS[i%FAM_COLORS.length]}"></span><span class="nm">${plEsc(k)}</span><span class="vl">${hrs(v)}</span><span class="pc">${Math.round(v/famTot*100)} %</span></div>`).join('')}</div>`
-    :empty('Aucune séance physique sur 90 jours.');
+    :empty('Aucune séance physique sur 90 jours.'));
   const histBody=ev.length?`<div class="tl psTl">${ev.slice(0,30).map(e=>{
       const chips=[];
       if(e.chg){ if(e.series||e.reps)chips.push(`<span class="tlChip">${[e.series?e.series+'×':'',e.reps||''].filter(Boolean).join(' ')}</span>`);
@@ -4689,7 +4706,7 @@ function renderPlayerSheet(){
       ${psPanel('Séances par microcycle','12 derniers microcycles',plStackChart(plWeeks(ev,12),46,false)+plLegend(),'psWide')}
       ${psPanel('Répartition par type de séance','28 jours',repBody+(undated?`<p class="psNote">${undated} séance(s) de prévention antérieure(s) au 30/09 non datée(s) : comptée(s) dans « Prévention », pas ici.</p>`:''))}
       ${psPanel('Placement dans le microcycle','90 jours · type de jour',typeBody)}
-      ${psPanel('Qualités travaillées en physique','90 jours · minutes',famBody)}
+      ${psPanel('Physique : haut / bas du corps et qualités','90 jours · minutes',famBody)}
     </div>`)}
   ${sec('tests','Tests physiques',(reg||hist)?`<div class="psGrid2">
       ${psPanel('Asymétries droite / gauche','deux dernières campagnes',reg||empty('Aucune mesure comparable.'),'psReg')}
@@ -6142,7 +6159,7 @@ function prFillTypes(){
   const cur=sel.value;
   sel.innerHTML=qaReady()
     ?'<option value="">— Choisir —</option>'+QA_PRINCIPES.map(([k,l])=>`<optgroup label="${l}">${qaTypes(k).map(a=>`<option value="${a.id}">${plEsc(a.nom)}</option>`).join('')}</optgroup>`).join('')
-    :'<option value="">Script v40 à exécuter</option>';
+    :'<option value="">Script v41 à exécuter</option>';
   sel.value=cur;
 }
 /* Groupe d'une prescription = séances du même jour et du même type, encore à faire.
@@ -6684,22 +6701,47 @@ function renderHeatmap(){
    commentaire (décision de Pierrick, 05/10) : la composition détaillée relève de la
    création de séances et de programmes, pas de l'enregistrement. La durée saisie vaut
    pour tout le groupe ; elle reste ajustable joueur par joueur. */
-let QA={principe:'physique',type:null,dur:{}};
+let QA={principe:'physique',group:null,type:null,dur:{}};
 const QA_PRINCIPES=[['physique','Physique'],['terrain','Terrain'],['autre','Autre']];
+/* Zones : les types de salle existent en « Bas du corps » et « Haut du corps » (v41) */
+const QA_REGIONS=[['bas','Bas du corps'],['haut','Haut du corps']];
 function qaTypes(pr){ return CHG_ACTIONS.filter(a=>a.principe===pr).sort((a,b)=>(a.ordre||0)-(b.ordre||0)); }
+function qaGroupOf(a){ return a.groupe||a.nom; }
+function qaGroups(pr){
+  const out=[];
+  qaTypes(pr).forEach(a=>{ const g=qaGroupOf(a); let x=out.find(o=>o.g===g); if(!x)out.push(x={g,items:[]}); x.items.push(a); });
+  return out;
+}
+function qaGroupItems(g){ return CHG_ACTIONS.filter(a=>a.principe&&qaGroupOf(a)===g); }
 function qaReady(){ return CHG_ACTIONS.some(a=>a.principe); }
 function qaRenderTypes(){
-  const pr=document.getElementById('qaPrBox'), box=document.getElementById('qaTypeBox'); if(!pr||!box)return;
+  const pr=document.getElementById('qaPrBox'), box=document.getElementById('qaTypeBox'), rw=document.getElementById('qaRegWrap'); if(!pr||!box)return;
   if(!qaReady()){
-    pr.innerHTML='';
-    box.innerHTML='<div class="qaHint" style="display:block;margin:0">Les types de séance n\'existent pas encore : exécute le script <b>schema_supabase_v40_types_seance.sql</b> dans Supabase.</div>';
+    pr.innerHTML=''; if(rw)rw.style.display='none';
+    box.innerHTML='<div class="qaHint" style="display:block;margin:0">Les types de séance n\'existent pas encore : exécute le script <b>schema_supabase_v41_types_seance_haut_bas.sql</b> dans Supabase.</div>';
     return;
   }
   pr.innerHTML=QA_PRINCIPES.map(([k,l])=>`<button type="button" class="qaSeg${QA.principe===k?' on':''}" onclick="qaSetPrincipe('${k}')">${l}</button>`).join('');
-  box.innerHTML=qaTypes(QA.principe).map(a=>`<button type="button" class="qaType${QA.type===a.id?' on':''}" onclick="qaSetType('${a.id}')">${plEsc(a.nom)}</button>`).join('');
+  box.innerHTML=qaGroups(QA.principe).map(o=>`<button type="button" class="qaType${QA.group===o.g?' on':''}" onclick="qaSetGroup(this.dataset.g)" data-g="${plEsc(o.g)}">${plEsc(o.g)}${o.items.length>1?'<small> · haut / bas</small>':''}</button>`).join('');
+  const items=QA.group?qaGroupItems(QA.group):[];
+  const reg=items.length>1;
+  if(rw){
+    rw.style.display=reg?'':'none';
+    const cur=CHG_ACTIONS.find(a=>a.id===QA.type);
+    document.getElementById('qaRegBox').innerHTML=reg?QA_REGIONS.filter(([k])=>items.some(a=>a.region===k)).map(([k,l])=>`<button type="button" class="qaSeg${cur&&cur.region===k?' on':''}" onclick="qaSetRegion('${k}')">${l}</button>`).join(''):'';
+    rw.classList.toggle('need',reg&&!QA.type);
+  }
 }
-function qaSetPrincipe(k){ QA.principe=k; const a=CHG_ACTIONS.find(x=>x.id===QA.type); if(!a||a.principe!==k)QA.type=null; qaRenderTypes(); }
-function qaSetType(id){ QA.type=id; qaRenderTypes(); }
+function qaSetPrincipe(k){ QA.principe=k; const a=CHG_ACTIONS.find(x=>x.id===QA.type); if(!a||a.principe!==k){QA.type=null;QA.group=null;} qaRenderTypes(); }
+function qaSetGroup(g){
+  const items=qaGroupItems(g), cur=CHG_ACTIONS.find(a=>a.id===QA.type);
+  QA.group=g;
+  if(items.length===1)QA.type=items[0].id;
+  else { const same=cur&&items.find(a=>a.region===cur.region); QA.type=same?same.id:null; }   // garde la zone déjà choisie
+  qaRenderTypes();
+}
+function qaSetRegion(r){ const a=qaGroupItems(QA.group).find(x=>x.region===r); if(a)QA.type=a.id; qaRenderTypes(); }
+function qaSetType(id){ const a=CHG_ACTIONS.find(x=>x.id===id); if(!a)return; QA.principe=a.principe||QA.principe; QA.group=qaGroupOf(a); QA.type=a.id; qaRenderTypes(); }
 function qaGroupDur(){ const el=document.getElementById('chgDuree'); const v=el?el.value:''; return v===''?null:Number(v); }
 function qaDurLabel(){
   const n=Object.keys(QA.dur).length, t=document.getElementById('qaDurToggle'); if(!t)return;
@@ -6739,7 +6781,7 @@ function openQuickAdd(opts){
   document.getElementById('chgDate').value=opts.date||new Date().toISOString().slice(0,10);
   document.getElementById('chgDuree').value=opts.duree??'';
   const a=opts.typeId?CHG_ACTIONS.find(x=>x.id===opts.typeId):null;
-  if(a&&a.principe){ QA.principe=a.principe; QA.type=a.id; } else QA.type=null;
+  if(a&&a.principe){ QA.principe=a.principe; QA.group=qaGroupOf(a); QA.type=a.id; } else { QA.type=null; QA.group=null; }
   document.getElementById('qaTitle').textContent=opts.title||'Enregistrer une séance réalisée';
   const hn=document.getElementById('qaHint');
   if(opts.hint){ hn.innerHTML=opts.hint; hn.style.display='block'; } else hn.style.display='none';
@@ -6753,8 +6795,8 @@ function closeQuickAdd(){
 }
 async function addChargeSession(){
   const ids=[...MP_SEL.chg];
-  if(!qaReady()){alert("Exécute d'abord le script schema_supabase_v40_types_seance.sql dans Supabase.");return;}
-  if(!QA.type){alert('Choisis le type de séance.');return;}
+  if(!qaReady()){alert("Exécute d'abord le script schema_supabase_v41_types_seance_haut_bas.sql dans Supabase.");return;}
+  if(!QA.type){alert(QA.group?'Choisis la zone : bas du corps ou haut du corps.':'Choisis le type de séance.');return;}
   if(!ids.length){alert('Coche au moins un joueur présent.');return;}
   const g=qaGroupDur();
   if(ids.some(id=>(QA.dur[id]??g)==null)){alert('Indique la durée de la séance.');return;}
