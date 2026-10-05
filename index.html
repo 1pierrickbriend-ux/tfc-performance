@@ -1459,7 +1459,11 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 .dayPg>.xtStripes,.dayPg>.xtWaveCorner{position:absolute;z-index:0}
 .dayPg .xtWaveCorner{width:62%}
 /* PDF journée épuré (05/10) : 2 rayures seulement, plus de séparateurs entre les créneaux */
-.dayPg>.xtStripes{background-image:linear-gradient(90deg,transparent 83%,var(--xt-stripe) 83%,var(--xt-stripe) calc(83% + .35mm),transparent calc(83% + .35mm),transparent 93%,var(--xt-stripe) 93%,var(--xt-stripe) calc(93% + .35mm),transparent calc(93% + .35mm));background-size:100% 100%;background-repeat:no-repeat;opacity:.55}
+/* 2 rayures calées au millimètre sur l'écusson (page 88 mm, marges 5 mm, écusson 10 mm → 73 à 83 mm) :
+   elles bordent l'écusson de part et d'autre, et le soulignement du titre s'arrête pile sur celle de droite. */
+.dayPg>.xtStripes{background-image:linear-gradient(90deg,transparent 73mm,var(--xt-stripe) 73mm,var(--xt-stripe) 73.35mm,transparent 73.35mm,transparent 82.65mm,var(--xt-stripe) 82.65mm,var(--xt-stripe) 83mm,transparent 83mm);background-size:100% 100%;background-repeat:no-repeat;opacity:1}
+.dayPg .djHead{border-bottom:.35mm solid var(--xt-stripe)}
+.dayPg .djBody{padding-right:11.5mm}   /* le texte des créneaux ne traverse plus la colonne de l'écusson */
 .dayPg .djIt{border-bottom:none;padding:2.4mm 0}
 .dayPg .djFoot{border-top:none}
 .djHead{border-bottom:.5mm solid var(--xt-stripe)}
