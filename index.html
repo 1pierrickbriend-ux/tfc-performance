@@ -15,7 +15,6 @@ if(typeof XLSX==='undefined'){
   document.write('<script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root{
@@ -85,8 +84,6 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .boardAssign{display:inline-block;padding:1px 6px;border-radius:6px;background:rgba(255,255,255,.08);font-size:10px}
 :root{--julien:#e1b57a;--pierrick:#dd8aab;--both:#c0b4cd}
 .boardSection{margin-bottom:32px}
-.progCreateRow{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
-@media (max-width:820px){.progCreateRow{grid-template-columns:1fr}}
 .boardSectionTitle{font-size:15px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 .btn.ghost{background:transparent;border:1px solid var(--line);margin-top:6px}
 .boardItem.urgent{border-color:#ff5c5c;box-shadow:0 0 0 1px #ff5c5c33}
@@ -110,25 +107,6 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .pkBtn.on-info{background:var(--info);border-color:var(--info);color:#0d2c4d}
 .agendaSlot .who{font-size:9px;opacity:.8;display:block;margin-top:2px}
 @media (max-width:900px){.agendaGrid{grid-template-columns:repeat(2,1fr)}}
-.progCard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.progCard h4{font-size:14px;margin-bottom:2px}
-.progStatus{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
-.progStatus.pdf_only{background:rgba(255,255,255,.08);color:var(--muted)}
-.progStatus.en_cours{background:rgba(255,180,84,.18);color:var(--warn)}
-.progStatus.structure{background:rgba(79,209,145,.18);color:var(--ok)}
-.progActions{display:flex;gap:8px;align-items:center}
-.exGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-.exCard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative}
-.exCard img{width:100%;height:100px;object-fit:cover;display:block}
-.exCard .exBody{padding:8px 10px}
-.exCard h5{font-size:13px;margin-bottom:3px}
-.exCard .exTags{font-size:10px;opacity:.6}
-.exCard .boardDel{position:absolute;top:4px;right:6px}
-.peRow{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}
-.peRow .peName{flex:1;font-weight:600;font-size:13px}
-.peRow .peNotes{font-size:12px;opacity:.7}
-.peRow button{background:none;border:none;color:inherit;cursor:pointer;opacity:.6;font-size:13px}
-.peRow button:hover{opacity:1}
 .progInline{background:rgba(139,123,255,.08);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:14px}
 .progInline h4{font-size:13px;margin-bottom:8px}
 .chgTop{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;align-items:start}
@@ -597,6 +575,54 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .qaDurRow small{color:var(--muted);font-size:10.5px}
 .qaDurRow.ovr input{border-color:var(--warn);color:var(--warn);font-weight:700}
 .qaGo{width:100%;margin-top:18px;padding:12px;font-size:14px}
+/* ═══ Bibliothèque (v42) ═══ */
+.bibBar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.bibTabs{display:inline-flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px}
+.bibTab{background:none;border:none;border-radius:9px;padding:9px 16px;font:inherit;font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.bibTab span{background:var(--panel3);color:var(--ink);border-radius:10px;padding:1px 8px;font-size:11px}
+.bibTab:hover{color:var(--ink)}
+.bibTab.on{background:var(--accent);color:#fff}
+.bibTab.on span{background:rgba(255,255,255,.22);color:#fff}
+.bibAdd{margin-left:auto}
+.bibFilters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.bibCats{display:flex;gap:6px;flex-wrap:wrap}
+.bibCat{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 13px;font:inherit;font-size:12px;font-weight:700;color:var(--ink);cursor:pointer}
+.bibCat span{color:var(--muted);font-weight:600;margin-left:2px}
+.bibCat:hover{border-color:var(--accent)}
+.bibCat.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.bibCat.on span{color:rgba(255,255,255,.75)}
+.bibSearch{margin-left:auto;min-width:200px;flex:0 1 260px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 14px;color:var(--ink);font:inherit;font-size:13px}
+.bibGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.bibCard{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform .15s,border-color .15s,box-shadow .15s}
+.bibCard:hover,.bibCard:focus-visible{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 8px 22px rgba(0,0,0,.28);outline:none}
+.bibThumb{height:128px;background:var(--panel2);display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);overflow:hidden}
+.bibThumb img{width:100%;height:100%;object-fit:cover;display:block}
+.bibEx .bibThumb img{object-fit:contain;background:#f3f0f7}
+.bibPdf{font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:1px;color:#fff;background:#c0392b;border-radius:8px;padding:10px 14px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.bibNoFile{font-size:12px;font-weight:700;color:var(--muted)}
+.bibEx .bibNoFile{font-family:var(--font-display);font-size:42px;color:var(--panel3)}
+.bibInfo{padding:10px 12px 12px;display:flex;flex-direction:column;gap:7px;flex:1}
+.bibInfo b{font-size:13.5px;line-height:1.3;color:var(--ink)}
+.bibMeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:auto}
+.bibMeta small{font-size:10.5px;color:var(--muted)}
+.bibTag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;border-radius:6px;padding:3px 7px}
+.c-physique.bibTag{background:rgba(138,111,214,.2);color:#b9a6f0}
+.c-terrain.bibTag{background:rgba(79,209,145,.16);color:#4fd191}
+.c-prevention.bibTag{background:rgba(255,180,84,.16);color:#ffb454}
+.c-autre.bibTag{background:rgba(255,255,255,.08);color:var(--muted)}
+.bibEdit{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;border:none;background:rgba(15,10,30,.72);color:#fff;font-size:14px;cursor:pointer;opacity:.85}
+.bibEdit:hover{opacity:1;background:var(--accent)}
+.bibEmpty{grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);font-size:13px;background:var(--panel);border:1px dashed var(--line);border-radius:14px}
+.bibPanel{max-width:520px}
+.qaBody .bibInput{width:100%}
+.bibSegs{grid-template-columns:repeat(4,1fr)}
+.bibCur{font-size:11.5px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;display:flex;align-items:center;gap:10px;line-height:1.4}
+.bibCur a{color:var(--accent);font-weight:700}
+.bibCur img{width:54px;height:54px;object-fit:contain;background:#f3f0f7;border-radius:6px;flex:none}
+.bibCur.warn{color:var(--warn);border-color:var(--warn)}
+.bibActions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.bibActions .btn.primary{min-width:140px}
+@media(max-width:600px){.bibAdd{margin-left:0;flex:1 1 100%}.bibSearch{margin-left:0;flex:1 1 100%}.bibGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bibThumb{height:96px}.bibSegs{grid-template-columns:repeat(2,1fr)}}
 .qaType small{font-weight:500;color:var(--muted);font-size:10.5px}
 .qaSegs2{grid-template-columns:repeat(2,1fr)}
 .qaRegWrap.need .qaSegs{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn)}
@@ -632,20 +658,6 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .mpQuick button:hover{color:var(--ink);border-color:var(--accent)}
 .dupBar{display:flex;align-items:center;gap:10px;background:var(--panel2);border-radius:10px;padding:10px 12px;margin-top:14px;flex-wrap:wrap}
 .dupBar .lb{font-size:11px;font-weight:700;color:var(--muted)}
-#sheetCanvasWrap{width:100%;max-width:960px;overflow:auto}
-#sheetCanvas{position:relative;width:960px;height:540px;background-size:cover;background-position:center;background-color:#2a1a4a;border-radius:8px;border:1px solid var(--line);user-select:none}
-.sheetItem{position:absolute;width:170px;background:rgba(255,255,255,.97);color:#17122b;border-radius:8px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.4);cursor:grab;touch-action:none;font-size:11px}
-.sheetItem .sheetItemImg{width:100%;height:120px;object-fit:contain;display:block;background:#f3f0f7}
-.sheetItem .sheetItemImg.noImg{display:flex;align-items:center;justify-content:center;font-size:26px;color:#a89ecb}
-.sheetItem .sheetItemBody{padding:6px 8px}
-.sheetItem .num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#c0392b;color:#fff;font-weight:800;font-size:10px;margin-bottom:5px;flex:none}
-.sheetItem .sheetFields{display:flex;gap:3px}
-.sheetItem .sheetFields input{width:32px;font-size:10px;padding:1px 2px;border:1px solid #ccc;border-radius:4px;text-align:center}
-.sheetItem .sheetFields label{font-size:8px;opacity:.7;display:block;text-align:center}
-.sheetItem .delSheetItem{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:#c0392b;color:#fff;border:none;font-size:10px;cursor:pointer;line-height:18px;z-index:2}
-#sheetTitleOverlay{position:absolute;top:4%;left:4%;right:30%;pointer-events:none;z-index:1}
-#sheetTitleOverlay .sheetTitleText{font-family:var(--font-display);font-weight:800;font-size:34px;color:#fff;text-transform:uppercase;letter-spacing:1px;text-shadow:0 2px 6px rgba(0,0,0,.5);line-height:1.05}
-#sheetTitleOverlay .sheetDescText{font-weight:700;font-size:14px;color:#fff;margin-top:6px;text-shadow:0 1px 4px rgba(0,0,0,.5)}
 .rowHead{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 .rowHead h2{font-size:16px}
 .tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--panel3);color:var(--muted)}
@@ -697,7 +709,7 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 #pasteGpsZone{background:var(--panel2);border:1px dashed var(--line);color:var(--muted);border-radius:10px;padding:9px 12px;font-size:13px;cursor:pointer;user-select:none}
 #pasteGpsModal{position:fixed;inset:0;background:rgba(15,10,30,.7);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
 #pasteGpsModal.on{display:flex}
-#customConfirmModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:120;padding:20px}
+#customConfirmModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:140;padding:20px}
 #customConfirmModal.on{display:flex}
 #customPromptModal{position:fixed;inset:0;background:rgba(15,10,30,.75);display:none;align-items:center;justify-content:center;z-index:120;padding:20px}
 #customPromptModal.on{display:flex}
@@ -1602,120 +1614,16 @@ body.plNoScroll{overflow:hidden}
 </section>
 
 <section class="view" id="v-programmes">
-  <div class="rowHead">
-    <h2>Programmes</h2>
+  <div class="rowHead"><h2>Bibliothèque</h2><span class="tag live">Données partagées Supabase</span></div>
+  <div class="bibBar">
+    <div class="bibTabs" id="bibTabs" role="tablist"></div>
+    <button class="btn primary bibAdd" id="bibAddBtn" onclick="bibOpen(BIB.tab,null)">＋ Ajouter</button>
   </div>
-
-  <div class="boardSection">
-    <h3 class="boardSectionTitle">📄 Bibliothèque de programmes</h3>
-    <div class="progCreateRow">
-      <div class="boardCol">
-        <div class="boardColHead" style="font-size:13px">📤 Programme déjà existant</div>
-        <div class="boardForm">
-          <input type="text" id="progTitre" placeholder="Titre du programme">
-          <select id="progCategorie">
-            <option value="autre">Catégorie —</option>
-            <option value="technique">Technique</option>
-            <option value="tactique">Tactique</option>
-            <option value="physique">Physique</option>
-            <option value="echauffement">Échauffement</option>
-            <option value="mental">Mental</option>
-          </select>
-          <textarea id="progDescription" placeholder="Description (optionnel)" style="min-height:36px"></textarea>
-          <input type="file" id="progPdfInput" accept="application/pdf,image/png,image/jpeg">
-          <span class="note" style="font-size:11px">PDF, PNG ou JPEG accepté</span>
-          <button class="btn" onclick="addProgramme()">Ajouter</button>
-        </div>
-      </div>
-      <div class="boardCol">
-        <div class="boardColHead" style="font-size:13px">🖼️ Nouveau programme — fiche visuelle</div>
-        <div class="boardForm">
-          <input type="text" id="newProgTitre" placeholder="Titre du programme">
-          <select id="newProgCategorie">
-            <option value="autre">Catégorie —</option>
-            <option value="technique">Technique</option>
-            <option value="tactique">Tactique</option>
-            <option value="physique">Physique</option>
-            <option value="echauffement">Échauffement</option>
-            <option value="mental">Mental</option>
-          </select>
-          <textarea id="newProgDescription" placeholder="Description (optionnel)" style="min-height:36px"></textarea>
-          <span class="note" style="font-size:11px">Pas de fichier à uploader — tu construis la fiche directement.</span>
-          <button class="btn" onclick="createProgrammeFromSheet()">Créer et ouvrir l'éditeur</button>
-        </div>
-      </div>
-    </div>
-    <div id="progListWrap"></div>
+  <div class="bibFilters">
+    <div class="bibCats" id="bibCats"></div>
+    <input type="search" id="bibSearch" class="bibSearch" placeholder="Rechercher…" oninput="BIB.q=this.value;renderBibGrid()">
   </div>
-
-  <div class="boardSection" id="progDetailSection" style="display:none">
-    <h3 class="boardSectionTitle">🧩 Reconstruction du programme — <span id="progDetailTitre"></span></h3>
-    <button class="btn ghost" onclick="closeProgrammeDetail()">← Retour à la bibliothèque</button>
-    <div style="margin:14px 0">
-      <a id="progDetailPdfLink" href="#" target="_blank" class="btn ghost" style="text-decoration:none;display:none">📄 Ouvrir le fichier d'origine</a>
-    </div>
-    <div class="boardForm" style="max-width:560px;margin-bottom:14px">
-      <select id="progAddExSel"><option value="">— Choisir un exercice de la banque —</option></select>
-      <input type="text" id="progAddExLibre" placeholder="…ou nom libre si pas encore dans la banque">
-      <textarea id="progAddExNotes" placeholder="Notes spécifiques à ce programme (optionnel)" style="min-height:36px"></textarea>
-      <button class="btn" onclick="addExerciseToProgramme()">Ajouter à ce programme</button>
-    </div>
-    <div id="progExList"></div>
-    <button class="btn" onclick="markProgrammeStructured()">✅ Marquer comme entièrement reconstruit</button>
-    <button class="btn ghost" style="margin-top:8px" onclick="openSheetBuilder()">🖼️ Construire une fiche visuelle</button>
-  </div>
-
-  <div class="boardSection" id="sheetBuilderSection" style="display:none">
-    <h3 class="boardSectionTitle">🖼️ Fiche visuelle — <span id="sheetProgTitre"></span></h3>
-    <button class="btn ghost" onclick="closeSheetBuilder()">← Retour au programme</button>
-    <div class="row" style="gap:8px;margin:12px 0;flex-wrap:wrap">
-      <input type="text" id="sheetTitre" placeholder="Titre de la fiche (ex. PRÉVENTION)" style="max-width:240px" oninput="renderSheetOverlay()">
-      <input type="text" id="sheetSubtitle" placeholder="Description (ex. CIRCUIT 2 TOURS · 12-15 REPS)" style="max-width:280px" oninput="renderSheetOverlay()">
-      <select id="sheetBgSel" onchange="renderSheetCanvas()"></select>
-    </div>
-    <div class="row" style="gap:8px;margin-bottom:12px;flex-wrap:wrap">
-      <select id="sheetAddExSel"><option value="">— Ajouter un exercice de la banque —</option></select>
-      <button class="btn" onclick="addExerciseToSheet()">+ Ajouter sur la fiche</button>
-      <button class="btn" onclick="saveSheet()">💾 Enregistrer</button>
-      <button class="btn ghost" onclick="exportSheetImage()">⬇️ Exporter en image</button>
-      <button class="btn ghost" onclick="printSheetVisual()">🖨️ Imprimer / PDF</button>
-    </div>
-    <div id="sheetCanvasWrap"><div id="sheetCanvas"></div></div>
-  </div>
-
-  <div class="boardSection">
-    <h3 class="boardSectionTitle">🗂️ Banque d'exercices</h3>
-    <div class="boardCol" style="max-width:560px;margin-bottom:16px">
-      <div class="boardForm">
-        <input type="text" id="exNom" placeholder="Nom de l'exercice">
-        <select id="exCategorie">
-          <option value="autre">Catégorie —</option>
-          <option value="technique">Technique</option>
-          <option value="tactique">Tactique</option>
-          <option value="physique">Physique</option>
-          <option value="echauffement">Échauffement</option>
-          <option value="mental">Mental</option>
-        </select>
-        <textarea id="exDescription" placeholder="Description (optionnel)" style="min-height:36px"></textarea>
-        <input type="text" id="exTags" placeholder="Tags séparés par une virgule (optionnel)">
-        <input type="file" id="exImageInput" accept="image/*">
-        <button class="btn" onclick="addExercise()">Ajouter à la banque</button>
-      </div>
-    </div>
-    <div class="row" style="margin-bottom:10px;gap:8px">
-      <select id="exFilterCat" onchange="renderExerciseBank()">
-        <option value="">Toutes catégories</option>
-        <option value="technique">Technique</option>
-        <option value="tactique">Tactique</option>
-        <option value="physique">Physique</option>
-        <option value="echauffement">Échauffement</option>
-        <option value="mental">Mental</option>
-      </select>
-      <input type="text" id="exSearch" placeholder="Recherche (nom ou tag)" oninput="renderExerciseBank()">
-    </div>
-    <div class="exGrid" id="exBankGrid"></div>
-  </div>
-
+  <div class="bibGrid" id="bibGrid"></div>
 </section>
 
 <section class="view" id="v-joueurs">
@@ -1729,6 +1637,10 @@ body.plNoScroll{overflow:hidden}
   </div>
 </section>
 <div id="playerSheet" role="dialog" aria-modal="true" aria-labelledby="psTitle" onclick="if(event.target===this)closePlayerSheet()"><div class="psBox"><div id="playerSheetBody"></div></div></div>
+<div class="qaOverlay" id="bibOverlay" onclick="if(event.target===this)bibClose()">
+  <div class="qaPanel bibPanel"><div class="qaHead"><span id="bibTitle"></span><button onclick="bibClose()" aria-label="Fermer">✕</button></div>
+  <div class="qaBody" id="bibForm"></div></div>
+</div>
 <!-- Fenêtre de saisie « séance réalisée » : au niveau de la page pour être utilisable depuis n'importe quel onglet (fiche joueur, Individualisation). -->
 <div class="qaOverlay" id="qaOverlay" onclick="if(event.target===this)closeQuickAdd()">
     <div class="qaPanel">
@@ -2331,10 +2243,20 @@ function setupBoardRealtime(){
     .subscribe();
 }
 
-/* ═══════ PROGRAMMES + BANQUE D'EXERCICES ═══════ */
-let PROGRAMMES=[], EXBANK=[], PROG_EX=[], currentProgId=null;
-const CAT_LABEL={technique:'Technique',tactique:'Tactique',physique:'Physique',echauffement:'Échauffement',mental:'Mental',autre:'Autre'};
-const STATUS_LABEL={pdf_only:'PDF seul',en_cours:'En reconstruction',structure:'Structuré'};
+/* ═══════ BIBLIOTHÈQUE (v42) : documents + banque d'exercices ═══════
+   Simplifiée le 05/10 (Pierrick) : deux rubriques seulement.
+   · Documents : archive des programmes (PDF / PNG / JPEG) — ajouter, ouvrir, modifier, supprimer.
+   · Exercices : catalogue avec photo — ajouter, modifier, supprimer.
+   Retirés de l'écran : reconstruction PDF → exercices, statuts, fiches visuelles, descriptions
+   jamais affichées. Les données correspondantes restent en base (programme_exercises,
+   programme_sheets). La banque de prévention (indiv_exercises) reste distincte : fusion = chantier suivant. */
+let PROGRAMMES=[], EXBANK=[];
+const BIB_CATS=[['physique','Physique'],['terrain','Terrain'],['prevention','Prévention'],['autre','Autre']];
+const BIB_CAT_LABEL=Object.fromEntries(BIB_CATS);
+// anciennes catégories (avant le script v42) lues proprement en attendant la conversion en base
+const BIB_LEGACY={echauffement:'prevention',technique:'terrain',tactique:'terrain',mental:'autre'};
+function bibCat(c){ c=BIB_LEGACY[c]||c; return BIB_CAT_LABEL[c]?c:'autre'; }
+let BIB={tab:'docs',cat:'',q:'',edit:null,formCat:'physique'};
 
 async function loadProgrammes(){
   const [{data:pr,error:e1},{data:ex,error:e2}]=await Promise.all([
@@ -2346,589 +2268,151 @@ async function loadProgrammes(){
   PROGRAMMES=pr||[];
   EXBANK=ex||[];
 }
-function renderProgrammes(){
-  renderProgList();
-  renderExerciseBank();
+function bibUrl(bucket,path){ return path?supa.storage.from(bucket).getPublicUrl(path).data.publicUrl:null; }
+function bibIsImg(path){ return /\.(png|jpe?g|webp)$/i.test(path||''); }
+function renderProgrammes(){ renderBib(); }
+function renderProgList(){ renderBib(); }      // appelé par la synchro temps réel
+function renderExerciseBank(){ renderBib(); }  // idem
+function renderBib(){
+  const tabs=document.getElementById('bibTabs'); if(!tabs)return;
+  const t=(k,l,n)=>`<button type="button" role="tab" class="bibTab${BIB.tab===k?' on':''}" aria-selected="${BIB.tab===k}" onclick="bibSetTab('${k}')">${l}<span>${n}</span></button>`;
+  tabs.innerHTML=t('docs','Documents',PROGRAMMES.length)+t('ex','Exercices',EXBANK.length);
+  document.getElementById('bibAddBtn').textContent=BIB.tab==='docs'?'＋ Ajouter un document':'＋ Ajouter un exercice';
+  const src=BIB.tab==='docs'?PROGRAMMES:EXBANK;
+  const cnt=k=>src.filter(x=>bibCat(x.categorie)===k).length;
+  document.getElementById('bibCats').innerHTML=[['','Tout',src.length],...BIB_CATS.map(([k,l])=>[k,l,cnt(k)])]
+    .map(([k,l,n])=>`<button type="button" class="bibCat${BIB.cat===k?' on':''}" onclick="bibSetCat('${k}')">${l} <span>${n}</span></button>`).join('');
+  renderBibGrid();
 }
-function renderProgList(){
-  const box=document.getElementById('progListWrap');
-  if(!box)return;
-  if(!PROGRAMMES.length){box.innerHTML='<div class="note">Aucun programme pour l\'instant.</div>';return;}
-  box.innerHTML=PROGRAMMES.map(p=>{
-    const pdfLink=p.pdf_path?`<a href="${supa.storage.from('programmes').getPublicUrl(p.pdf_path).data.publicUrl}" target="_blank" class="btn ghost" style="text-decoration:none;font-size:11px">📄 Fichier</a>`:'';
-    return `<div class="progCard">
-      <div>
-        <h4>${(p.titre||'').replace(/</g,'&lt;')}</h4>
-        <span class="progStatus ${p.structure_status}">${STATUS_LABEL[p.structure_status]||p.structure_status}</span>
-        <span class="note" style="margin-left:6px">${CAT_LABEL[p.categorie]||''}</span>
-      </div>
-      <div class="progActions">
-        ${pdfLink}
-        <button class="btn" style="font-size:11px" onclick="openProgrammeDetail('${p.id}')">Reconstruire</button>
-        <label class="note" style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px">
-          <input type="checkbox" id="sheetChk-${p.id}" onchange="toggleSheetFromCard('${p.id}',this.checked)">🖼️ Créer une fiche visuelle
-        </label>
-        <button class="boardDel" onclick="deleteProgramme('${p.id}')" title="Supprimer" style="position:static">✕</button>
-      </div>
+function bibSetTab(k){ BIB.tab=k; BIB.cat=''; BIB.q=''; const q=document.getElementById('bibSearch'); if(q)q.value=''; renderBib(); }
+function bibSetCat(k){ BIB.cat=k; renderBib(); }
+function renderBibGrid(){
+  const box=document.getElementById('bibGrid'); if(!box)return;
+  const q=BIB.q.trim().toLowerCase();
+  const tag=c=>`<span class="bibTag c-${bibCat(c)}">${BIB_CAT_LABEL[bibCat(c)]}</span>`;
+  if(BIB.tab==='docs'){
+    const list=PROGRAMMES.filter(p=>(!BIB.cat||bibCat(p.categorie)===BIB.cat)&&(!q||(p.titre||'').toLowerCase().includes(q)));
+    if(!list.length){box.innerHTML=`<div class="bibEmpty">${PROGRAMMES.length?'Aucun document ne correspond.':'Aucun document. Ajoute le premier avec « ＋ Ajouter un document ».'}</div>`;return;}
+    box.innerHTML=list.map(p=>{
+      const url=bibUrl('programmes',p.pdf_path);
+      const thumb=!p.pdf_path?'<span class="bibNoFile">Aucun fichier</span>'
+        :bibIsImg(p.pdf_path)?`<img src="${url}" alt="" loading="lazy">`:'<span class="bibPdf">PDF</span>';
+      const d=p.created_at?fmtDateFR(String(p.created_at).slice(0,10)):'';
+      return `<div class="bibCard" role="button" tabindex="0" onclick="bibOpenDoc('${p.id}')" onkeydown="if(event.key==='Enter')bibOpenDoc('${p.id}')" title="${p.pdf_path?'Ouvrir le fichier':'Joindre un fichier'}">
+        <div class="bibThumb">${thumb}</div>
+        <div class="bibInfo"><b>${plEsc(p.titre||'Sans titre')}</b>
+          <div class="bibMeta">${tag(p.categorie)}<small>${[d,p.created_by].filter(Boolean).map(plEsc).join(' · ')}</small></div></div>
+        <button class="bibEdit" onclick="event.stopPropagation();bibOpen('docs','${p.id}')" title="Modifier" aria-label="Modifier">✎</button>
+      </div>`;
+    }).join('');
+  }else{
+    const list=EXBANK.filter(e=>(!BIB.cat||bibCat(e.categorie)===BIB.cat)&&(!q||((e.nom||'')+' '+(e.tags||[]).join(' ')).toLowerCase().includes(q)));
+    if(!list.length){box.innerHTML=`<div class="bibEmpty">${EXBANK.length?'Aucun exercice ne correspond.':'Aucun exercice. Ajoute le premier avec « ＋ Ajouter un exercice ».'}</div>`;return;}
+    box.innerHTML=list.map(e=>{
+      const url=bibUrl('exercise-images',e.image_path);
+      return `<div class="bibCard bibEx" role="button" tabindex="0" onclick="bibOpen('ex','${e.id}')" onkeydown="if(event.key==='Enter')bibOpen('ex','${e.id}')" title="Modifier">
+        <div class="bibThumb">${url?`<img src="${url}" alt="" loading="lazy">`:`<span class="bibNoFile">${plEsc((e.nom||'?').slice(0,1).toUpperCase())}</span>`}</div>
+        <div class="bibInfo"><b>${plEsc(e.nom||'')}</b><div class="bibMeta">${tag(e.categorie)}</div></div>
+      </div>`;
+    }).join('');
+  }
+}
+function bibOpenDoc(id){
+  const p=PROGRAMMES.find(x=>x.id===id); if(!p)return;
+  if(p.pdf_path)window.open(bibUrl('programmes',p.pdf_path),'_blank','noopener');
+  else bibOpen('docs',id);
+}
+/* Fenêtre unique d'ajout / modification (document ou exercice) */
+function bibOpen(kind,id){
+  const isDoc=kind==='docs';
+  const it=id?(isDoc?PROGRAMMES:EXBANK).find(x=>x.id===id):null;
+  if(id&&!it)return;
+  BIB.edit={kind,id:id||null};
+  BIB.formCat=it?bibCat(it.categorie):(BIB.cat||'physique');
+  document.getElementById('bibTitle').textContent=(it?'Modifier ':'Ajouter ')+(isDoc?'un document':'un exercice');
+  const path=it?(isDoc?it.pdf_path:it.image_path):null;
+  const url=path?bibUrl(isDoc?'programmes':'exercise-images',path):null;
+  const cur=!it?'':isDoc
+    ?(path?`<div class="bibCur">Fichier actuel : <a href="${url}" target="_blank" rel="noopener">ouvrir ↗</a> — choisis un fichier ci-dessous seulement pour le remplacer.</div>`:'<div class="bibCur warn">Aucun fichier joint à ce document.</div>')
+    :(path?`<div class="bibCur"><img src="${url}" alt="">Photo actuelle — choisis une image ci-dessous seulement pour la remplacer.</div>`:'');
+  document.getElementById('bibForm').innerHTML=`
+    <div class="qaStep"><span class="qaNum">1</span>${isDoc?'Titre':'Nom'}</div>
+    <input type="text" id="bibName" class="bibInput" value="${it?plEsc(isDoc?it.titre||'':it.nom||''):''}" placeholder="${isDoc?'Ex. Programme force bas du corps — Julien':'Ex. Copenhague court levier'}">
+    <div class="qaStep"><span class="qaNum">2</span>Catégorie</div>
+    <div class="qaSegs bibSegs" id="bibCatBox"></div>
+    <div class="qaStep"><span class="qaNum">3</span>${isDoc?'Fichier <span class="qaSub">PDF, PNG ou JPEG</span>':'Photo <span class="qaSub">facultative</span>'}</div>
+    ${cur}
+    <input type="file" id="bibFile" class="bibInput" accept="${isDoc?'application/pdf,image/png,image/jpeg':'image/*'}">
+    <div class="bibActions">
+      ${it?`<button type="button" class="btn danger" onclick="bibDelete()">Supprimer</button>`:''}
+      <button type="button" class="btn primary" id="bibSaveBtn" onclick="bibSave()">Enregistrer</button>
     </div>`;
-  }).join('');
+  bibRenderCatBox();
+  document.getElementById('bibOverlay').classList.add('on');
+  setTimeout(()=>document.getElementById('bibName')?.focus(),30);
 }
-async function addProgramme(){
-  const titre=document.getElementById('progTitre').value.trim();
-  if(!titre){alert('Le titre est obligatoire.');return;}
-  const categorie=document.getElementById('progCategorie').value;
-  const description=document.getElementById('progDescription').value.trim()||null;
-  const fileEl=document.getElementById('progPdfInput');
-  const file=fileEl.files[0];
-  let pdf_path=null;
+function bibRenderCatBox(){
+  const box=document.getElementById('bibCatBox'); if(!box)return;
+  box.innerHTML=BIB_CATS.map(([k,l])=>`<button type="button" class="qaSeg${BIB.formCat===k?' on':''}" onclick="BIB.formCat='${k}';bibRenderCatBox()">${l}</button>`).join('');
+}
+function bibClose(){ document.getElementById('bibOverlay').classList.remove('on'); BIB.edit=null; }
+async function bibUpload(bucket,name,file,maxDim,q){
+  let body=file, ext='pdf';
+  if(file.type!=='application/pdf'){
+    try{ const r=await compressImage(file,maxDim,q); body=r.blob; ext=r.ext; }
+    catch(err){ alert('Erreur de compression : '+err.message); return null; }
+  }
+  const path=`${slugify(name)}-${Date.now()}.${ext}`;
+  const {error}=await supa.storage.from(bucket).upload(path,body,{upsert:true});
+  if(error){ alert('Erreur d\'envoi du fichier : '+error.message); return null; }
+  return path;
+}
+async function bibSave(){
+  const e=BIB.edit; if(!e)return;
+  const isDoc=e.kind==='docs';
+  const name=document.getElementById('bibName').value.trim();
+  if(!name){alert(isDoc?'Le titre est obligatoire.':'Le nom est obligatoire.');return;}
+  const file=document.getElementById('bibFile').files[0]||null;
+  const it=e.id?(isDoc?PROGRAMMES:EXBANK).find(x=>x.id===e.id):null;
+  if(isDoc&&!it&&!file){alert('Choisis le fichier à archiver (PDF, PNG ou JPEG).');return;}
   if(file){
-    const isPdf=file.type==='application/pdf';
-    const isImg=file.type==='image/png'||file.type==='image/jpeg';
-    if(!isPdf&&!isImg){alert('Choisis un fichier PDF, PNG ou JPEG.');return;}
-    if(file.size>60*1024*1024){alert('Fichier trop lourd (60 Mo max).');return;}
-    if(isPdf){
-      pdf_path=`${slugify(titre)}-${Date.now()}.pdf`;
-      const {error:upErr}=await supa.storage.from('programmes').upload(pdf_path,file,{upsert:true});
-      if(upErr){alert('Erreur d\'envoi du fichier : '+upErr.message);return;}
-    }else{
-      // 1600px : plus généreux que les photos joueurs, pour garder un texte scanné lisible
-      let blob,ext;
-      try{({blob,ext}=await compressImage(file,1600,.88));}
-      catch(e){alert('Erreur de compression : '+e.message);return;}
-      pdf_path=`${slugify(titre)}-${Date.now()}.${ext}`;
-      const {error:upErr}=await supa.storage.from('programmes').upload(pdf_path,blob,{upsert:true});
-      if(upErr){alert('Erreur d\'envoi du fichier : '+upErr.message);return;}
-    }
+    if(isDoc&&!['application/pdf','image/png','image/jpeg'].includes(file.type)){alert('Choisis un fichier PDF, PNG ou JPEG.');return;}
+    if(isDoc&&file.size>60*1024*1024){alert('Fichier trop lourd (60 Mo max).');return;}
+    if(!isDoc&&!file.type.startsWith('image/')){alert('Choisis une image.');return;}
   }
-  const {error}=await supa.from('programmes').insert({titre,categorie,description,pdf_path,created_by:CURRENT_USER_LABEL});
-  if(error){alert('Erreur d\'enregistrement : '+error.message);return;}
-  document.getElementById('progTitre').value='';
-  document.getElementById('progDescription').value='';
-  fileEl.value='';
-  await loadProgrammes();renderProgrammes();
+  const btn=document.getElementById('bibSaveBtn'); btn.disabled=true; btn.textContent='Enregistrement…';
+  const bucket=isDoc?'programmes':'exercise-images';
+  // documents : 1600 px (texte scanné encore lisible) · exercices : 700 px
+  const path=file?await bibUpload(bucket,name,file,isDoc?1600:700,isDoc?.88:.85):null;
+  if(file&&!path){btn.disabled=false;btn.textContent='Enregistrer';return;}
+  const table=isDoc?'programmes':'exercise_bank';
+  const row=isDoc?{titre:name,categorie:BIB.formCat}:{nom:name,categorie:BIB.formCat};
+  if(path)row[isDoc?'pdf_path':'image_path']=path;
+  const oldPath=it?(isDoc?it.pdf_path:it.image_path):null;
+  const {error}=it
+    ?await supa.from(table).update(row).eq('id',it.id)
+    :await supa.from(table).insert({...row,created_by:CURRENT_USER_LABEL});
+  if(error){
+    if(path)supa.storage.from(bucket).remove([path]);   // pas de fichier orphelin
+    alert('Erreur d\'enregistrement : '+error.message+(/check|violates|policy|row-level/i.test(error.message)?'\n\nExécute le script schema_supabase_v42_bibliotheque.sql dans Supabase.':''));
+    btn.disabled=false; btn.textContent='Enregistrer'; return;
+  }
+  if(it&&path&&oldPath&&oldPath!==path)supa.storage.from(bucket).remove([oldPath]);
+  bibClose();
+  if(!it&&BIB.cat&&BIB.cat!==row.categorie)BIB.cat='';   // l'élément ajouté reste visible
+  await loadProgrammes(); renderBib();
 }
-async function createProgrammeFromSheet(){
-  const titre=document.getElementById('newProgTitre').value.trim();
-  if(!titre){alert('Le titre est obligatoire.');return;}
-  const categorie=document.getElementById('newProgCategorie').value;
-  const description=document.getElementById('newProgDescription').value.trim()||null;
-  const {data,error}=await supa.from('programmes')
-    .insert({titre,categorie,description,pdf_path:null,created_by:CURRENT_USER_LABEL})
-    .select().single();
-  if(error){alert('Erreur d\'enregistrement : '+error.message);return;}
-  document.getElementById('newProgTitre').value='';
-  document.getElementById('newProgDescription').value='';
-  await loadProgrammes();renderProgrammes();
-  openSheetBuilder(data.id);
-}
-async function deleteProgramme(id){
-  if(!await customConfirm('Supprimer ce programme ? Cette action est définitive (le PDF et le contenu structuré associés seront aussi supprimés).'))return;
-  const p=PROGRAMMES.find(x=>x.id===id);
-  const {error}=await supa.from('programmes').delete().eq('id',id);
+async function bibDelete(){
+  const e=BIB.edit; if(!e||!e.id)return;
+  const isDoc=e.kind==='docs';
+  const it=(isDoc?PROGRAMMES:EXBANK).find(x=>x.id===e.id); if(!it)return;
+  if(!await customConfirm(isDoc?`Supprimer le document « ${plEsc(it.titre||'')} » et son fichier ? Action définitive.`:`Supprimer l'exercice « ${plEsc(it.nom||'')} » de la banque ? Action définitive.`))return;
+  const {error}=await supa.from(isDoc?'programmes':'exercise_bank').delete().eq('id',it.id);
   if(error){alert('Erreur : '+error.message);return;}
-  if(p&&p.pdf_path)supa.storage.from('programmes').remove([p.pdf_path]);
-  await loadProgrammes();renderProgrammes();
-}
-async function openProgrammeDetail(id){
-  currentProgId=id;
-  const p=PROGRAMMES.find(x=>x.id===id);
-  if(!p)return;
-  document.getElementById('progDetailTitre').textContent=p.titre;
-  const link=document.getElementById('progDetailPdfLink');
-  if(p.pdf_path){link.href=supa.storage.from('programmes').getPublicUrl(p.pdf_path).data.publicUrl;link.style.display='inline-block';}
-  else{link.style.display='none';}
-  const sel=document.getElementById('progAddExSel');
-  sel.innerHTML='<option value="">— Choisir un exercice de la banque —</option>'+
-    EXBANK.map(e=>`<option value="${e.id}">${e.nom}</option>`).join('');
-  document.getElementById('progDetailSection').style.display='block';
-  document.getElementById('progDetailSection').scrollIntoView({behavior:'smooth',block:'start'});
-  const {data,error}=await supa.from('programme_exercises').select('*').eq('programme_id',id).order('sort_order');
-  if(error){console.error(error);return;}
-  PROG_EX=data||[];
-  renderProgExList();
-}
-function closeProgrammeDetail(){
-  currentProgId=null;
-  document.getElementById('progDetailSection').style.display='none';
-}
-function renderProgExList(){
-  const box=document.getElementById('progExList');
-  if(!box)return;
-  if(!PROG_EX.length){box.innerHTML='<div class="note">Aucun exercice ajouté pour l\'instant.</div>';return;}
-  box.innerHTML=PROG_EX.map((pe,idx)=>{
-    const ex=EXBANK.find(e=>e.id===pe.exercise_id);
-    const name=ex?ex.nom:(pe.nom_libre||'?');
-    return `<div class="peRow">
-      <span class="peName">${idx+1}. ${name.replace(/</g,'&lt;')}</span>
-      ${pe.notes?`<span class="peNotes">${pe.notes.replace(/</g,'&lt;')}</span>`:''}
-      <button onclick="moveProgEx('${pe.id}',-1)" title="Monter">↑</button>
-      <button onclick="moveProgEx('${pe.id}',1)" title="Descendre">↓</button>
-      <button onclick="removeProgEx('${pe.id}')" title="Retirer">✕</button>
-    </div>`;
-  }).join('');
-}
-async function addExerciseToProgramme(){
-  if(!currentProgId)return;
-  const exId=document.getElementById('progAddExSel').value;
-  const libre=document.getElementById('progAddExLibre').value.trim();
-  if(!exId&&!libre){alert('Choisis un exercice de la banque ou saisis un nom libre.');return;}
-  const notes=document.getElementById('progAddExNotes').value.trim()||null;
-  const sort_order=PROG_EX.length?Math.max(...PROG_EX.map(p=>p.sort_order))+1:0;
-  const row={programme_id:currentProgId,exercise_id:exId||null,nom_libre:exId?null:libre,notes,sort_order};
-  const {data,error}=await supa.from('programme_exercises').insert(row).select().single();
-  if(error){alert('Erreur : '+error.message);return;}
-  PROG_EX.push(data);
-  document.getElementById('progAddExSel').value='';
-  document.getElementById('progAddExLibre').value='';
-  document.getElementById('progAddExNotes').value='';
-  renderProgExList();
-  // Premier exercice ajouté : passe automatiquement le programme en "en_cours"
-  const p=PROGRAMMES.find(x=>x.id===currentProgId);
-  if(p&&p.structure_status==='pdf_only'){
-    await supa.from('programmes').update({structure_status:'en_cours'}).eq('id',currentProgId);
-    p.structure_status='en_cours';
-    renderProgList();
-  }
-}
-async function removeProgEx(peId){
-  if(!await customConfirm('Retirer cet exercice du programme ?'))return;
-  const {error}=await supa.from('programme_exercises').delete().eq('id',peId);
-  if(error){alert('Erreur : '+error.message);return;}
-  PROG_EX=PROG_EX.filter(p=>p.id!==peId);
-  renderProgExList();
-}
-async function moveProgEx(peId,dir){
-  const idx=PROG_EX.findIndex(p=>p.id===peId);
-  const swapIdx=idx+dir;
-  if(idx<0||swapIdx<0||swapIdx>=PROG_EX.length)return;
-  const a=PROG_EX[idx],b=PROG_EX[swapIdx];
-  const aOrder=a.sort_order,bOrder=b.sort_order;
-  const [{error:e1},{error:e2}]=await Promise.all([
-    supa.from('programme_exercises').update({sort_order:bOrder}).eq('id',a.id),
-    supa.from('programme_exercises').update({sort_order:aOrder}).eq('id',b.id),
-  ]);
-  if(e1||e2){alert('Erreur : '+((e1||e2).message));return;}
-  a.sort_order=bOrder;b.sort_order=aOrder;
-  PROG_EX.sort((x,y)=>x.sort_order-y.sort_order);
-  renderProgExList();
-}
-async function markProgrammeStructured(){
-  if(!currentProgId)return;
-  const {error}=await supa.from('programmes').update({structure_status:'structure'}).eq('id',currentProgId);
-  if(error){alert('Erreur : '+error.message);return;}
-  const p=PROGRAMMES.find(x=>x.id===currentProgId);
-  if(p)p.structure_status='structure';
-  renderProgList();
-  alert('Programme marqué comme entièrement reconstruit.');
-}
-
-/* ─── Fiche visuelle (façon PowerPoint) ─── */
-let SHEET_BACKGROUNDS=[], currentSheetId=null, currentSheetProgId=null, sheetLayout=[];
-let sheetDrag=null;
-
-async function loadSheetBackgrounds(){
-  const {data,error}=await supa.storage.from('sheet-backgrounds').list();
-  if(error){console.error(error);return;}
-  SHEET_BACKGROUNDS=(data||[]).filter(f=>f.name&&!f.name.startsWith('.'));
-}
-function fillSheetBgSel(){
-  const sel=document.getElementById('sheetBgSel');
-  sel.innerHTML=SHEET_BACKGROUNDS.map(f=>{
-    const label=f.name.replace(/\.[a-z0-9]+$/i,'').replace(/[-_]/g,' ');
-    return `<option value="${f.name}">${label}</option>`;
-  }).join('')||'<option value="">Aucun fond disponible</option>';
-}
-function toggleSheetFromCard(programmeId,checked){
-  if(checked)openSheetBuilder(programmeId);
-  else closeSheetBuilder();
-}
-async function openSheetBuilder(programmeId){
-  const progId=programmeId||currentSheetProgId||currentProgId;
-  if(!progId)return;
-  currentSheetProgId=progId;
-  const p=PROGRAMMES.find(x=>x.id===progId);
-  if(!p)return;
-  document.getElementById('sheetProgTitre').textContent=p.titre;
-  await loadSheetBackgrounds();
-  fillSheetBgSel();
-  const exSel=document.getElementById('sheetAddExSel');
-  exSel.innerHTML='<option value="">— Ajouter un exercice de la banque —</option>'+
-    EXBANK.map(e=>`<option value="${e.id}">${e.nom}</option>`).join('');
-  const {data,error}=await supa.from('programme_sheets').select('*').eq('programme_id',progId).order('updated_at',{ascending:false}).limit(1);
-  if(error)console.error(error);
-  const existing=(data&&data[0])||null;
-  if(existing){
-    currentSheetId=existing.id;
-    document.getElementById('sheetTitre').value=existing.titre||'';
-    document.getElementById('sheetSubtitle').value=existing.subtitle||'';
-    if(existing.background_path)document.getElementById('sheetBgSel').value=existing.background_path;
-    sheetLayout=Array.isArray(existing.layout)?existing.layout:[];
-  }else{
-    currentSheetId=null;
-    document.getElementById('sheetTitre').value='';
-    document.getElementById('sheetSubtitle').value='';
-    sheetLayout=[];
-  }
-  const chk=document.getElementById('sheetChk-'+progId);
-  if(chk)chk.checked=true;
-  document.getElementById('sheetBuilderSection').style.display='block';
-  document.getElementById('sheetBuilderSection').scrollIntoView({behavior:'smooth',block:'start'});
-  renderSheetCanvas();
-}
-function closeSheetBuilder(){
-  document.getElementById('sheetBuilderSection').style.display='none';
-  if(currentSheetProgId){
-    const chk=document.getElementById('sheetChk-'+currentSheetProgId);
-    if(chk)chk.checked=false;
-  }
-  currentSheetProgId=null;
-}
-function renderSheetCanvas(){
-  sheetDrag=null;
-  const canvas=document.getElementById('sheetCanvas');
-  const bgName=document.getElementById('sheetBgSel').value;
-  if(bgName){
-    const url=supa.storage.from('sheet-backgrounds').getPublicUrl(bgName).data.publicUrl;
-    canvas.style.backgroundImage=`url('${url}')`;
-  }else{
-    canvas.style.backgroundImage='none';
-  }
-  canvas.innerHTML=sheetOverlayHtml()+sheetLayout.map((it,idx)=>{
-    const ex=EXBANK.find(e=>e.id===it.exercise_id);
-    const name=ex?ex.nom:'?';
-    const img=ex&&ex.image_path?supa.storage.from('exercise-images').getPublicUrl(ex.image_path).data.publicUrl:null;
-    const imgHtml=img?`<img class="sheetItemImg" src="${img}" draggable="false">`:`<div class="sheetItemImg noImg">🖼</div>`;
-    return `<div class="sheetItem" data-id="${it.id}" style="left:${it.x}%;top:${it.y}%" title="${name.replace(/"/g,'&quot;')}">
-      <button class="delSheetItem" onclick="removeSheetItem('${it.id}')">✕</button>
-      ${imgHtml}
-      <div class="sheetItemBody">
-        <span class="num">${idx+1}</span>
-        <div class="sheetFields">
-          <div><label>Reps</label><input value="${it.reps||''}" oninput="updateSheetField('${it.id}','reps',this.value)"></div>
-          <div><label>Séries</label><input value="${it.series||''}" oninput="updateSheetField('${it.id}','series',this.value)"></div>
-          <div><label>R</label><input value="${it.recup||''}" oninput="updateSheetField('${it.id}','recup',this.value)"></div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-  canvas.querySelectorAll('.sheetItem').forEach(el=>{
-    el.addEventListener('pointerdown',startSheetDrag);
-  });
-}
-function sheetOverlayHtml(){
-  const titre=(document.getElementById('sheetTitre')?.value||'').trim();
-  const desc=(document.getElementById('sheetSubtitle')?.value||'').trim();
-  if(!titre&&!desc)return'';
-  return `<div id="sheetTitleOverlay">
-    ${titre?`<div class="sheetTitleText">${titre.replace(/</g,'&lt;')}</div>`:''}
-    ${desc?`<div class="sheetDescText">${desc.replace(/</g,'&lt;')}</div>`:''}
-  </div>`;
-}
-function renderSheetOverlay(){
-  // mise à jour légère à la frappe : ne touche pas aux blocs d'exercice
-  // (évite de perdre le focus du champ en cours d'édition)
-  let ov=document.getElementById('sheetTitleOverlay');
-  const html=sheetOverlayHtml();
-  if(!html){if(ov)ov.remove();return;}
-  if(!ov){
-    document.getElementById('sheetCanvas').insertAdjacentHTML('afterbegin',html);
-  }else{
-    ov.outerHTML=html;
-  }
-}
-function addExerciseToSheet(){
-  const sel=document.getElementById('sheetAddExSel');
-  const exId=sel.value;
-  if(!exId)return;
-  const n=sheetLayout.length;
-  sheetLayout.push({
-    id:'p'+Date.now()+Math.random().toString(36).slice(2,7),
-    exercise_id:exId,
-    x:Math.min(20+(n%4)*20,78), y:Math.min(10+Math.floor(n/4)*33,80),
-    reps:'', series:'', recup:'',
-  });
-  sel.value='';
-  renderSheetCanvas();
-  const p=PROGRAMMES.find(x=>x.id===currentSheetProgId);
-  if(p&&p.structure_status==='pdf_only'){
-    supa.from('programmes').update({structure_status:'en_cours'}).eq('id',currentSheetProgId).then(({error})=>{
-      if(error){console.error(error);return;}
-      p.structure_status='en_cours';
-      renderProgList();
-    });
-  }
-}
-function removeSheetItem(id){
-  sheetLayout=sheetLayout.filter(i=>i.id!==id);
-  renderSheetCanvas();
-}
-function updateSheetField(id,field,val){
-  const it=sheetLayout.find(i=>i.id===id);
-  if(it)it[field]=val;
-}
-function startSheetDrag(e){
-  if(e.target.tagName==='INPUT'||e.target.classList.contains('delSheetItem'))return;
-  const el=e.currentTarget;
-  const canvas=document.getElementById('sheetCanvas');
-  const cRect=canvas.getBoundingClientRect();
-  const it=sheetLayout.find(i=>i.id===el.dataset.id);
-  if(!it)return;
-  // point exact où le bloc a été attrapé, pour qu'il suive le curseur
-  // depuis cet endroit précis au lieu de recaler son coin dessus
-  const grabXPct=((e.clientX-cRect.left)/cRect.width)*100-it.x;
-  const grabYPct=((e.clientY-cRect.top)/cRect.height)*100-it.y;
-  sheetDrag={id:el.dataset.id,cRect,grabXPct,grabYPct,startX:e.clientX,startY:e.clientY,moved:false};
-  el.setPointerCapture(e.pointerId);
-  el.addEventListener('pointermove',onSheetDragMove);
-  el.addEventListener('pointerup',endSheetDrag);
-}
-function onSheetDragMove(e){
-  if(!sheetDrag)return;
-  if(!sheetDrag.moved){
-    // seuil : un simple contact/survol léger ne doit rien déplacer
-    if(Math.hypot(e.clientX-sheetDrag.startX,e.clientY-sheetDrag.startY)<4)return;
-    sheetDrag.moved=true;
-  }
-  const {cRect,id,grabXPct,grabYPct}=sheetDrag;
-  let x=((e.clientX-cRect.left)/cRect.width)*100-grabXPct;
-  let y=((e.clientY-cRect.top)/cRect.height)*100-grabYPct;
-  x=Math.max(0,Math.min(92,x)); y=Math.max(0,Math.min(88,y));
-  const it=sheetLayout.find(i=>i.id===id);
-  if(it){it.x=x;it.y=y;}
-  const el=document.querySelector(`.sheetItem[data-id="${id}"]`);
-  if(el){el.style.left=x+'%';el.style.top=y+'%';}
-}
-function endSheetDrag(e){
-  const el=e.currentTarget;
-  el.removeEventListener('pointermove',onSheetDragMove);
-  el.removeEventListener('pointerup',endSheetDrag);
-  sheetDrag=null;
-}
-async function saveSheet(){
-  if(!currentSheetProgId)return;
-  const titre=document.getElementById('sheetTitre').value.trim()||'Fiche';
-  const subtitle=document.getElementById('sheetSubtitle').value.trim()||null;
-  const background_path=document.getElementById('sheetBgSel').value||null;
-  const row={programme_id:currentSheetProgId,titre,subtitle,background_path,layout:sheetLayout,updated_at:new Date().toISOString()};
-  if(!currentSheetId)row.created_by=CURRENT_USER_LABEL;
-  let error;
-  if(currentSheetId){
-    ({error}=await supa.from('programme_sheets').update(row).eq('id',currentSheetId));
-  }else{
-    const {data,error:e2}=await supa.from('programme_sheets').insert(row).select().single();
-    error=e2;
-    if(data)currentSheetId=data.id;
-  }
-  if(error){alert('Erreur d\'enregistrement : '+error.message);return;}
-  alert('Fiche enregistrée.');
-}
-function loadImageEl(url){
-  return new Promise((resolve,reject)=>{
-    const img=new Image();
-    img.crossOrigin='anonymous';
-    img.onload=()=>resolve(img);
-    img.onerror=reject;
-    img.src=url;
-  });
-}
-function drawContainImage(ctx,img,x,y,w,h){
-  const ir=img.naturalWidth/img.naturalHeight, tr=w/h;
-  let dw,dh,dx,dy;
-  if(ir>tr){dw=w;dh=w/ir;dx=x;dy=y+(h-dh)/2;}
-  else{dh=h;dw=h*ir;dy=y;dx=x+(w-dw)/2;}
-  ctx.drawImage(img,dx,dy,dw,dh);
-}
-function roundRectPath(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-async function buildSheetCanvas(){
-  // Composition partagée par l'export image ET le PDF : les deux sorties
-  // sont ainsi garanties strictement identiques entre elles et fidèles à
-  // l'éditeur (mêmes proportions, mêmes images en qualité native, aucune
-  // mise à l'échelle ni repositionnement propre au moteur d'impression).
-  const bgName=document.getElementById('sheetBgSel').value;
-  let bgImg=null;
-  if(bgName){
-    try{
-      const bgUrl=supa.storage.from('sheet-backgrounds').getPublicUrl(bgName).data.publicUrl;
-      bgImg=await loadImageEl(bgUrl);
-    }catch(e){console.error(e);}
-  }
-  const OUT_W=bgImg?bgImg.naturalWidth:1920;
-  const OUT_H=bgImg?bgImg.naturalHeight:1080;
-  const S=OUT_W/960;
-  const out=document.createElement('canvas');
-  out.width=OUT_W; out.height=OUT_H;
-  const ctx=out.getContext('2d');
-  if(bgImg)ctx.drawImage(bgImg,0,0,OUT_W,OUT_H);
-  else{ctx.fillStyle='#2a1a4a';ctx.fillRect(0,0,OUT_W,OUT_H);}
-
-  const titre=document.getElementById('sheetTitre').value.trim();
-  const desc=document.getElementById('sheetSubtitle').value.trim();
-  // 34px / 14px : mêmes tailles que #sheetTitleOverlay à l'écran (mises à
-  // l'échelle par S), pour que le titre ne grossisse pas de façon
-  // disproportionnée par rapport à l'éditeur.
-  const titleFontPx=34*S, descFontPx=14*S;
-  if(titre){
-    ctx.fillStyle='#ffffff';
-    ctx.font='800 '+Math.round(titleFontPx)+'px "Barlow Condensed",Arial';
-    ctx.textBaseline='top';
-    ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=6*S;
-    ctx.fillText(titre.toUpperCase(), OUT_W*0.04, OUT_H*0.04);
-  }
-  if(desc){
-    ctx.fillStyle='#ffffff';
-    ctx.font='700 '+Math.round(descFontPx)+'px Barlow,Arial';
-    ctx.shadowBlur=4*S;
-    // hauteur de ligne du titre (1.05) + margin-top 6px, comme à l'écran
-    const descY=OUT_H*0.04+titleFontPx*1.05+6*S;
-    ctx.fillText(desc, OUT_W*0.04, descY);
-  }
-  ctx.shadowBlur=0;
-
-  // 170×120 : mêmes proportions que les blocs affichés dans l'éditeur (CSS)
-  const boxW=170*S, imgH=120*S, bodyPad=7*S, bodyH=60*S, boxH=imgH+bodyH;
-  for(let idx=0;idx<sheetLayout.length;idx++){
-    const it=sheetLayout[idx];
-    const ex=EXBANK.find(e=>e.id===it.exercise_id);
-    const x=OUT_W*it.x/100, y=OUT_H*it.y/100;
-
-    ctx.fillStyle='rgba(255,255,255,.97)';
-    roundRectPath(ctx,x,y,boxW,boxH,8*S); ctx.fill();
-
-    ctx.save();
-    roundRectPath(ctx,x,y,boxW,imgH,8*S);
-    ctx.clip();
-    ctx.fillStyle='#f3f0f7';
-    ctx.fillRect(x,y,boxW,imgH);
-    if(ex&&ex.image_path){
-      try{
-        const url=supa.storage.from('exercise-images').getPublicUrl(ex.image_path).data.publicUrl;
-        const im=await loadImageEl(url);
-        drawContainImage(ctx,im,x,y,boxW,imgH); // image entière, sans rognage
-      }catch(e){console.error(e);}
-    }
-    ctx.restore();
-
-    const numR=9*S;
-    ctx.fillStyle='#c0392b';
-    ctx.beginPath(); ctx.arc(x+bodyPad+numR,y+imgH+bodyPad+numR,numR,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#fff'; ctx.font='800 '+Math.round(10*S)+'px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(String(idx+1), x+bodyPad+numR, y+imgH+bodyPad+numR+0.5*S);
-    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
-
-    const fieldsY=y+imgH+bodyPad+numR*2+8*S;
-    const colW=(boxW-bodyPad*2)/3;
-    const boxFieldW=colW-4*S, boxFieldH=14*S;
-    let fx=x+bodyPad;
-    [['Reps',it.reps],['Séries',it.series],['R',it.recup]].forEach(([lab,val])=>{
-      ctx.fillStyle='#888'; ctx.font=Math.round(8*S)+'px Arial';
-      ctx.fillText(lab, fx, fieldsY);
-      ctx.strokeStyle='#ccc'; ctx.lineWidth=1*S;
-      roundRectPath(ctx, fx, fieldsY+4*S, boxFieldW, boxFieldH, 3*S);
-      ctx.stroke();
-      if(val){
-        ctx.fillStyle='#17122b'; ctx.font='700 '+Math.round(10*S)+'px Arial';
-        ctx.textAlign='center';
-        ctx.fillText(val, fx+boxFieldW/2, fieldsY+4*S+boxFieldH/2+3.5*S);
-        ctx.textAlign='left';
-      }
-      fx+=colW;
-    });
-  }
-  return out;
-}
-async function exportSheetImage(){
-  const canvas=await buildSheetCanvas();
-  const titre=document.getElementById('sheetTitre').value.trim();
-  const link=document.createElement('a');
-  link.download=(titre||'fiche')+'.png';
-  link.href=canvas.toDataURL('image/png');
-  link.click();
-}
-async function printSheetVisual(){
-  if(!window.jspdf){alert('Génération PDF indisponible (librairie non chargée).');return;}
-  const canvas=await buildSheetCanvas();
-  const {jsPDF}=window.jspdf;
-  // Conversion explicite px->pt (96dpi standard écran) : évite de laisser
-  // jsPDF interpréter l'unité "px" avec sa propre hypothèse de résolution,
-  // qui pouvait légèrement décaler/redimensionner le rendu par rapport à
-  // l'éditeur.
-  const pxToPt=72/96;
-  const pageW=canvas.width*pxToPt, pageH=canvas.height*pxToPt;
-  const pdf=new jsPDF({orientation:canvas.width>=canvas.height?'landscape':'portrait',unit:'pt',format:[pageW,pageH]});
-  pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,pageW,pageH);
-  const titre=document.getElementById('sheetTitre').value.trim();
-  pdf.save((titre||'fiche')+'.pdf');
-}
-
-function renderExerciseBank(){
-  const box=document.getElementById('exBankGrid');
-  if(!box)return;
-  const cat=document.getElementById('exFilterCat')?.value||'';
-  const q=(document.getElementById('exSearch')?.value||'').trim().toLowerCase();
-  let items=EXBANK.filter(e=>{
-    if(cat&&e.categorie!==cat)return false;
-    if(q){
-      const hay=(e.nom+' '+(e.tags||[]).join(' ')).toLowerCase();
-      if(!hay.includes(q))return false;
-    }
-    return true;
-  });
-  if(!items.length){box.innerHTML='<div class="note">Aucun exercice trouvé.</div>';return;}
-  box.innerHTML=items.map(e=>{
-    const img=e.image_path?supa.storage.from('exercise-images').getPublicUrl(e.image_path).data.publicUrl:null;
-    return `<div class="exCard">
-      <button class="boardDel" onclick="deleteExercise('${e.id}')" title="Supprimer">✕</button>
-      ${img?`<img src="${img}" alt="">`:''}
-      <div class="exBody">
-        <h5>${(e.nom||'').replace(/</g,'&lt;')}</h5>
-        <div class="note" style="font-size:11px">${CAT_LABEL[e.categorie]||''}</div>
-        ${(e.tags&&e.tags.length)?`<div class="exTags">${e.tags.join(', ')}</div>`:''}
-      </div>
-    </div>`;
-  }).join('');
-}
-async function addExercise(){
-  const nom=document.getElementById('exNom').value.trim();
-  if(!nom){alert('Le nom est obligatoire.');return;}
-  const categorie=document.getElementById('exCategorie').value;
-  const description=document.getElementById('exDescription').value.trim()||null;
-  const tagsRaw=document.getElementById('exTags').value.trim();
-  const tags=tagsRaw?tagsRaw.split(',').map(t=>t.trim()).filter(Boolean):[];
-  const fileEl=document.getElementById('exImageInput');
-  const file=fileEl.files[0];
-  let image_path=null;
-  if(file){
-    if(!file.type.startsWith('image/')){alert('Choisis une image.');return;}
-    let blob,ext;
-    try{({blob,ext}=await compressImage(file,700,.85));}
-    catch(e){alert('Erreur de compression : '+e.message);return;}
-    image_path=`${slugify(nom)}-${Date.now()}.${ext}`;
-    const {error:upErr}=await supa.storage.from('exercise-images').upload(image_path,blob,{upsert:true});
-    if(upErr){alert('Erreur d\'envoi de l\'image : '+upErr.message);return;}
-  }
-  const {error}=await supa.from('exercise_bank').insert({nom,categorie,description,tags,image_path,created_by:CURRENT_USER_LABEL});
-  if(error){alert('Erreur d\'enregistrement : '+error.message);return;}
-  document.getElementById('exNom').value='';
-  document.getElementById('exDescription').value='';
-  document.getElementById('exTags').value='';
-  fileEl.value='';
-  await loadProgrammes();renderProgrammes();
-}
-async function deleteExercise(id){
-  if(!await customConfirm('Supprimer cet exercice de la banque ? Il sera aussi retiré des programmes qui l\'utilisent.'))return;
-  const e=EXBANK.find(x=>x.id===id);
-  const {error}=await supa.from('exercise_bank').delete().eq('id',id);
-  if(error){alert('Erreur : '+error.message);return;}
-  if(e&&e.image_path)supa.storage.from('exercise-images').remove([e.image_path]);
-  await loadProgrammes();renderProgrammes();
+  const path=isDoc?it.pdf_path:it.image_path;
+  if(path)supa.storage.from(isDoc?'programmes':'exercise-images').remove([path]);
+  bibClose();
+  await loadProgrammes(); renderBib();
 }
 
 function extMatchesForWeek(team,w){
@@ -4374,12 +3858,10 @@ function closeTopLayer(){
   if(qa&&qa.classList.contains('on')){closeQuickAdd();return true;}
   if(seanceModal&&seanceModal.classList.contains('on')){closeSeanceModal();return true;}
   if(modal&&modal.classList.contains('on')){closeModal();return true;}
-  const sb=document.getElementById('sheetBuilderSection');
-  if(sb&&sb.style.display==='block'){closeSheetBuilder();return true;}
+  const bo=document.getElementById('bibOverlay');
+  if(bo&&bo.classList.contains('on')){bibClose();return true;}
   const pb=document.getElementById('prBuilder');
   if(pb&&pb.style.display==='block'){closePrescBuilder();return true;}
-  const pd=document.getElementById('progDetailSection');
-  if(pd&&pd.style.display==='block'){closeProgrammeDetail();return true;}
   if(typeof PSHEET!=='undefined'&&PSHEET){closePlayerSheet();return true;}
   if(typeof jSelMode!=='undefined'&&jSelMode){toggleJSel();return true;}
   if(typeof pSelMode!=='undefined'&&pSelMode){togglePSel();return true;}
