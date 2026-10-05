@@ -1324,6 +1324,47 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 .bibEx .bibNoFile{color:var(--id-line)}
 .logoCard{border-color:var(--card-line);background:linear-gradient(180deg,#f4f2fb 0,#e8e3ee 84px,var(--id-line) 84px,var(--id-line) 87px,var(--panel) 87px)}
 .logoCard .prev{margin-bottom:10px}
+
+/* ═══ Tests & zones : profil de l'effectif (05/10) ═══ */
+.cmpGRow.dg{grid-template-columns:minmax(170px,1fr) 86px repeat(11,40px) 62px;gap:5px}
+.cmpGRow.dgGrp{cursor:default;padding:7px 14px 0;border-bottom:none;background:var(--id-bg)}
+.cmpGRow.dgGrp:hover{background:var(--id-bg)}
+.dgGrpL{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--id-sub);text-align:center;border-bottom:2px solid var(--id-line);padding-bottom:3px}
+.cmpGRow.dgGrp+.cmpGRow.hd{border-top:none}
+.dg .cmpGName .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dgWarn{color:var(--warn);font-size:12px;flex:none;cursor:help}
+.dgSt{justify-self:start;font-size:9.5px;font-weight:800;letter-spacing:.04em;border-radius:6px;padding:3px 7px;white-space:nowrap}
+.dgCell{width:40px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;font-family:'Spline Sans Mono',monospace;white-space:nowrap;overflow:hidden}
+.dgCell.nd{background:rgba(255,255,255,.04);color:rgba(255,255,255,.18)}
+.dgFlags{display:none}
+.dgLegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:-4px 0 10px;font-size:11.5px;color:var(--ink);font-weight:600}
+.dgLegend span{display:inline-flex;align-items:center;gap:6px}
+.dgLegend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.dgLegend b{font-family:var(--font-display);font-size:15px}
+.cmpTools .dashFilters .chip{min-height:30px;padding:5px 12px}
+.iReset{margin-left:auto;background:transparent;color:var(--bad);border-color:rgba(255,106,106,.45)}
+.iReset:hover{background:rgba(255,106,106,.12)}
+.psVigBtn{background:#fff;color:var(--id-ink);border:1px solid rgba(42,26,74,.22);border-radius:7px;padding:3px 9px;font:inherit;font-size:10.5px;font-weight:700;text-transform:none;letter-spacing:0;cursor:pointer}
+.psVigBtn:hover{background:var(--id-line)}
+.psVigForm{display:flex;flex-direction:column;gap:10px}
+.psVigForm label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;color:var(--muted)}
+.psVigForm textarea{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);font:inherit;font-size:12.5px;resize:vertical;min-height:40px}
+.psVigRO{font-size:12px;color:var(--ink);display:flex;gap:10px;flex-wrap:wrap}
+.psVigRO b{color:var(--muted)}
+.psVigAct{display:flex;justify-content:flex-end;gap:8px}
+@media(max-width:760px){
+  .cmpGRow.dg{grid-template-columns:minmax(0,1fr) auto;row-gap:6px}
+  .cmpGRow.dgGrp,.cmpGRow.dg .dgCell,.cmpGRow.dg .cmpGSum,.cmpGRow.dg.hd .cmpGHead{display:none}
+  .cmpGRow.dg.hd .cmpGHead:nth-child(2){display:block}
+  .dgFlags{display:flex;flex-wrap:wrap;gap:4px;grid-column:1/-1}
+  .dgFlags span{font-size:10px;font-weight:800;border-radius:5px;padding:2px 6px}
+}
+/* Zones de la fiche joueur : mêmes teintes que la grille Tests & zones */
+.psZone{color:var(--ink);background:rgba(255,255,255,.04)}
+.psZone.cell-R{background:#ff6b6b1f;box-shadow:inset 3px 0 0 #ff6b6b}.psZone.cell-R span{color:#ff6b6b}
+.psZone.cell-O{background:#ffb04d1f;box-shadow:inset 3px 0 0 #ffb04d}.psZone.cell-O span{color:#ffb04d}
+.psZone.cell-J{background:#f2d23a1a;box-shadow:inset 3px 0 0 #f2d23a}.psZone.cell-J span{color:#f2d23a}
+.psZone.cell-V{background:#5ad18a1a;box-shadow:inset 3px 0 0 #5ad18a}.psZone.cell-V span{color:#5ad18a}
 </style>
 </head>
 <body>
@@ -1528,32 +1569,18 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
   </div>
   <div class="subTabs">
     <span class="subGroupLabel">Diagnostic</span>
-    <button class="on" onclick="indivTab(this,'carto')">Cartographie joueurs</button>
-    <button onclick="indivTab(this,'tests')">Tests</button>
+    <button onclick="indivTab(this,'tests')" title="Import des tests, zones à surveiller et statut de chaque joueur">Tests &amp; zones</button>
     <span class="subGroupLabel">Prescription</span>
-    <button onclick="indivTab(this,'seance')" title="Rotation automatique — effectif complet">Séance du jour</button>
+    <button class="on" onclick="indivTab(this,'seance')" title="Rotation automatique — effectif complet">Séance du jour</button>
     <button onclick="indivTab(this,'presc')" title="Prévoir une séance : date, type, durée, joueurs — puis la valider une fois réalisée">Prescription</button>
     <span class="subGroupLabel">Suivi</span>
     <button onclick="indivTab(this,'charge')">Charge externe</button>
     <button onclick="indivTab(this,'analyse')">Analyse</button>
   </div>
 
-  <div id="indiv-seance" style="display:none">
+  <div id="indiv-seance">
     <div class="indivCtrls" id="indivControls"></div>
     <div id="indivMain"></div>
-  </div>
-
-  <div id="indiv-carto">
-    <div class="filterRow">
-      <span class="note">22 joueurs</span>
-      <span class="legendMini">
-        <span><i class="sev-R"></i>Rouge</span><span><i class="sev-O"></i>Orange</span>
-        <span><i class="sev-J"></i>Jaune</span><span><i class="sev-V"></i>Vert</span>
-        <span><i class="sev-GRIS"></i>Non testé</span>
-      </span>
-      <button class="btn" style="margin-left:auto" onclick="resetIndivHistory()">Réinitialiser l'historique</button>
-    </div>
-    <div class="sheetWrap"><table class="sheet" id="cartoTable"></table></div>
   </div>
 
   <div id="indiv-charge" style="display:none">
@@ -1638,24 +1665,20 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
     </div>
 
     <div class="cmpHead">
-      <h3>Comparatif entre campagnes</h3>
+      <h3>Profil de l'effectif</h3>
       <div class="cmpTools">
-        <select id="cmpCat" onchange="renderCompare()">
-          <option value="">Toutes les mesures</option>
-          <option value="force">Force</option>
-          <option value="mobilite">Mobilité</option>
-          <option value="energetique">Énergétique</option>
-        </select>
+        <div class="dashFilters" id="dgFilters"></div>
         <select id="cmpSort" onchange="renderCompare()">
+          <option value="sev">Les plus à surveiller d'abord</option>
           <option value="nom">Trier par nom</option>
           <option value="prog">Meilleure progression</option>
           <option value="reg">Plus forte régression</option>
-          <option value="asym">Asymétrie la plus élevée</option>
         </select>
       </div>
     </div>
+    <div class="dgLegend" id="dgLegend"></div>
     <div class="cmpGridWrap"><div id="cmpGrid"></div></div>
-    <p class="cmpHint" style="margin-top:8px">Clique sur un joueur pour ouvrir sa fiche : réglette bilatérale, historique complet des mesures, charge et cartographie.</p>
+    <p class="cmpHint" style="margin-top:8px">Clique sur un joueur pour ouvrir sa fiche : zones, points de vigilance, réglette bilatérale et historique des mesures.</p>
   </div>
 
   <div id="indiv-analyse" style="display:none">
@@ -4169,7 +4192,7 @@ function renderPlayerLoad(){
 /* ─── Fiche joueur (mini-page) ─── */
 function openPlayerSheet(pid,focus){
   if(!IPLAYERS.some(p=>p.id===pid))return;
-  PSHEET={pid,focus:focus||null};
+  PSHEET={pid,focus:focus||null,vig:false};
   document.body.classList.add('plNoScroll');
   document.getElementById('playerSheet').classList.add('on');
   renderPlayerSheet();
@@ -4182,6 +4205,18 @@ function closePlayerSheet(){
   document.body.classList.remove('plNoScroll');
 }
 function psAddSollicitation(pid){ dashSel=pid; openQuickAdd({players:[pid]}); }
+function psVig(on){ if(!PSHEET)return; PSHEET.vig=on; renderPlayerSheet(); if(on)setTimeout(()=>document.getElementById('psVigA')?.focus(),30); }
+async function psVigSave(pid){
+  const p=IPLAYERS.find(x=>x.id===pid); if(!p)return;
+  const val=id=>(document.getElementById(id)?.value||'').trim()||null;
+  const row={alertes:val('psVigA'),douleurs:val('psVigD'),priorites:val('psVigP')};
+  const btn=document.getElementById('psVigSave'); if(btn){btn.disabled=true;btn.textContent='Enregistrement…';}
+  const {error}=await supa.from('indiv_players').update(row).eq('id',pid);
+  if(error){alert('Erreur d\'enregistrement : '+error.message); if(btn){btn.disabled=false;btn.textContent='Enregistrer';} return;}
+  Object.assign(p,row);
+  PSHEET.vig=false; renderPlayerSheet();
+  if(document.getElementById('indiv-tests')?.style.display==='block')renderCompare();
+}
 function psPanel(title,hint,body,cls){
   return `<div class="psPanel${cls?' '+cls:''}"><div class="psPanelH"><span>${title}</span>${hint?`<span class="hint">${hint}</span>`:''}</div><div class="psPanelB">${body}</div></div>`;
 }
@@ -4282,7 +4317,13 @@ function renderPlayerSheet(){
     :`<div class="psGrid1">${psPanel('Tests','',empty('Aucun test enregistré pour ce joueur.'))}</div>`)}
   ${sec('zones','Cartographie',`<div class="psGrid2">
       ${psPanel('Zones évaluées','les plus sévères d’abord',zRows.length?`<div class="psZones">${zRows.map(k=>`<div class="psZone cell-${z[k].sev}"><b>${ZONE_SHORT[k]||k}</b><span>${z[k].sev==='V'?'OK':plEsc(z[k].detail||STATUT_LABEL[z[k].sev]||z[k].sev)}</span></div>`).join('')}</div>`:empty('Pas de cartographie pour ce joueur.'))}
-      ${psPanel('Points de vigilance','',`<dl class="psDl">
+      ${psPanel('Points de vigilance',PSHEET.vig?'':`<button type="button" class="psVigBtn" onclick="psVig(true)">✎ Modifier</button>`,PSHEET.vig?`<div class="psVigForm">
+          <div class="psVigRO"><b>Contre-indications</b>${contra.length?contra.join(' · '):'Aucune'}</div>
+          <label>Alertes<textarea id="psVigA" rows="2" placeholder="Ex. asymétrie adducteurs à surveiller">${plEsc(p.alertes||'')}</textarea></label>
+          <label>Douleurs<textarea id="psVigD" rows="2" placeholder="Ex. gêne adducteur gauche">${plEsc(p.douleurs||'')}</textarea></label>
+          <label>Priorités<textarea id="psVigP" rows="2" placeholder="Ex. force des adducteurs, mobilité de hanche">${plEsc(p.priorites||'')}</textarea></label>
+          <div class="psVigAct"><button type="button" class="btn" onclick="psVig(false)">Annuler</button><button type="button" class="btn primary" id="psVigSave" onclick="psVigSave('${p.id}')">Enregistrer</button></div>
+        </div>`:`<dl class="psDl">
           <dt>Contre-indications</dt><dd>${contra.length?contra.join(' · '):'Aucune'}</dd>
           <dt>Alertes</dt><dd>${plEsc(p.alertes||'—')}</dd>
           <dt>Douleurs</dt><dd>${plEsc(p.douleurs||'—')}</dd>
@@ -4528,7 +4569,17 @@ const ZONE_COLS=['F_ADD','F_ABD','F_IJ','F_Quad','M_THOMAS','M_HANCHE_ART','M_RO
 const ZONE_SHORT={F_ADD:'F. Add',F_ABD:'F. Abd',F_IJ:'F. Ischios',F_Quad:'F. Quad',M_THOMAS:'Flé. hanche',
   M_HANCHE_ART:'Hanche art.',M_ROT:'Rotations',M_FROG:'Frog',M_CHPOST:'Chaîne post.',M_CHEVILLE:'Cheville',M_GENOU:'Genou'};
 const STATUT_COLOR={R:'#ff6b6b',O:'#ffb04d',J:'#f2d23a',V:'#5ad18a','V?':'#a79fc4'};
-const STATUT_LABEL={R:'ROUGE',O:'ORANGE',J:'JAUNE',V:'VERT','V?':'VERT*'};
+const STATUT_LABEL={R:'ROUGE',O:'ORANGE',J:'JAUNE',V:'VERT','V?':'NON TESTÉ'};
+/* Statut global d'individualisation = zone la plus sévère de la cartographie (décision du 05/10).
+   Recalculé à chaque chargement, donc après chaque import de tests ; plus de statut figé.
+   Aucune zone évaluée → « NON TESTÉ » ('V?'). */
+const STATUT_RANK={R:3,O:2,J:1,V:0,'V?':-1};
+function iComputeStatut(p){
+  const z=IZONES[p.id]||{};
+  const sevs=ZONE_COLS.map(k=>z[k]&&z[k].sev).filter(v=>v in STATUT_RANK&&v!=='V?');
+  if(!sevs.length)return 'V?';
+  return sevs.reduce((w,v)=>STATUT_RANK[v]>STATUT_RANK[w]?v:w,'V');
+}
 const K_STATIONS=3, CYCLE_LEN=16;
 
 /* ── Deux modes de séance (v38) ──────────────────────────────────────────
@@ -4579,6 +4630,7 @@ async function loadIndiv(){
   Object.values(IBANK).forEach(arr=>arr.sort((a,b)=>(a.niv-b.niv)||String(a.id).localeCompare(String(b.id))));
   IZONES={};
   (zn||[]).forEach(z=>{ (IZONES[z.player_id]??={})[z.zone]={sev:z.severite,detail:z.detail}; });
+  IPLAYERS.forEach(p=>{ p.statut=iComputeStatut(p); });
   IMODES.encadree.state=st?{counter:st.counter,last_validated_date:st.last_validated_date,
     last_validated_absents:iParseArr(st.last_validated_absents)}:iEmptyState();
   // Compteur de l'activation autonome : table du script v38, chargée à part pour que
@@ -4769,7 +4821,9 @@ async function commitIndivSession(){
   renderIndiv();
 }
 async function resetIndivHistory(){
-  if(!await customConfirm("Réinitialiser tout l'historique de rotation ? Cette action est irréversible et affecte aussi Julien."))return;
+  const nSess=m=>new Set((IHIST_ROWS||[]).filter(h=>(h.mode==='autonome'?'autonome':'encadree')===m).map(h=>h.session_idx)).size;
+  const nE=nSess('encadree'), nA=nSess('autonome');
+  if(!await customConfirm(`<b>Réinitialiser tout l'historique ?</b>\n\nCela efface définitivement ${nE} séance${nE>1?'s':''} de prévention encadrée et ${nA} activation${nA>1?'s':''} autonome${nA>1?'s':''} déjà enregistrées.\n\n⚠️ Elles disparaîtront aussi de la <b>charge de travail des joueurs</b> (onglet Joueurs et fiches joueur), et la rotation des exercices repartira de zéro.\n\nAction irréversible, qui s'applique aussi pour Julien.`))return;
   const {error}=await supa.from('indiv_history').delete().neq('id',-1);
   if(error){alert("Erreur : "+error.message);return;}
   await supa.from('indiv_state').upsert({id:1,counter:-1,last_validated_date:null,last_validated_absents:[]});
@@ -4822,7 +4876,6 @@ function indivTab(btn,name){
   btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   document.getElementById('indiv-seance').style.display=name==='seance'?'block':'none';
-  document.getElementById('indiv-carto').style.display=name==='carto'?'block':'none';
   document.getElementById('indiv-charge').style.display=name==='charge'?'block':'none';
   document.getElementById('indiv-presc').style.display=name==='presc'?'block':'none';
   document.getElementById('indiv-analyse').style.display=name==='analyse'?'block':'none';
@@ -5270,7 +5323,7 @@ function cmpPair(pid,cat,key){
 }
 const CMP_SHORT={ADD:'ADD',ABD:'ABD',IJ:'ISC',Quad:'QUA',THOMAS:'THO','WALL TEST':'CHE'};
 let cmpSel=null;
-function cmpSelect(id){ openPlayerSheet(id,'tests'); }
+function cmpSelect(id){ openPlayerSheet(id,'zones'); }
 function cmpDefs(onlyCat){
   const eKeys=[...new Set(TESTS.filter(t=>t.categorie==='energetique').map(t=>t.test))]
     .map(k=>({cat:'energetique',key:k,lbl:k,unit:'',dir:EVO_DIR[k]??1,lat:false,dec:true}));
@@ -5292,48 +5345,65 @@ function cmpEnrich(p,defs){
     prog:prog.length?prog.reduce((a,b)=>a+b,0)/prog.length:null,
     asym:asym.length?Math.max(...asym):null};
 }
+/* ═══ Tests & zones : profil de l'effectif ═══
+   Fusion de l'ancienne Cartographie et de la grille Tests (05/10) : une ligne par joueur,
+   une pastille par zone qui pilote la prévention (sévérité + valeur mesurée), le statut
+   global calculé (zone la plus sévère) et la tendance des tests. Clic → fiche joueur. */
+let DG_FILTER='reserve';
+const DG_SHORT={F_ADD:'Add',F_ABD:'Abd',F_IJ:'Isc',F_Quad:'Quad',M_THOMAS:'Tho',M_HANCHE_ART:'Han',M_ROT:'Rot',M_FROG:'Frog',M_CHPOST:'C.p',M_CHEVILLE:'Che',M_GENOU:'Gen'};
+const DG_COL={R:'#ff6b6b',O:'#ffb04d',J:'#f2d23a',V:'#5ad18a','V?':'#a79fc4'};
+function dgCellTxt(c){
+  if(!c||!c.sev)return '·';
+  if(c.sev==='V')return '✓';
+  const m=String(c.detail||'').match(/-?\d+(?:[.,]\d+)?\s*(%|°|cm)?/);
+  return m?m[0].replace(/\s+/g,'').replace(',','.'):'●';
+}
+function dgSetFilter(f){ DG_FILTER=f; renderCompare(); }
 function renderCompare(){
-  const grid=document.getElementById('cmpGrid');
-  if(!grid)return;
-  const onlyCat=document.getElementById('cmpCat')?.value||'';
-  const sort=document.getElementById('cmpSort')?.value||'nom';
-
-  const defs=cmpDefs(onlyCat);
-  const latDefs=defs.filter(d=>d.lat);
-
-  const players=IPLAYERS.filter(p=>TESTS.some(t=>t.player_id===p.id));
-  const enrich=players.map(p=>cmpEnrich(p,defs)).filter(x=>x.rows.length);
-  if(sort==='prog')enrich.sort((a,b)=>(b.prog??-999)-(a.prog??-999));
-  else if(sort==='reg')enrich.sort((a,b)=>(a.prog??999)-(b.prog??999));
-  else if(sort==='asym')enrich.sort((a,b)=>(b.asym??-1)-(a.asym??-1));
-  else enrich.sort((a,b)=>a.p.name.localeCompare(b.p.name));
-
-  if(!enrich.length){
-    grid.innerHTML='<div class="cmpHint">Aucun test enregistré.</div>';
-    return;
-  }
-
-  // ── Grille compacte : une ligne par joueur, une pastille par zone latéralisée ──
-  grid.style.setProperty('--ncols',latDefs.length);
-  const head=`<div class="cmpGRow hd"><span class="cmpGName">Joueur</span>
-    ${latDefs.map(d=>`<span class="cmpGHead">${CMP_SHORT[d.key]||d.key.slice(0,3).toUpperCase()}</span>`).join('')}
-    <span class="cmpGHead">Tendance</span></div>`;
-  const gridRows=enrich.map(({p,rows,prog})=>{
-    const cells=latDefs.map(d=>{
-      const r=rows.find(x=>x.d===d);
-      const a=r?.pair?.t2?.asym;
-      if(a==null)return '<span class="cmpGCell nd">—</span>';
-      const col=cmpAsymColor(a);
-      return `<span class="cmpGCell" style="background:${col}22;color:${col}">${Math.round(a)}</span>`;
+  const grid=document.getElementById('cmpGrid'); if(!grid)return;
+  const sort=document.getElementById('cmpSort')?.value||'sev';
+  const all=IPLAYERS.filter(p=>p.actif!==false);
+  const list=DG_FILTER==='reserve'?all.filter(p=>p.dispo!==false&&!p.affectation):all;
+  const fb=document.getElementById('dgFilters');
+  if(fb)fb.innerHTML=[['reserve','Réserve disponible'],['all',"Tout l'effectif"]]
+    .map(([k,l])=>`<button type="button" class="dfBtn${DG_FILTER===k?' on':''}" onclick="dgSetFilter('${k}')">${l}</button>`).join('');
+  const defs=cmpDefs('');
+  const rows=list.map(p=>{
+    const z=IZONES[p.id]||{};
+    const st=p.statut&&p.statut in STATUT_RANK?p.statut:iComputeStatut(p);
+    const cnt=s=>ZONE_COLS.filter(k=>z[k]&&z[k].sev===s).length;
+    const prog=TESTS.some(t=>t.player_id===p.id)?cmpEnrich(p,defs).prog:null;
+    return {p,z,st,nR:cnt('R'),nO:cnt('O'),prog};
+  });
+  if(sort==='nom')rows.sort((a,b)=>a.p.name.localeCompare(b.p.name,'fr'));
+  else if(sort==='prog')rows.sort((a,b)=>(b.prog??-999)-(a.prog??-999));
+  else if(sort==='reg')rows.sort((a,b)=>(a.prog??999)-(b.prog??999));
+  else rows.sort((a,b)=>(STATUT_RANK[b.st]-STATUT_RANK[a.st])||(b.nR-a.nR)||(b.nO-a.nO)||a.p.name.localeCompare(b.p.name,'fr'));
+  // La légende sert aussi de compteur : combien de joueurs par statut dans la sélection
+  const lg=document.getElementById('dgLegend');
+  if(lg)lg.innerHTML=['R','O','J','V','V?'].map(k=>`<span><i style="background:${DG_COL[k]}"></i><b>${rows.filter(r=>r.st===k).length}</b> ${STATUT_LABEL[k].toLowerCase()}</span>`).join('');
+  if(!rows.length){grid.innerHTML='<div class="cmpHint">Aucun joueur dans cette sélection.</div>';return;}
+  const grp=`<div class="cmpGRow dg dgGrp"><span></span><span></span><span class="dgGrpL" style="grid-column:span 4">Force</span><span class="dgGrpL" style="grid-column:span 6">Mobilité</span><span class="dgGrpL">Genou</span><span></span></div>`;
+  const head=`<div class="cmpGRow dg hd"><span class="cmpGName">Joueur</span><span class="cmpGHead">Statut</span>${ZONE_COLS.map(k=>`<span class="cmpGHead" title="${plEsc(ZONE_LABELS[k]||k)}">${DG_SHORT[k]}</span>`).join('')}<span class="cmpGHead">Tendance</span></div>`;
+  const body=rows.map(({p,z,st,prog})=>{
+    const cells=ZONE_COLS.map(k=>{
+      const c=z[k];
+      if(!c||!c.sev)return `<span class="dgCell nd" title="${plEsc(ZONE_LABELS[k]||k)} : non évalué">·</span>`;
+      const col=DG_COL[c.sev]||DG_COL['V?'];
+      return `<span class="dgCell" style="background:${col}26;color:${col}" title="${plEsc((ZONE_LABELS[k]||k)+' : '+String(STATUT_LABEL[c.sev]||c.sev).toLowerCase()+(c.detail?' — '+c.detail:''))}">${plEsc(dgCellTxt(c))}</span>`;
     }).join('');
+    const flags=ZONE_COLS.filter(k=>z[k]&&(z[k].sev==='R'||z[k].sev==='O'))
+      .map(k=>`<span style="background:${DG_COL[z[k].sev]}26;color:${DG_COL[z[k].sev]}">${plEsc(ZONE_SHORT[k]||k)}</span>`).join('');
     const pc=prog==null?'flat':(prog>2?'up':(prog<-2?'down':'flat'));
-    return `<div class="cmpGRow" onclick="cmpSelect('${p.id}')" title="Ouvrir la fiche joueur">
-      <span class="cmpGName"><span class="arrow">▶</span>${p.name}</span>${cells}
+    const col=DG_COL[st];
+    return `<div class="cmpGRow dg" onclick="cmpSelect('${p.id}')" title="Ouvrir la fiche joueur">
+      <span class="cmpGName">${phFrame(p,'xs')}<span class="nm">${plEsc(p.name)}</span>${p.douleurs?`<span class="dgWarn" title="Douleurs : ${plEsc(p.douleurs)}">⚠</span>`:''}</span>
+      <span class="dgSt" style="background:${col}26;color:${col}">${STATUT_LABEL[st]}</span>${cells}
       <span class="cmpGSum ${pc}">${prog==null?'—':(prog>0?'+':'')+prog.toFixed(0)+'%'}</span>
+      ${flags?`<span class="dgFlags">${flags}</span>`:''}
     </div>`;
   }).join('');
-  grid.innerHTML=head+gridRows;
-
+  grid.innerHTML=grp+head+body;
 }
 /* Réglette bilatérale d'un joueur (deux dernières campagnes) — affichée dans la fiche joueur */
 function cmpDetailHTML(pid){
@@ -5387,7 +5457,7 @@ function cmpDetailHTML(pid){
 function renderTests(){
   const drop=document.getElementById('impDrop');
   if(drop&&typeof XLSX==='undefined'){
-    drop.insertAdjacentHTML('beforeend',
+    if(!document.getElementById('impNoLib'))drop.insertAdjacentHTML('beforeend',
       '<div class="impWarn" id="impNoLib" style="margin-top:12px;text-align:left">La librairie de lecture Excel n\'est pas disponible : l\'import ne pourra pas fonctionner. Recharge la page avec Cmd+Shift+R, ou vérifie qu\'aucune extension ne bloque les scripts externes.</div>');
   }else{
     document.getElementById('impNoLib')?.remove();
@@ -6507,6 +6577,7 @@ function renderIndivControls(){
   }
   h+=`<button class="btn primary" onclick="iPreview(${nextIdx})">Prévisualiser ${IMODE==='autonome'?"l'activation":'la séance'} n°${nextIdx+1}</button>`;
   if(ILAST)h+=`<button class="btn" onclick="IPREVIEW=null;renderIndivMain()">Revoir la dernière ${IMODE==='autonome'?'activation validée':'séance validée'}</button>`;
+  h+=`<button class="btn iReset" onclick="resetIndivHistory()" title="Efface tout l'historique de prévention et d'activation, et remet la rotation à zéro">Réinitialiser l'historique</button>`;
   c.innerHTML=h;
   const done=st.counter+1, s=document.getElementById('indivStatus');
   if(IMODE==='autonome'){
@@ -6577,58 +6648,6 @@ function iPrintFiches(){
   document.getElementById('printSheet').innerHTML=`<div class="ficheSheet"><div class="fHead"><b>${IMODE_LABEL[mode]} — n°${st.counter+1}</b><span>${iEsc(st.last_validated_date||'')}</span></div><div class="fGrid">${cards}</div></div>`;
   window.print();
 }
-function renderCarto(){
-  const t=document.getElementById('cartoTable');
-  const head=['Joueur','Statut','Alertes','Douleurs',...ZONE_COLS.map(z=>ZONE_SHORT[z]),'Priorités','Zones à pb','Exercices cumulés'];
-  const rows=IPLAYERS.slice().sort((a,b)=>(SEV_RANK[b.statut]??-9)-(SEV_RANK[a.statut]??-9)).map(p=>{
-    const z=IZONES[p.id]||{};
-    const cells=ZONE_COLS.map(zc=>{
-      const c=z[zc]||{};
-      const sev=c.sev||'';
-      const txt=(sev==='V')?'OK':(c.detail||'—');
-      return `<td class="zoneCell ${sev?'cell-'+sev:''}" data-sort="${sev}" title="${(c.detail||'').replace(/"/g,'&quot;')}">${txt}</td>`;
-    }).join('');
-    const h=IHIST[p.id]||{};
-    const total=Object.values(h).reduce((s,a)=>s+a.length,0);
-    const nZones=(p.zones||[]).length;
-    return `<tr>
-      <td class="colName" data-sort="${p.name}">${p.name}</td>
-      <td class="cell-${p.statut==='V?'?'GRIS':p.statut}" data-sort="${p.statut}">${STATUT_LABEL[p.statut]||p.statut}</td>
-      <td data-sort="${p.alertes||''}">${p.alertes||'—'}</td>
-      <td class="${p.douleurs?'cell-O':''}" data-sort="${p.douleurs||''}">${p.douleurs||'—'}</td>
-      ${cells}
-      <td class="colPrio">${p.priorites||'—'}</td>
-      <td data-sort="${nZones}">${nZones||'—'}</td>
-      <td data-sort="${total}">${total}</td></tr>`;
-  }).join('');
-  t.innerHTML=`<thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody>`;
-  initCartoSort();
-}
-const SEV_RANK={R:3,O:2,J:1,V:0,'V?':-1,GRIS:-2};
-function initCartoSort(){
-  const table=document.getElementById('cartoTable');
-  const ths=table.querySelectorAll('thead th');
-  let sortState={col:-1,asc:false};
-  ths.forEach((th,ci)=>{
-    th.addEventListener('click',()=>{
-      const asc=sortState.col===ci?!sortState.asc:true;
-      sortState={col:ci,asc};
-      ths.forEach(h=>h.classList.remove('sorted','asc'));
-      th.classList.add('sorted'); if(asc)th.classList.add('asc');
-      const tb=table.querySelector('tbody');
-      const rows=[...tb.querySelectorAll('tr')];
-      rows.sort((r1,r2)=>{
-        const v1=r1.children[ci].dataset.sort,v2=r2.children[ci].dataset.sort;
-        const s1=SEV_RANK[v1],s2=SEV_RANK[v2];
-        let cmp;
-        if(s1!==undefined&&s2!==undefined)cmp=s1-s2;
-        else cmp=(v1||'').localeCompare(v2||'','fr',{numeric:true});
-        return asc?cmp:-cmp;
-      });
-      rows.forEach(r=>tb.appendChild(r));
-    });
-  });
-}
 function renderIndiv(){
   if(!indivLoaded){
     document.getElementById('indivMain').innerHTML=
@@ -6636,7 +6655,8 @@ function renderIndiv(){
     document.getElementById('indivControls').innerHTML='';
     return;
   }
-  renderIndivControls(); renderIndivMain(); renderCarto();
+  renderIndivControls(); renderIndivMain();
+  if(document.getElementById('indiv-tests')?.style.display==='block')renderCompare();
   if(PSHEET)renderPlayerSheet();
 }
 
