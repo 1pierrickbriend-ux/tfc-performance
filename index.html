@@ -213,6 +213,12 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .prSt.annule{background:rgba(255,255,255,.08);color:var(--muted)}
 .prUp{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px}
 .prUp:last-child{border-bottom:none}
+.prUp .cs{font-size:10.5px;color:var(--muted);font-weight:500}
+.prUp.late .d{color:var(--warn)}
+.prUp .prGo{flex:none;background:var(--accent);border:none;border-radius:7px;color:#fff;font:inherit;font-size:11px;font-weight:700;padding:6px 11px;cursor:pointer}
+.prUp.late .prGo{background:var(--warn);color:#241a3d}
+.prDone{font-size:11.5px;color:var(--ok);font-weight:600;margin-top:8px;opacity:0;transition:opacity .2s;min-height:15px}
+.prDone.on{opacity:1}
 .prUp .d{font-family:'Spline Sans Mono',monospace;font-size:11px;color:var(--muted);width:62px;flex:none}
 .prUp .n{flex:1;font-weight:600}
 .prUp button{background:none;border:1px solid var(--line);border-radius:6px;color:var(--ink);cursor:pointer;font-size:11px;padding:3px 8px}
@@ -1416,7 +1422,7 @@ body.plNoScroll{overflow:hidden}
     <button onclick="indivTab(this,'tests')">Tests</button>
     <span class="subGroupLabel">Prescription</span>
     <button onclick="indivTab(this,'seance')" title="Rotation automatique — effectif complet">Séance du jour</button>
-    <button onclick="indivTab(this,'presc')" title="Séance détaillée — sur-mesure, joueur par joueur">Prescription</button>
+    <button onclick="indivTab(this,'presc')" title="Prévoir une séance : date, type, durée, joueurs — puis la valider une fois réalisée">Prescription</button>
     <span class="subGroupLabel">Suivi</span>
     <button onclick="indivTab(this,'charge')">Charge externe</button>
     <button onclick="indivTab(this,'analyse')">Analyse</button>
@@ -1465,52 +1471,27 @@ body.plNoScroll{overflow:hidden}
   <div id="indiv-presc" style="display:none">
     <div class="chgTop">
       <div class="chgCard chgForm">
-        <div class="chgCardHead">🎯 Nouvelle prescription individualisée</div>
+        <div class="chgCardHead">🎯 Prévoir une séance</div>
         <div class="chgRow2">
+          <label style="grid-column:1/-1">Date<input type="date" id="prDate"></label>
+          <label>Type de séance<select id="prType"></select></label>
+          <label>Durée prévue (min)<input type="number" id="prDuree" placeholder="60"></label>
           <div class="mpField" style="grid-column:1/-1">Joueurs <span class="mpCount" id="prPlayerCount">0 sélectionné</span>
             <div class="mpBox" id="prPlayerBox"></div>
             <div class="mpQuick"><button type="button" onclick="mpAll('pr',true)">Tout</button><button type="button" onclick="mpAll('pr',false)">Aucun</button></div>
           </div>
-          <label style="grid-column:1/-1">Date<input type="date" id="prDate"></label>
         </div>
-        <div class="chgRow2">
-          <label>Type de séance<select id="prType"></select></label>
-          <label>Durée prévue (min)<input type="number" id="prDuree" placeholder="60"></label>
-        </div>
-        <button class="btn primary" onclick="createPrescSession()">Créer et composer</button>
+        <button class="btn primary" onclick="createPrescSession()">Créer la séance</button>
+        <div class="prDone" id="prDoneMsg"></div>
       </div>
 
       <div class="chgCard">
-        <div class="chgCardHead">📌 Prescriptions à venir</div>
+        <div class="chgCardHead">📌 Séances prévues</div>
         <div id="prUpcoming"></div>
       </div>
     </div>
 
-    <div class="chgCard" id="prBuilder" style="display:none;margin-top:14px">
-      <div class="chgCardHead">
-        🧱 <span id="prBuilderTitle"></span>
-        <button class="btn ghost" style="margin-left:auto;font-size:11px" onclick="closePrescBuilder()">Fermer</button>
-        <button class="btn" style="font-size:11px" onclick="printPrescSheet()">🖨️ Fiche séance</button>
-        <button class="btn" style="font-size:11px" onclick="markPrescDone()">✅ Marquer réalisée</button>
-      </div>
-      <div class="prAddRow">
-        <select id="prBloc" onchange="prBlocSwitch()"><option value="1">Bloc 1</option><option value="2">Bloc 2</option><option value="3">Bloc 3</option><option value="4">Bloc 4</option></select>
-        <input type="text" id="prCategorie" placeholder="Plan de sollicitation (Vertical, COD…)" list="prCatList">
-        <datalist id="prCatList"><option>Vertical</option><option>Horizontal</option><option>COD</option><option>Prévention</option><option>Gainage</option></datalist>
-        <select id="prExSel"></select>
-        <input type="text" id="prNomLibre" placeholder="…ou nom libre">
-        <button class="btn" onclick="addPrescItem()">+ Ajouter</button>
-      </div>
-      <div id="prItems"></div>
-      <div class="dupBar">
-        <span class="lb">📋 Dupliquer cette prescription vers d'autres joueurs</span>
-        <span class="mpCount" id="dupPlayerCount">0 sélectionné</span>
-        <div class="mpBox" id="dupPlayerBox" style="flex-basis:100%"></div>
-        <div class="mpQuick"><button type="button" onclick="mpAll('dup',true)">Tout</button><button type="button" onclick="mpAll('dup',false)">Aucun</button></div>
-        <button class="btn" style="margin-left:auto" onclick="duplicatePrescTo()">Copier</button>
-      </div>
-    </div>
-
+    <!-- Composition détaillée des prescriptions retirée le 05/10 (Pierrick) : une prescription = date, type, durée, joueurs. -->
     <div class="chgCard" style="margin-top:14px">
       <div class="chgCardHead">
         📋 Historique des prescriptions
@@ -6151,8 +6132,6 @@ function renderPresc(){
   if(f&&!f.options.length){
     f.innerHTML='<option value="">Tous les joueurs</option>'+chgPlayerOptions();
     document.getElementById('prDate').value=new Date().toISOString().slice(0,10);
-    document.getElementById('prExSel').innerHTML='<option value="">— Exercice de la banque —</option>'+
-      EXBANK.map(e=>`<option value="${e.id}">${e.nom}</option>`).join('');
   }
   prFillTypes();
   mpRender('pr');
@@ -6166,16 +6145,25 @@ function prFillTypes(){
     :'<option value="">Script v40 à exécuter</option>';
   sel.value=cur;
 }
+/* Groupe d'une prescription = séances du même jour et du même type, encore à faire.
+   Une séance créée pour 6 joueurs reste ainsi une seule séance à valider. */
+function prescKey(p){ return p.date+'|'+(p.action_id||p.objectif||p.titre||''); }
+function prescGroup(p){ return PRESC.filter(s=>s.statut==='prevu'&&prescKey(s)===prescKey(p)); }
 function renderPrescUpcoming(){
   const today=new Date().toISOString().slice(0,10);
-  const up=PRESC.filter(p=>p.statut==='prevu'&&p.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,8);
-  const box=document.getElementById('prUpcoming');
-  if(!up.length){box.innerHTML='<div class="chgEmpty">Aucune prescription programmée.</div>';return;}
-  box.innerHTML=up.map(p=>{
-    const pl=IPLAYERS.find(x=>x.id===p.player_id);
-    return `<div class="prUp"><span class="d">${fmtDateFR(p.date)}</span>
-      <span class="n">${pl?pl.name:'?'}<br><span class="cs" style="font-size:10px;opacity:.7">${p.objectif||p.titre}</span></span>
-      <button onclick="openPrescBuilder('${p.id}')">Ouvrir</button></div>`;
+  const box=document.getElementById('prUpcoming'); if(!box)return;
+  const groups={};
+  PRESC.filter(p=>p.statut==='prevu').forEach(p=>(groups[prescKey(p)]??=[]).push(p));
+  // séances passées non validées en premier (à régulariser), puis à venir
+  const list=Object.values(groups).sort((a,b)=>a[0].date.localeCompare(b[0].date)).slice(0,10);
+  if(!list.length){box.innerHTML='<div class="chgEmpty">Aucune séance prévue.</div>';return;}
+  box.innerHTML=list.map(g=>{
+    const p=g[0], late=p.date<today;
+    const names=g.map(x=>{const pl=IPLAYERS.find(y=>y.id===x.player_id);return pl?pl.name.split(' ')[0]:'?';});
+    return `<div class="prUp${late?' late':''}"><span class="d">${fmtDateFR(p.date)}</span>
+      <span class="n">${plEsc(p.objectif||p.titre)}${p.duree_prevue_min?` <span class="cs">· ${p.duree_prevue_min} min</span>`:''}<br>
+        <span class="cs" title="${plEsc(names.join(', '))}">${g.length} joueur${g.length>1?'s':''} · ${plEsc(names.slice(0,4).join(', '))}${names.length>4?'…':''}</span></span>
+      <button class="prGo" onclick="markPrescDone('${p.id}')">${late?'⚠︎ ':''}Réalisée</button></div>`;
   }).join('');
 }
 function renderPrescList(){
@@ -6198,7 +6186,7 @@ function renderPrescList(){
       <span><span class="cn">${pl?pl.name:'?'}</span><br><span class="cs">${p.objectif||p.titre}</span></span>
       <span><span class="prSt ${p.statut}">${p.statut==='prevu'?'Prévu':(p.statut==='fait'?'Réalisé':'Annulé')}</span></span>
       <span class="cs">${p.duree_prevue_min?p.duree_prevue_min+' min':''}</span>
-      <span>${pSelMode?'':`<button onclick="event.stopPropagation();openPrescBuilder('${p.id}')">Composer</button>
+      <span>${pSelMode?'':`${p.statut==='prevu'?`<button onclick="event.stopPropagation();markPrescDone('${p.id}')" title="Valider la séance réalisée">✅</button>`:''}
         <button onclick="event.stopPropagation();cancelPresc('${p.id}')" title="${p.statut==='annule'?'Réactiver':'Annuler'}">${p.statut==='annule'?'↺':'⊘'}</button>`}</span>
       ${pSelMode?'<span></span>':`<button onclick="event.stopPropagation();deletePresc('${p.id}')" title="Supprimer">✕</button>`}
     </div>`;
@@ -6221,10 +6209,10 @@ async function createPrescSession(){
   (data||[]).forEach(d2=>PRESC.unshift(d2));
   document.getElementById('prType').value='';
   MP_SEL.pr.clear(); mpRender('pr');
+  document.getElementById('prDuree').value='';
   renderPrescList();renderPrescUpcoming();
-  // On compose la première : le contenu pourra ensuite être copié vers les autres
-  if(data&&data.length)openPrescBuilder(data[0].id);
-  if(ids.length>1)alert(`${ids.length} séances créées. Compose la première, puis utilise « Copier vers d'autres joueurs » pour les remplir d'un coup.`);
+  const msg=document.getElementById('prDoneMsg');
+  if(msg){ msg.textContent=`✓ ${objectif||'Séance'} prévue le ${fmtDateFR(base.date)} pour ${ids.length} joueur${ids.length>1?'s':''}.`; msg.classList.add('on'); clearTimeout(msg._t); msg._t=setTimeout(()=>msg.classList.remove('on'),4000); }
 }
 /* Duplique le contenu composé vers d'autres joueurs : évite de recomposer
    la même séance autant de fois qu'il y a de joueurs concernés. */
@@ -6348,7 +6336,7 @@ async function openPrescBuilder(id){
   document.getElementById('prBuilder').scrollIntoView({behavior:'smooth',block:'start'});
   renderPrescItems();
 }
-function closePrescBuilder(){currentPrescId=null;document.getElementById('prBuilder').style.display='none'}
+function closePrescBuilder(){currentPrescId=null;const b=document.getElementById('prBuilder');if(b)b.style.display='none'}
 function renderPrescItems(){
   const box=document.getElementById('prItems');
   if(!PRESC_ITEMS.length){box.innerHTML='<div class="chgEmpty">Aucun exercice. Ajoute-en ci-dessus.</div>';return;}
@@ -6477,20 +6465,10 @@ async function movePrescItem(id,dir){
 }
 let pendingPresc=null;   // prescription en cours de validation
 let pendingPrescBulk=null; // plusieurs prescriptions validées d'un coup (sélection multiple)
-async function markPrescDone(){
-  if(!currentPrescId)return;
-  const p=PRESC.find(x=>x.id===currentPrescId); if(!p)return;
-  // Le groupe = toutes les séances créées en même temps que celle-ci (même date,
-  // même objectif, autre joueur) — pas besoin d'être passé par "Dupliquer" au
-  // préalable : on synchronise le contenu maintenant, pour tout le monde.
-  const siblings=PRESC.filter(s=>s.id!==p.id&&s.player_id!==p.player_id&&s.date===p.date&&(s.objectif||s.titre)===(p.objectif||p.titre));
-  if(siblings.length&&PRESC_ITEMS.length){
-    for(const sib of siblings){
-      const ok=await copyPrescContentTo(sib.id);
-      if(!ok)return;
-    }
-  }
-  const group=[p,...siblings];
+function markPrescDone(id){
+  const p=PRESC.find(x=>x.id===(id||currentPrescId)); if(!p)return;
+  // Le groupe = les séances du même jour et du même type encore à faire.
+  const group=p.statut==='prevu'?prescGroup(p):[p];
   // Fenêtre de saisie pré-remplie (type, durée, joueurs du groupe) : il ne reste
   // qu'à décocher les absents. Le statut « fait » est posé à la validation.
   pendingPresc=null;
