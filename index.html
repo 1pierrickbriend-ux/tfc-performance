@@ -566,6 +566,31 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .qaRow2{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px;align-items:end}
 .qaRow4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}
 @media (max-width:600px){.qaRow4{grid-template-columns:1fr 1fr}}
+.qaStep{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:16px 0 8px;flex-wrap:wrap}
+#qaHint+.qaStep{margin-top:0}
+.qaNum{width:20px;height:20px;border-radius:50%;background:var(--panel3);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;letter-spacing:0;flex:none}
+.qaBody .qaDate{width:auto;margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600}
+.qaSub{font-size:10.5px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)}
+.qaDurIn{display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink);font-weight:600}
+.qaBody .qaDurIn input{width:78px;font-size:15px;font-weight:700;text-align:center;padding:6px 8px}
+.qaSegs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:4px}
+.qaSeg{background:none;border:none;border-radius:7px;padding:9px 6px;font:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.qaSeg:hover{color:var(--ink)}
+.qaSeg.on{background:var(--accent);color:#fff}
+.qaTypes{display:flex;flex-wrap:wrap;gap:6px}
+.qaType{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px 13px;font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer}
+.qaType:hover{border-color:var(--accent)}
+.qaType.on{background:rgba(138,111,214,.22);border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.qaLink{background:none;border:none;padding:0;margin-top:12px;font:inherit;font-size:11.5px;font-weight:600;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.qaDurList{display:none;margin-top:8px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 10px;max-height:220px;overflow-y:auto}
+.qaDurList.on{display:block}
+.qaBody .qaDurRow{flex-direction:row;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--ink)}
+.qaBody .qaDurRow:last-child{border-bottom:none}
+.qaDurRow span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qaBody .qaDurRow input{width:66px;padding:4px 6px;text-align:center;font-size:12px}
+.qaDurRow small{color:var(--muted);font-size:10.5px}
+.qaDurRow.ovr input{border-color:var(--warn);color:var(--warn);font-weight:700}
+.qaGo{width:100%;margin-top:18px;padding:12px;font-size:14px}
 .dashEmpty{grid-column:1/-1;padding:34px;text-align:center;color:var(--muted);font-size:13px;background:var(--panel);border:1px dashed var(--line);border-radius:14px}
 .hmWrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:18px}
 .hmHead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -966,7 +991,7 @@ body.plNoScroll{overflow:hidden}
 .psContent{padding:0 22px 26px}
 .psSec{margin-top:24px;scroll-margin-top:150px}
 .psH{font-family:var(--font-display);font-size:20px;font-weight:800;color:#e8e3ee;margin:0 0 12px;padding-left:12px;border-left:4px solid #c9bdf5;line-height:1.1}
-.psTiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.psTiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
 .psTile{background:var(--panel2);border:1px solid rgba(201,189,245,.22);border-top:3px solid #c9bdf5;border-radius:12px;padding:11px 13px;min-width:0}
 .psTile .dsK{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .psTile .dsV{font-family:var(--font-display);font-size:26px;font-weight:800;line-height:1.15;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -1003,7 +1028,7 @@ body.plNoScroll{overflow:hidden}
 .psExN{font-weight:700;margin-right:6px}
 .psTl{max-height:440px;overflow:auto;padding-right:4px}
 .tlKind{font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 8px;white-space:nowrap}
-@media(max-width:900px){.psTiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.psTiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.psGrid2{grid-template-columns:1fr}}
 @media(max-width:600px){.psTiles{grid-template-columns:repeat(2,minmax(0,1fr))}.psHead{padding:12px 56px 0 14px;gap:12px}.psAv{width:74px;height:88px}.psId h2{font-size:22px}.psAdd{order:3;flex:1 1 100%;margin:0 0 10px}.psContent{padding:0 14px 20px}.psNav{padding:12px 14px 0}.psRowBar{grid-template-columns:96px 1fr 26px}.plSort{margin-left:0}}
 
@@ -1216,7 +1241,6 @@ body.plNoScroll{overflow:hidden}
   <button data-t="mois">Vue d'ensemble</button>
   <button data-t="semaine">Planification semaine</button>
   <button data-t="programmes">Bibliothèque</button>
-  <button data-t="seances">Séances</button>
   <button data-t="indiv">Individualisation</button>
   <button data-t="joueurs">Joueurs</button>
   <button data-t="logos">Logos</button>
@@ -1378,29 +1402,7 @@ body.plNoScroll{overflow:hidden}
   </div>
 </section>
 
-<section class="view" id="v-seances">
-  <div class="rowHead">
-    <h2>Séances</h2><span class="tag live">Journal partagé</span>
-    <button class="btn primary" style="margin-left:auto" onclick="openCreateSeance()">+ Séance collective</button>
-    <button class="btn" onclick="indivQuickFromSeances()">+ Sollicitation individualisée</button>
-    <button class="btn ghost" id="jSelBtn" onclick="toggleJSel()">☑︎ Sélectionner</button>
-  </div>
-
-  <div class="jStrip" id="jStrip"></div>
-
-  <div class="subTabs">
-    <button class="on" onclick="jTab(this,'all')">Tout le journal</button>
-    <button onclick="jTab(this,'coll')">Collectif</button>
-    <button onclick="jTab(this,'indiv')">Individualisé</button>
-  </div>
-
-  <div class="jSelBar" id="jSelBar" style="display:none">
-    <span id="jSelCount">0 sélectionnée</span>
-    <button class="btn ghost" onclick="toggleJSel()">Annuler</button>
-    <button class="btn danger" onclick="deleteJSelection()">🗑 Supprimer la sélection</button>
-  </div>
-  <div id="jList"></div>
-</section>
+<!-- Onglet Séances supprimé le 05/10 : la saisie unique « Enregistrer une séance réalisée » le remplace ; les séances collectives passées restent dans la fiche joueur. -->
 
 <section class="view" id="v-indiv">
   <div class="rowHead">
@@ -1447,7 +1449,7 @@ body.plNoScroll{overflow:hidden}
         <button class="dfBtn" data-f="bottom" onclick="setDashFilter('bottom',this)">Sollicitation faible</button>
         <button class="dfBtn" data-f="none" onclick="setDashFilter('none',this)">Non sollicités</button>
       </div>
-      <button class="btn primary" onclick="openQuickAdd()">＋ Enregistrer une sollicitation</button>
+      <button class="btn primary" onclick="openQuickAdd()">＋ Enregistrer une séance réalisée</button>
     </div>
 
     <div class="dashStrip" id="dashStrip"></div>
@@ -1458,39 +1460,7 @@ body.plNoScroll{overflow:hidden}
     <div class="hmWrap" id="hmWrap"></div>
   </div>
 
-  <div class="qaOverlay" id="qaOverlay" onclick="if(event.target===this)closeQuickAdd()">
-    <div class="qaPanel">
-      <div class="qaHead">
-        <span id="qaTitle">Enregistrer une sollicitation individualisée</span>
-        <button onclick="closeQuickAdd()">✕</button>
-      </div>
-      <div class="qaBody">
-        <div id="qaHint" class="qaHint" style="display:none">Renseigne le <b>volume réellement effectué</b> et l'action correspondante : sans volume, la séance n'apparaîtrait pas dans les analyses.</div>
-        <div class="qaRow2">
-          <div class="mpField" style="grid-column:1/-1">Joueurs <span class="mpCount" id="chgPlayerCount">0 sélectionné</span>
-            <div class="mpBox" id="chgPlayerBox"></div>
-            <div class="mpQuick"><button type="button" onclick="mpAll('chg',true)">Tout</button><button type="button" onclick="mpAll('chg',false)">Aucun</button></div>
-          </div>
-          <label style="grid-column:1/-1">Date<input type="date" id="chgDate"></label>
-        </div>
-        <div class="qaRow2">
-          <label>Secteur<select id="chgSecteur" onchange="fillChgActions()"></select></label>
-          <label>Action<select id="chgAction"></select></label>
-        </div>
-        <div class="qaRow4">
-          <label>Séries<input type="number" id="chgSeries" min="0" placeholder="4"></label>
-          <label>Reps<input type="text" id="chgReps" placeholder="8-10"></label>
-          <label>Charge kg<input type="number" id="chgKg" step="0.5" placeholder="60"></label>
-          <label>Volume (min)<input type="number" id="chgDuree" min="0" placeholder="30"></label>
-        </div>
-        <textarea id="chgComment" placeholder="Commentaire (facultatif)"></textarea>
-        <div class="qaRow2">
-          <label>Réalisé par<input type="text" id="chgRealisePar" placeholder="Pierrick / Julien"></label>
-          <button class="btn primary" onclick="addChargeSession()">Enregistrer</button>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
   <div id="indiv-presc" style="display:none">
     <div class="chgTop">
@@ -1504,8 +1474,8 @@ body.plNoScroll{overflow:hidden}
           <label style="grid-column:1/-1">Date<input type="date" id="prDate"></label>
         </div>
         <div class="chgRow2">
-          <label>Qualité dominante<input type="text" id="prObjectif" placeholder="FORCE-VITESSE"></label>
-          <label>Volume prévu (min)<input type="number" id="prDuree" placeholder="30"></label>
+          <label>Type de séance<select id="prType"></select></label>
+          <label>Durée prévue (min)<input type="number" id="prDuree" placeholder="60"></label>
         </div>
         <button class="btn primary" onclick="createPrescSession()">Créer et composer</button>
       </div>
@@ -1767,6 +1737,30 @@ body.plNoScroll{overflow:hidden}
   </div>
 </section>
 <div id="playerSheet" role="dialog" aria-modal="true" aria-labelledby="psTitle" onclick="if(event.target===this)closePlayerSheet()"><div class="psBox"><div id="playerSheetBody"></div></div></div>
+<!-- Fenêtre de saisie « séance réalisée » : au niveau de la page pour être utilisable depuis n'importe quel onglet (fiche joueur, Individualisation). -->
+<div class="qaOverlay" id="qaOverlay" onclick="if(event.target===this)closeQuickAdd()">
+    <div class="qaPanel">
+      <div class="qaHead">
+        <span id="qaTitle">Enregistrer une séance réalisée</span>
+        <button onclick="closeQuickAdd()">✕</button>
+      </div>
+      <div class="qaBody">
+        <div id="qaHint" class="qaHint" style="display:none"></div>
+        <div class="qaStep"><span class="qaNum">1</span>Date<input type="date" id="chgDate" class="qaDate"></div>
+        <div class="qaStep"><span class="qaNum">2</span>Principe</div>
+        <div class="qaSegs" id="qaPrBox"></div>
+        <div class="qaStep"><span class="qaNum">3</span>Type de séance</div>
+        <div class="qaTypes" id="qaTypeBox"></div>
+        <div class="qaStep"><span class="qaNum">4</span>Durée<span class="qaDurIn"><input type="number" id="chgDuree" min="0" placeholder="60" oninput="qaRenderDur()"> min</span><span class="qaSub">pour tous les joueurs cochés</span></div>
+        <div class="qaStep"><span class="qaNum">5</span>Joueurs présents <span class="mpCount" id="chgPlayerCount">0 sélectionné</span></div>
+        <div class="mpBox" id="chgPlayerBox"></div>
+        <div class="mpQuick"><button type="button" onclick="qaSelReserve()">Réserve disponible</button><button type="button" onclick="mpAll('chg',true)">Tout</button><button type="button" onclick="mpAll('chg',false)">Aucun</button></div>
+        <button type="button" class="qaLink" id="qaDurToggle" onclick="document.getElementById('qaDurList').classList.toggle('on')"></button>
+        <div class="qaDurList" id="qaDurList"></div>
+        <button class="btn primary qaGo" onclick="addChargeSession()">Valider</button>
+      </div>
+    </div>
+  </div>
 
 <section class="view" id="v-legende">
   <div class="rowHead">
@@ -4113,6 +4107,7 @@ function jFaces(ids,max){
   }).join('')}${rest>0?`<span class="jFace more">+${rest}</span>`:''}</span>`;
 }
 function renderSeances(){
+  if(!document.getElementById('jList'))return;   // onglet supprimé (v40)
   // Journal unifié : une séance collective et une séance individuelle sont
   // le même acte, seule l'échelle change. On les affiche ensemble, par jour.
   const items=[];
@@ -4445,13 +4440,26 @@ const IMG_PLAYERBG='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEB
    La fiche joueur est la SEULE vue détaillée d'un joueur : Charge externe et Tests y
    renvoient au lieu d'avoir chacun leur propre panneau. */
 let PL_VIEW='charge', PL_SORT='nom', PL_FILTER='reserve', PSHEET=null;
+/* Depuis la v40 les séances réalisées sont classées par principe (Physique / Terrain / Autre).
+   « coll » = séances collectives de l'ancien onglet Séances (supprimé) : archive, affichée
+   seulement si des présences y ont été validées. */
 const PL_KIND={
-  coll:{lbl:'Collectives',col:'#8a6fd6'},
-  ind:{lbl:'Individuelles',col:'#4fd191'},
+  phys:{lbl:'Physique',col:'#8a6fd6'},
+  terr:{lbl:'Terrain',col:'#4fd191'},
+  autre:{lbl:'Autre',col:'#c9a0dc'},
   prev:{lbl:'Prévention encadrée',col:'#ffb454'},
   auto:{lbl:'Activation autonome',col:'#6fb0ff'},
+  coll:{lbl:'Collectives (archive)',col:'#7d7891'},
 };
-const PL_KIND_ORDER=['coll','ind','prev','auto'];
+const PL_KIND_ORDER=['phys','terr','autre','prev','auto','coll'];
+function plKindOfAction(a){
+  if(!a)return 'autre';
+  if(a.principe==='physique')return 'phys';
+  if(a.principe==='terrain')return 'terr';
+  if(a.principe==='autre')return 'autre';
+  return a.secteur==='preparation_physique'?'phys':'autre';
+}
+function plHasColl(){ return SEANCES.some(s=>(s.presences||[]).some(p=>p.valide)); }
 
 function plDate(s){ return new Date(String(s).slice(0,10)+'T12:00:00'); }
 function plMonday(d){ const x=new Date(d); x.setHours(12,0,0,0); x.setDate(x.getDate()-((x.getDay()+6)%7)); return x; }
@@ -4476,7 +4484,7 @@ function plEvents(pid){
   CHG_SESSIONS.forEach(s=>{
     if(s.player_id!==pid)return;
     const a=CHG_ACTIONS.find(x=>x.id===s.action_id);
-    ev.push({kind:'ind',id:s.id,date:plDate(s.date),label:a?a.nom:'Sollicitation individuelle',min:s.duree_min||0,
+    ev.push({kind:plKindOfAction(a),chg:true,id:s.id,date:plDate(s.date),label:a?a.nom:'Séance',min:s.duree_min||0,
       fam:a?(a.famille||CHG_SECTEURS[a.secteur]||'Autre'):'Autre',series:s.series,reps:s.reps,kg:s.charge_kg,note:s.commentaire});
   });
   plPrevSessions(pid).forEach(x=>ev.push(x));
@@ -4488,7 +4496,7 @@ function plWeeks(ev,n){
   for(let i=n-1;i>=0;i--){
     const start=new Date(mon0); start.setDate(start.getDate()-7*i);
     const end=new Date(start); end.setDate(end.getDate()+7);
-    const c={coll:0,ind:0,prev:0,auto:0,min:0};
+    const c={min:0}; PL_KIND_ORDER.forEach(k=>c[k]=0);
     ev.forEach(e=>{ if(e.date&&e.date>=start&&e.date<end){ c[e.kind]++; c.min+=e.min||0; } });
     c.label='S'+weekNumFor(start); c.current=i===0;
     out.push(c);
@@ -4529,7 +4537,7 @@ function plStackChart(weeks,h,compact){
   return `<svg class="plChart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Séances par microcycle">${grid}${bars}</svg>
     ${compact?'':`<div class="ddAxis">${weeks.map((wk,i)=>`<span>${i%2===(n-1)%2?wk.label:''}</span>`).join('')}</div><div class="plScale">max ${mx} séance${mx>1?'s':''} / microcycle</div>`}`;
 }
-function plLegend(){ return `<div class="plLegend">${PL_KIND_ORDER.map(k=>`<span><i style="background:${PL_KIND[k].col}"></i>${PL_KIND[k].lbl}</span>`).join('')}</div>`; }
+function plLegend(){ return `<div class="plLegend">${PL_KIND_ORDER.filter(k=>k!=='coll'||plHasColl()).map(k=>`<span><i style="background:${PL_KIND[k].col}"></i>${PL_KIND[k].lbl}</span>`).join('')}</div>`; }
 
 /* ─── Vue « charge » de l'onglet Joueurs ─── */
 function plRows(){
@@ -4569,15 +4577,16 @@ function renderPlayerLoad(){
   if(isEdit)return;
   const rows=plRows();
   const all=IPLAYERS.filter(p=>p.actif!==false);
-  const coll28=SEANCES.filter(s=>{const d=plDate(s.date);return plDaysAgo(d)>=0&&plDaysAgo(d)<28;}).length;
-  const ind28=CHG_SESSIONS.filter(s=>{const d=plDate(s.date);return plDaysAgo(d)>=0&&plDaysAgo(d)<28;});
+  const chg28=CHG_SESSIONS.filter(s=>{const d=plDate(s.date);return plDaysAgo(d)>=0&&plDaysAgo(d)<28;});
+  const byPr=k=>chg28.filter(s=>plKindOfAction(CHG_ACTIONS.find(a=>a.id===s.action_id))===k);
+  const prLine=['phys','terr','autre'].map(k=>{const l=byPr(k);return l.length?`${PL_KIND[k].lbl} ${hrs(l.reduce((t,s)=>t+(s.duree_min||0),0))}`:null;}).filter(Boolean).join(' · ');
   const reserve=all.filter(p=>p.dispo!==false&&!p.affectation);
   const oublies=reserve.filter(p=>{const e=plEvents(p.id).find(x=>x.date&&plDaysAgo(x.date)>=0);return !e||plDaysAgo(e.date)>=14;});
   const tile=(v,l,s)=>`<div class="dsCard"><div class="dsK">${l}</div><div class="dsV">${v}</div><div class="dsU">${s}</div></div>`;
   const mxw=Math.max(1,...rows.flatMap(r=>r.weeks.map(plTotal)));
   load.innerHTML=`<div class="dashStrip">
-      ${tile(coll28,'Séances collectives','sur 28 jours')}
-      ${tile(ind28.length,'Sollicitations individuelles',hrs(ind28.reduce((t,s)=>t+(s.duree_min||0),0))+' sur 28 jours')}
+      ${tile(chg28.length,'Séances réalisées · 28 j','présences joueur')}
+      ${tile(hrs(chg28.reduce((t,s)=>t+(s.duree_min||0),0)),'Volume · 28 j',prLine||'aucune séance')}
       ${tile(reserve.length,'Réserve disponible',`sur ${all.length} joueurs`)}
       ${tile(oublies.length,'Sans séance depuis 14 j',oublies.length?plEsc(oublies.slice(0,3).map(p=>p.name.split(' ')[0]).join(', '))+(oublies.length>3?'…':''):'Réserve disponible')}
     </div>
@@ -4590,7 +4599,7 @@ function renderPlayerLoad(){
       return `<button type="button" class="plCard" onclick="openPlayerSheet('${r.p.id}')">
         <div class="plTop">${plAvatar(r.p,'plAv')}<span class="plName"><span class="plNm">${plEsc(r.p.name)}</span>
           <small><span class="plBadge ${st.cls}">${st.lbl}</span>${r.p.affectation?`<span class="plBadge ${gr.cls}">${gr.lbl}</span>`:''}</small></span></div>
-        <div class="plBody"><div class="plNums"><span><b>${r.n7}</b> séance${r.n7>1?'s':''} · 7 j</span><span><b>${r.n28}</b> · 28 j</span><span><b>${hrs(r.min28)}</b> indiv.</span></div>
+        <div class="plBody"><div class="plNums"><span><b>${r.n7}</b> séance${r.n7>1?'s':''} · 7 j</span><span><b>${r.n28}</b> · 28 j</span><span><b>${hrs(r.min28)}</b> · 28 j</span></div>
         <div class="plMini" aria-hidden="true">${bars}</div>
         <div class="plFoot"><span>8 derniers microcycles</span><span class="${days==null||days>=14?'plWarn':''}">${days==null?'aucune séance':(days===0?"séance aujourd'hui":'dernière il y a '+days+' j')}</span></div></div>
       </button>`;}).join('')}</div>`:'<div class="dashEmpty">Aucun joueur dans cette sélection.</div>'}`;
@@ -4611,7 +4620,7 @@ function closePlayerSheet(){
   document.getElementById('playerSheet').classList.remove('on');
   document.body.classList.remove('plNoScroll');
 }
-function psAddSollicitation(pid){ dashSel=pid; MP_SEL.chg.clear(); MP_SEL.chg.add(pid); openQuickAdd(); }
+function psAddSollicitation(pid){ dashSel=pid; openQuickAdd({players:[pid]}); }
 function psPanel(title,hint,body,cls){
   return `<div class="psPanel${cls?' '+cls:''}"><div class="psPanelH"><span>${title}</span>${hint?`<span class="hint">${hint}</span>`:''}</div><div class="psPanelB">${body}</div></div>`;
 }
@@ -4622,9 +4631,6 @@ function renderPlayerSheet(){
   const ev=plEvents(p.id), w7=plWindow(ev,7), w28=plWindow(ev,28);
   const last=ev.find(e=>e.date&&plDaysAgo(e.date)>=0), days=last?plDaysAgo(last.date):null;
   const st=plStatus(p), gr=plGroup(p);
-  // présence aux séances collectives où il était convoqué (28 j)
-  const conv=SEANCES.filter(s=>{const d=plDate(s.date);return plDaysAgo(d)>=0&&plDaysAgo(d)<28&&(s.presences||[]).some(x=>x.player_id===p.id);});
-  const pres=conv.filter(s=>s.presences.find(x=>x.player_id===p.id).valide).length;
   const min28=w28.reduce((t,e)=>t+(e.min||0),0);
   const tile=(l,v,s)=>`<div class="psTile"><div class="dsK">${l}</div><div class="dsV">${v}</div><div class="dsU">${s}</div></div>`;
   const empty=t=>`<div class="psEmpty">${t}</div>`;
@@ -4641,7 +4647,7 @@ function renderPlayerSheet(){
   const typeCol=k=>k==='_'?'var(--muted)':(TYPES[k].stripes?TYPES[k].stripes[0]:TYPES[k].color);
   // qualités travaillées (sollicitations individuelles, 90 j)
   const byFam={};
-  plWindow(ev,90).filter(e=>e.kind==='ind').forEach(e=>{ byFam[e.fam]=(byFam[e.fam]||0)+(e.min||0); });
+  plWindow(ev,90).filter(e=>e.chg&&e.kind==='phys').forEach(e=>{ byFam[e.fam]=(byFam[e.fam]||0)+(e.min||0); });
   const famRows=Object.entries(byFam).sort((a,b)=>b[1]-a[1]);
   const famTot=famRows.reduce((t,[,v])=>t+v,0)||1;
   // tests, cartographie, individualisation
@@ -4663,10 +4669,10 @@ function renderPlayerSheet(){
     :empty('Aucune séance datée sur 90 jours.');
   const famBody=famRows.length?`<div class="famBar">${famRows.map(([k,v],i)=>`<i style="width:${v/famTot*100}%;background:${FAM_COLORS[i%FAM_COLORS.length]}" title="${plEsc(k)}"></i>`).join('')}</div>
       <div class="psRows">${famRows.map(([k,v],i)=>`<div class="psRow"><span class="dot" style="background:${FAM_COLORS[i%FAM_COLORS.length]}"></span><span class="nm">${plEsc(k)}</span><span class="vl">${hrs(v)}</span><span class="pc">${Math.round(v/famTot*100)} %</span></div>`).join('')}</div>`
-    :empty('Aucune sollicitation individuelle sur 90 jours.');
+    :empty('Aucune séance physique sur 90 jours.');
   const histBody=ev.length?`<div class="tl psTl">${ev.slice(0,30).map(e=>{
       const chips=[];
-      if(e.kind==='ind'){ if(e.series||e.reps)chips.push(`<span class="tlChip">${[e.series?e.series+'×':'',e.reps||''].filter(Boolean).join(' ')}</span>`);
+      if(e.chg){ if(e.series||e.reps)chips.push(`<span class="tlChip">${[e.series?e.series+'×':'',e.reps||''].filter(Boolean).join(' ')}</span>`);
         if(e.kg)chips.push(`<span class="tlChip">${e.kg} kg</span>`); if(e.min)chips.push(`<span class="tlChip">${e.min} min</span>`); }
       if(e.kind==='coll'&&e.cat&&TYPES[e.cat])chips.push(`<span class="tlChip">${plEsc(TYPES[e.cat].nom)}</span>`);
       if(e.kind==='prev'||e.kind==='auto')chips.push(`<span class="tlChip">${e.n} exercices · n°${e.idx+1}</span>`);
@@ -4674,7 +4680,7 @@ function renderPlayerSheet(){
         <div class="tlTop"><span class="tlDate">${e.date?fmtDateFR(iso(e.date)):'non datée'}</span>
           <span class="tlKind" style="background:${PL_KIND[e.kind].col}22;color:${PL_KIND[e.kind].col}">${PL_KIND[e.kind].lbl}</span>
           <span class="tlAct">${plEsc(e.label)}</span>
-          ${e.kind==='ind'?`<button class="tlDel" onclick="event.stopPropagation();deleteChargeSession('${e.id}')" title="Supprimer cette sollicitation">✕</button>`:''}</div>
+          ${e.chg?`<button class="tlDel" onclick="event.stopPropagation();deleteChargeSession('${e.id}')" title="Supprimer cette séance pour ce joueur">✕</button>`:''}</div>
         ${chips.length?`<div class="tlChips">${chips.join('')}</div>`:''}
         ${e.note?`<div class="tlNote">${plEsc(e.note)}</div>`:''}
       </div></div>`;}).join('')}</div>${ev.length>30?`<p class="psNote">30 plus récentes sur ${ev.length}.</p>`:''}`
@@ -4686,7 +4692,7 @@ function renderPlayerSheet(){
     <div class="psId"><h2 id="psTitle">${plEsc(p.name)}</h2>
       <div class="psBadges"><span class="plBadge ${st.cls}">${st.lbl}</span><span class="plBadge ${gr.cls}">${gr.lbl}</span>
         ${p.statut?`<span class="plBadge plS-neu"><span class="sdot" style="background:${STATUT_COLOR[p.statut]||'#888'}"></span>Individualisation : ${STATUT_LABEL[p.statut]||p.statut}</span>`:''}</div></div>
-    <button class="btn psAdd" onclick="psAddSollicitation('${p.id}')">＋ Sollicitation</button>
+    <button class="btn psAdd" onclick="psAddSollicitation('${p.id}')">＋ Séance réalisée</button>
     <button class="psClose" onclick="closePlayerSheet()" aria-label="Fermer la fiche">✕</button>
   </header>
   <nav class="psNav" aria-label="Sections de la fiche">${[['charge','Charge'],['tests','Tests'],['zones','Cartographie'],['indiv','Prévention'],['historique','Historique']].map(([k,l])=>`<a href="#ps-${k}" onclick="event.preventDefault();document.getElementById('ps-${k}').scrollIntoView({behavior:'smooth',block:'start'})">${l}</a>`).join('')}</nav>
@@ -4695,15 +4701,14 @@ function renderPlayerSheet(){
     <div class="psTiles">
       ${tile('7 derniers jours',w7.length,'séance'+(w7.length>1?'s':''))}
       ${tile('28 derniers jours',w28.length,'séance'+(w28.length>1?'s':''))}
-      ${tile('Individuel · 28 j',hrs(min28),w28.filter(e=>e.kind==='ind').length+' sollicitation(s)')}
-      ${tile('Présence collectives',conv.length?Math.round(pres/conv.length*100)+' %':'—',conv.length?`${pres} / ${conv.length} convocations`:'aucune convocation')}
+      ${tile('Volume · 28 j',hrs(min28),['phys','terr','autre'].map(k=>{const m=w28.filter(e=>e.kind===k).reduce((t,e)=>t+(e.min||0),0);return m?PL_KIND[k].lbl+' '+hrs(m):null;}).filter(Boolean).join(' · ')||'aucune séance')}
       ${tile('Dernière séance',days==null?'—':(days===0?"Aujourd'hui":'il y a '+days+' j'),last?PL_KIND[last.kind].lbl:'aucune enregistrée')}
     </div>
     <div class="psGrid2">
       ${psPanel('Séances par microcycle','12 derniers microcycles',plStackChart(plWeeks(ev,12),46,false)+plLegend(),'psWide')}
       ${psPanel('Répartition par type de séance','28 jours',repBody+(undated?`<p class="psNote">${undated} séance(s) de prévention antérieure(s) au 30/09 non datée(s) : comptée(s) dans « Prévention », pas ici.</p>`:''))}
       ${psPanel('Placement dans le microcycle','90 jours · type de jour',typeBody)}
-      ${psPanel('Qualités travaillées en individuel','90 jours · minutes',famBody)}
+      ${psPanel('Qualités travaillées en physique','90 jours · minutes',famBody)}
     </div>`)}
   ${sec('tests','Tests physiques',(reg||hist)?`<div class="psGrid2">
       ${psPanel('Asymétries droite / gauche','deux dernières campagnes',reg||empty('Aucune mesure comparable.'),'psReg')}
@@ -6149,8 +6154,17 @@ function renderPresc(){
     document.getElementById('prExSel').innerHTML='<option value="">— Exercice de la banque —</option>'+
       EXBANK.map(e=>`<option value="${e.id}">${e.nom}</option>`).join('');
   }
+  prFillTypes();
   mpRender('pr');
   renderPrescList();renderPrescUpcoming();
+}
+function prFillTypes(){
+  const sel=document.getElementById('prType'); if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML=qaReady()
+    ?'<option value="">— Choisir —</option>'+QA_PRINCIPES.map(([k,l])=>`<optgroup label="${l}">${qaTypes(k).map(a=>`<option value="${a.id}">${plEsc(a.nom)}</option>`).join('')}</optgroup>`).join('')
+    :'<option value="">Script v40 à exécuter</option>';
+  sel.value=cur;
 }
 function renderPrescUpcoming(){
   const today=new Date().toISOString().slice(0,10);
@@ -6193,16 +6207,19 @@ function renderPrescList(){
 async function createPrescSession(){
   const ids=[...MP_SEL.pr];
   if(!ids.length){alert('Sélectionne au moins un joueur.');return;}
-  const objectif=document.getElementById('prObjectif').value.trim()||null;
+  const typeId=document.getElementById('prType').value||null;
+  const type=typeId?CHG_ACTIONS.find(a=>a.id===typeId):null;
+  if(qaReady()&&!type){alert('Choisis le type de séance.');return;}
+  const objectif=type?type.nom:null;
   const d=document.getElementById('prDuree').value;
-  const base={objectif,titre:objectif||'Séance individuelle',
+  const base={objectif,titre:objectif||'Séance individuelle',...(type?{action_id:type.id}:{}),
     date:document.getElementById('prDate').value||new Date().toISOString().slice(0,10),
     duree_prevue_min:d===''?null:Number(d),created_by:CURRENT_USER_LABEL};
   const rows=ids.map(player_id=>({player_id,...base}));
   const {data,error}=await supa.from('presc_sessions').insert(rows).select();
   if(error){alert('Erreur : '+error.message);return;}
   (data||[]).forEach(d2=>PRESC.unshift(d2));
-  document.getElementById('prObjectif').value='';
+  document.getElementById('prType').value='';
   MP_SEL.pr.clear(); mpRender('pr');
   renderPrescList();renderPrescUpcoming();
   // On compose la première : le contenu pourra ensuite être copié vers les autres
@@ -6282,22 +6299,11 @@ async function markPSelectionDone(){
   if(!sessions.length)return;
   const already=sessions.filter(s=>s.statut==='fait');
   if(already.length&&!await customConfirm(`${already.length} des ${sessions.length} séances sélectionnées sont déjà marquées réalisées. Continuer quand même ?`))return;
-  pendingPrescBulk=sessions.map(p=>({id:p.id,player_id:p.player_id}));
-  ensureChgFormReady();
-  MP_SEL.chg.clear(); sessions.forEach(p=>MP_SEL.chg.add(p.player_id)); mpRender('chg');
   const ref=sessions[0];
-  document.getElementById('chgDate').value=ref.date;
-  document.getElementById('chgDuree').value=ref.duree_prevue_min||'';
-  document.getElementById('chgComment').value='Séance prescrite : '+(ref.objectif||ref.titre);
-  const q=(ref.objectif||'').toLowerCase();
-  const best=CHG_ACTIONS.find(a=>q&&a.nom.toLowerCase().split(/[\s-]+/).some(w=>w.length>3&&q.includes(w)));
-  if(best){
-    document.getElementById('chgSecteur').value=best.secteur; fillChgActions();
-    document.getElementById('chgAction').value=best.id;
-  }
-  document.getElementById('qaTitle').textContent=`Valider ${sessions.length} séances réalisées`;
-  document.getElementById('qaHint').style.display='block';
-  document.getElementById('qaOverlay').classList.add('on');
+  openQuickAdd({date:ref.date,duree:ref.duree_prevue_min,typeId:ref.action_id||qaGuessType(ref.objectif||ref.titre),
+    players:sessions.map(p=>p.player_id),title:`Valider ${sessions.length} séances réalisées`,
+    hint:"Décoche seulement les joueurs absents, puis valide."});
+  pendingPrescBulk=sessions.map(p=>({id:p.id,player_id:p.player_id}));
 }
 /* Annuler sans supprimer : la trace reste, mais la prescription sort
    du calcul d'observance. */
@@ -6485,31 +6491,14 @@ async function markPrescDone(){
     }
   }
   const group=[p,...siblings];
-  // On passe par la fenêtre de saisie pour garantir un volume et une action
-  // corrects : sans volume la séance compterait pour zéro dans toutes les
-  // analyses, et une action choisie au hasard fausserait la distribution.
+  // Fenêtre de saisie pré-remplie (type, durée, joueurs du groupe) : il ne reste
+  // qu'à décocher les absents. Le statut « fait » est posé à la validation.
   pendingPresc=null;
+  openQuickAdd({date:p.date,duree:p.duree_prevue_min,typeId:p.action_id||qaGuessType(p.objectif||p.titre),
+    players:group.map(g=>g.player_id),
+    title:group.length>1?`Valider ${group.length} séances réalisées`:'Valider la séance réalisée',
+    hint:group.length>1?"Tout le groupe prescrit est coché. <b>Décoche seulement les joueurs absents</b>, puis valide.":"Vérifie le type et la durée, puis valide."});
   pendingPrescBulk=group.map(g=>({id:g.id,player_id:g.player_id}));
-  ensureChgFormReady();
-  MP_SEL.chg.clear(); group.forEach(g=>MP_SEL.chg.add(g.player_id));
-  mpRender('chg');
-  document.getElementById('chgDate').value=p.date;
-  document.getElementById('chgDuree').value=p.duree_prevue_min||'';
-  document.getElementById('chgComment').value='Séance prescrite : '+(p.objectif||p.titre);
-  // pré-sélectionne l'action dont le nom se rapproche le plus de la qualité visée
-  const q=(p.objectif||'').toLowerCase();
-  const best=CHG_ACTIONS.find(a=>q&&a.nom.toLowerCase().split(/[\s-]+/).some(w=>w.length>3&&q.includes(w)));
-  if(best){
-    document.getElementById('chgSecteur').value=best.secteur; fillChgActions();
-    document.getElementById('chgAction').value=best.id;
-  }
-  document.getElementById('qaTitle').textContent=group.length>1?`Valider ${group.length} séances réalisées`:'Valider la séance réalisée';
-  const hint=document.getElementById('qaHint');
-  hint.innerHTML=group.length>1
-    ?'Tout le groupe initialement sélectionné est déjà coché ci-dessous. <b>Décoche uniquement les joueurs qui n\'ont pas fait la séance.</b>'
-    :'Renseigne le <b>volume réellement effectué</b> et l\'action correspondante : sans volume, la séance n\'apparaîtrait pas dans les analyses.';
-  hint.style.display='block';
-  document.getElementById('qaOverlay').classList.add('on');
 }
 /* ═══════ DASHBOARD INDIVIDUALISATION — SUIVI DE CHARGE ═══════
    Volume de travail uniquement (séances + durée). Pas de RPE ni de
@@ -6570,14 +6559,8 @@ function playerPhoto(p){
   try{return supa.storage.from('player-photos').getPublicUrl(p.photo_path).data.publicUrl}catch(e){return null}
 }
 function chgPlayerOptions(){return IPLAYERS.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}
-function fillChgActions(){
-  const sect=document.getElementById('chgSecteur').value;
-  const byFam={};
-  CHG_ACTIONS.filter(a=>a.secteur===sect).forEach(a=>{const f=a.famille||'—';(byFam[f]=byFam[f]||[]).push(a)});
-  document.getElementById('chgAction').innerHTML=Object.keys(byFam).sort().map(f=>
-    `<optgroup label="${f}">${byFam[f].map(a=>`<option value="${a.id}">${a.nom}</option>`).join('')}</optgroup>`
-  ).join('')||'<option value="">— aucune action —</option>';
-}
+function fillChgActions(){}   // remplacé par la saisie par principe / type (v40)
+
 
 /* ─── multi-sélection de joueurs (chips) ─── */
 const MP_SEL={chg:new Set(),pr:new Set(),dup:new Set()};
@@ -6591,18 +6574,13 @@ function mpRender(ns){
   const n=MP_SEL[ns].size;
   const c=document.getElementById(ns+'PlayerCount');
   if(c)c.textContent=n===0?'0 sélectionné':(n+' sélectionné'+(n>1?'s':''));
+  if(ns==='chg'&&typeof qaRenderDur==='function')qaRenderDur();
 }
 function mpToggle(ns,id){MP_SEL[ns].has(id)?MP_SEL[ns].delete(id):MP_SEL[ns].add(id);mpRender(ns)}
 function mpAll(ns,on){MP_SEL[ns].clear();if(on)IPLAYERS.forEach(p=>MP_SEL[ns].add(p.id));mpRender(ns)}
 
-function ensureChgFormReady(){
-  const sect=document.getElementById('chgSecteur');
-  if(sect&&!sect.options.length){
-    sect.innerHTML=Object.entries(CHG_SECTEURS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
-    document.getElementById('chgDate').value=new Date().toISOString().slice(0,10);
-    fillChgActions();
-  }
-}
+function ensureChgFormReady(){}   // la fenêtre de saisie s'initialise à l'ouverture (openQuickAdd)
+
 function renderCharge(){
   ensureChgFormReady();
   mpRender('chg');
@@ -6723,33 +6701,89 @@ function renderHeatmap(){
 }
 
 /* ─── saisie ─── */
-function openQuickAdd(){
-  if(dashSel&&MP_SEL.chg.size===0)MP_SEL.chg.add(dashSel);
-  mpRender('chg');
+/* ═══ Saisie simplifiée d'une séance réalisée (v40) ═══
+   Principe → type → durée → joueurs présents → valider. Plus de séries / reps / kg /
+   commentaire (décision de Pierrick, 05/10) : la composition détaillée relève de la
+   création de séances et de programmes, pas de l'enregistrement. La durée saisie vaut
+   pour tout le groupe ; elle reste ajustable joueur par joueur. */
+let QA={principe:'physique',type:null,dur:{}};
+const QA_PRINCIPES=[['physique','Physique'],['terrain','Terrain'],['autre','Autre']];
+function qaTypes(pr){ return CHG_ACTIONS.filter(a=>a.principe===pr).sort((a,b)=>(a.ordre||0)-(b.ordre||0)); }
+function qaReady(){ return CHG_ACTIONS.some(a=>a.principe); }
+function qaRenderTypes(){
+  const pr=document.getElementById('qaPrBox'), box=document.getElementById('qaTypeBox'); if(!pr||!box)return;
+  if(!qaReady()){
+    pr.innerHTML='';
+    box.innerHTML='<div class="qaHint" style="display:block;margin:0">Les types de séance n\'existent pas encore : exécute le script <b>schema_supabase_v40_types_seance.sql</b> dans Supabase.</div>';
+    return;
+  }
+  pr.innerHTML=QA_PRINCIPES.map(([k,l])=>`<button type="button" class="qaSeg${QA.principe===k?' on':''}" onclick="qaSetPrincipe('${k}')">${l}</button>`).join('');
+  box.innerHTML=qaTypes(QA.principe).map(a=>`<button type="button" class="qaType${QA.type===a.id?' on':''}" onclick="qaSetType('${a.id}')">${plEsc(a.nom)}</button>`).join('');
+}
+function qaSetPrincipe(k){ QA.principe=k; const a=CHG_ACTIONS.find(x=>x.id===QA.type); if(!a||a.principe!==k)QA.type=null; qaRenderTypes(); }
+function qaSetType(id){ QA.type=id; qaRenderTypes(); }
+function qaGroupDur(){ const el=document.getElementById('chgDuree'); const v=el?el.value:''; return v===''?null:Number(v); }
+function qaDurLabel(){
+  const n=Object.keys(QA.dur).length, t=document.getElementById('qaDurToggle'); if(!t)return;
+  t.style.display=MP_SEL.chg.size?'':'none';
+  t.textContent=`Ajuster la durée d'un joueur${n?` · ${n} ajustée${n>1?'s':''}`:''}`;
+}
+function qaRenderDur(){
+  const box=document.getElementById('qaDurList'); if(!box)return;
+  Object.keys(QA.dur).forEach(id=>{ if(!MP_SEL.chg.has(id))delete QA.dur[id]; });
+  const g=qaGroupDur();
+  box.innerHTML=[...MP_SEL.chg].map(id=>{
+    const p=IPLAYERS.find(x=>x.id===id), v=QA.dur[id]??g??'';
+    return `<label class="qaDurRow${QA.dur[id]!=null?' ovr':''}"><span>${plEsc(p?p.name:id)}</span><input type="number" min="0" value="${v}" oninput="qaSetDur('${id}',this.value,this)"><small>min</small></label>`;
+  }).join('');
+  qaDurLabel();
+}
+function qaSetDur(id,v,el){
+  if(v===''||Number(v)===qaGroupDur())delete QA.dur[id]; else QA.dur[id]=Number(v);
+  if(el)el.closest('.qaDurRow').classList.toggle('ovr',QA.dur[id]!=null);
+  qaDurLabel();
+}
+function qaSelReserve(){ MP_SEL.chg.clear(); IPLAYERS.filter(p=>p.actif!==false&&p.dispo!==false&&!p.affectation).forEach(p=>MP_SEL.chg.add(p.id)); mpRender('chg'); }
+/* Type le plus proche d'un intitulé libre (anciennes prescriptions sans type) */
+function qaGuessType(txt){
+  const q=(txt||'').toLowerCase().trim(); if(!q)return null;
+  const types=CHG_ACTIONS.filter(a=>a.principe);
+  const exact=types.find(a=>a.nom.toLowerCase()===q); if(exact)return exact.id;
+  let best=null, bestN=0;
+  types.forEach(a=>{ const n=a.nom.toLowerCase().split(/[\s/-]+/).filter(w=>w.length>2&&q.includes(w)).length; if(n>bestN){best=a;bestN=n;} });
+  return best?best.id:null;
+}
+function openQuickAdd(opts){
+  opts=opts||{};
+  QA.dur={};
+  if(opts.players){ MP_SEL.chg.clear(); opts.players.forEach(id=>MP_SEL.chg.add(id)); }
+  else if(dashSel&&MP_SEL.chg.size===0)MP_SEL.chg.add(dashSel);
+  document.getElementById('chgDate').value=opts.date||new Date().toISOString().slice(0,10);
+  document.getElementById('chgDuree').value=opts.duree??'';
+  const a=opts.typeId?CHG_ACTIONS.find(x=>x.id===opts.typeId):null;
+  if(a&&a.principe){ QA.principe=a.principe; QA.type=a.id; } else QA.type=null;
+  document.getElementById('qaTitle').textContent=opts.title||'Enregistrer une séance réalisée';
+  const hn=document.getElementById('qaHint');
+  if(opts.hint){ hn.innerHTML=opts.hint; hn.style.display='block'; } else hn.style.display='none';
+  document.getElementById('qaDurList').classList.remove('on');
+  mpRender('chg'); qaRenderTypes();
   document.getElementById('qaOverlay').classList.add('on');
 }
 function closeQuickAdd(){
   document.getElementById('qaOverlay').classList.remove('on');
   pendingPresc=null; pendingPrescBulk=null;
-  const t=document.getElementById('qaTitle'); if(t)t.textContent='Enregistrer une sollicitation individualisée';
-  const hn=document.getElementById('qaHint'); if(hn)hn.style.display='none';
 }
 async function addChargeSession(){
   const ids=[...MP_SEL.chg];
-  const action_id=document.getElementById('chgAction').value;
-  if(!ids.length){alert('Sélectionne au moins un joueur.');return;}
-  if(!action_id){alert('Choisis une action.');return;}
-  const num=id=>{const v=document.getElementById(id).value;return v===''?null:Number(v)};
-  const base={action_id,
-    date:document.getElementById('chgDate').value||new Date().toISOString().slice(0,10),
-    series:num('chgSeries'),
-    reps:document.getElementById('chgReps').value.trim()||null,
-    charge_kg:num('chgKg'), duree_min:num('chgDuree'),
-    commentaire:document.getElementById('chgComment').value.trim()||null,
-    realise_par:document.getElementById('chgRealisePar').value.trim()||CURRENT_USER_LABEL||null,
-    created_by:CURRENT_USER_LABEL};
+  if(!qaReady()){alert("Exécute d'abord le script schema_supabase_v40_types_seance.sql dans Supabase.");return;}
+  if(!QA.type){alert('Choisis le type de séance.');return;}
+  if(!ids.length){alert('Coche au moins un joueur présent.');return;}
+  const g=qaGroupDur();
+  if(ids.some(id=>(QA.dur[id]??g)==null)){alert('Indique la durée de la séance.');return;}
+  const date=document.getElementById('chgDate').value||new Date().toISOString().slice(0,10);
   const rows=ids.map(player_id=>{
-    const row={player_id,...base};
+    const row={player_id,action_id:QA.type,date,duree_min:QA.dur[player_id]??g,
+      realise_par:CURRENT_USER_LABEL||null,created_by:CURRENT_USER_LABEL};
     if(pendingPresc&&pendingPresc.player_id===player_id)row.presc_session_id=pendingPresc.id;
     if(pendingPrescBulk){const m=pendingPrescBulk.find(x=>x.player_id===player_id); if(m)row.presc_session_id=m.id;}
     return row;
@@ -6768,12 +6802,10 @@ async function addChargeSession(){
     pSel.clear(); pSelMode=false;
     if(typeof renderPrescList==='function'){renderPrescList();renderPrescUpcoming();}
   }
-  ['chgSeries','chgReps','chgKg','chgDuree','chgComment'].forEach(id=>document.getElementById(id).value='');
-  MP_SEL.chg.clear(); mpRender('chg');
+  QA.dur={}; MP_SEL.chg.clear(); mpRender('chg');
   closeQuickAdd(); renderCharge();
-  if(typeof renderSeances==='function')renderSeances();
+  if(typeof renderPlayerLoad==='function')renderPlayerLoad();
   if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
-  if(ids.length>1)alert(`Sollicitation enregistrée pour ${ids.length} joueurs.`);
 }
 async function deleteChargeSession(id){
   if(!await customConfirm('Supprimer cette séance ?'))return;
