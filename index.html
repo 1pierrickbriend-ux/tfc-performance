@@ -54,6 +54,20 @@ header.top small{display:block;font-family:'Archivo';font-weight:500;color:var(-
 .dispoBar:hover{border-color:var(--accent)}
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600}
 .dot{width:8px;height:8px;border-radius:50%}
+/* Bouton Paramètres (v66) : Logos et Légende & types sortis de la barre d'onglets */
+.setWrap{position:relative;flex:none}
+.setBtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:none;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:color .15s,border-color .15s,background .15s}
+.setBtn svg{width:18px;height:18px}
+.setBtn:hover,.setBtn[aria-expanded="true"]{color:var(--ink);border-color:var(--accent)}
+.setBtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.setMenu{position:absolute;right:0;top:calc(100% + 8px);min-width:240px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 36px rgba(0,0,0,.4);z-index:60}
+.setMenu[hidden]{display:none}
+.setMenuK{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:6px 10px 4px}
+.setMenu button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:var(--ink);font:inherit;font-size:13px;font-weight:600;padding:10px;border-radius:8px;cursor:pointer;text-align:left}
+.setMenu button svg{width:16px;height:16px;flex:none;color:var(--muted)}
+.setMenu button:hover,.setMenu button:focus-visible{background:rgba(255,255,255,.07);outline:none}
+.setMenu button.on{background:rgba(138,111,214,.22)}
+.setMenu button.on svg{color:var(--accent)}
 .userPill{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px}
 .userPill button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:4px 9px;font-size:11px}
 .userPill button:hover{color:var(--ink);border-color:var(--accent)}
@@ -1953,6 +1967,14 @@ a.bibVid:hover{transform:scale(1.08)}
 
   </div>
   <div id="headerAvailScore" onclick="goTab('joueurs')" style="cursor:pointer;display:flex;align-items:center"></div>
+  <div class="setWrap">
+    <button type="button" class="setBtn" id="setBtn" onclick="toggleSettings(event)" aria-haspopup="menu" aria-expanded="false" aria-controls="setMenu" title="Paramètres" aria-label="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    <div class="setMenu" id="setMenu" role="menu" aria-label="Paramètres" hidden>
+      <div class="setMenuK">Paramètres</div>
+      <button type="button" role="menuitem" data-t="logos" onclick="openSettingsView('logos')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.4 2.9 8.3 7 10 4.1-1.7 7-5.6 7-10V6z"/></svg>Logos des équipes</button>
+      <button type="button" role="menuitem" data-t="legende" onclick="openSettingsView('legende')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h3M4 12h3M4 18h3M10 6h10M10 12h10M10 18h10"/></svg>Légende &amp; types de jour</button>
+    </div>
+  </div>
   <div class="userPill"><span id="userEmail"></span><button onclick="doLogout()">Déconnexion</button></div>
 </header>
 
@@ -1963,8 +1985,6 @@ a.bibVid:hover{transform:scale(1.08)}
   <button data-t="programmes">Bibliothèque</button>
   <button data-t="indiv">Individualisation</button>
   <button data-t="joueurs">Joueurs</button>
-  <button data-t="logos">Logos</button>
-  <button data-t="legende">Légende &amp; types</button>
 </nav>
 
 <main>
@@ -4270,13 +4290,32 @@ async function afterLogin(user){
 })();
 
 /* ═══════ NAV ═══════ */
+const SETTINGS_VIEWS=['logos','legende'];
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>goTab(b.dataset.t));
 function goTab(t){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  // Logos et Légende & types (réglages, pas d'usage quotidien) : rangés derrière le bouton Paramètres de l'en-tête
+  const sb=document.getElementById('setBtn'); if(sb)sb.classList.toggle('on',SETTINGS_VIEWS.includes(t));
+  document.querySelectorAll('#setMenu [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  closeSettings();
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+t));
   if(t==='mois')renderMonth();
   if(t==='joueurs')renderPlayerLoad();
 }
+
+function openSettingsView(t){ goTab(t); window.scrollTo({top:0}); }
+function closeSettings(){
+  const m=document.getElementById('setMenu'),b=document.getElementById('setBtn');
+  if(m)m.hidden=true; if(b)b.setAttribute('aria-expanded','false');
+}
+function toggleSettings(ev){
+  if(ev)ev.stopPropagation();
+  const m=document.getElementById('setMenu'),b=document.getElementById('setBtn'); if(!m)return;
+  const open=m.hidden; m.hidden=!open; b.setAttribute('aria-expanded',String(open));
+  if(open){ const f=m.querySelector('button'); if(f)f.focus(); }
+}
+document.addEventListener('click',e=>{ const w=e.target.closest&&e.target.closest('.setWrap'); if(!w)closeSettings(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const m=document.getElementById('setMenu'); if(m&&!m.hidden){ closeSettings(); const b=document.getElementById('setBtn'); if(b)b.focus(); } } });
 
 /* ═══════ VUE D'ENSEMBLE ═══════ */
 function renderMonth(){
