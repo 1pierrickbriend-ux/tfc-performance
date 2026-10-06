@@ -192,6 +192,11 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .prUp:last-child{border-bottom:none}
 .prUp .cs{font-size:10.5px;color:var(--muted);font-weight:500}
 .prUp.late .d{color:var(--warn)}
+.prRight{display:flex;flex-direction:column;gap:14px;min-width:0}
+.prHint{margin-left:auto;font-size:10.5px;font-weight:600;color:var(--id-sub,#6b5a8a);text-transform:none;letter-spacing:0}
+.prUp .prDel{flex:none;width:32px;height:30px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.prUp .prDel:hover{background:rgba(255,106,106,.14);border-color:rgba(255,106,106,.5)}
+.prUp.done .d{color:var(--ok)}
 .prUp .prGo{flex:none;background:var(--accent);border:none;border-radius:7px;color:#fff;font:inherit;font-size:11px;font-weight:700;padding:6px 11px;cursor:pointer}
 .prUp.late .prGo{background:var(--warn);color:#241a3d}
 .prDone{font-size:11.5px;color:var(--ok);font-weight:600;margin-top:8px;opacity:0;transition:opacity .2s;min-height:15px}
@@ -1797,9 +1802,15 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
         <div class="prDone" id="prDoneMsg"></div>
       </div>
 
-      <div class="chgCard">
-        <div class="chgCardHead">📌 Séances prévues</div>
-        <div id="prUpcoming"></div>
+      <div class="prRight">
+        <div class="chgCard">
+          <div class="chgCardHead">📌 Séances prévues</div>
+          <div id="prUpcoming"></div>
+        </div>
+        <div class="chgCard">
+          <div class="chgCardHead">✅ Séances réalisées <span class="prHint">30 derniers jours</span></div>
+          <div id="prDone"></div>
+        </div>
       </div>
     </div>
 
@@ -2483,6 +2494,7 @@ function setupSharedRealtime(){
   };
   const refreshJournal=()=>{
     if(typeof renderSeances==='function')renderSeances();
+    if(typeof renderPrescDone==='function')renderPrescDone();
     if(typeof renderCharge==='function')renderCharge();
     if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
   };
@@ -5990,8 +6002,72 @@ function renderPrescUpcoming(){
     return `<div class="prUp${late?' late':''}"><span class="d">${fmtDateFR(p.date)}</span>
       <span class="n">${plEsc(p.objectif||p.titre)}${p.duree_prevue_min?` <span class="cs">· ${p.duree_prevue_min} min</span>`:''}<br>
         <span class="cs" title="${plEsc(names.join(', '))}">${g.length} joueur${g.length>1?'s':''} · ${plEsc(names.slice(0,4).join(', '))}${names.length>4?'…':''}</span></span>
-      <button class="prGo" onclick="markPrescDone('${p.id}')">${late?'⚠︎ ':''}Réalisée</button></div>`;
+      <button class="prGo" onclick="markPrescDone('${p.id}')">${late?'⚠︎ ':''}Réalisée</button>
+      <button class="prDel" onclick="deletePlannedGroup('${p.id}')" title="Supprimer cette séance prévue (tous les joueurs)" aria-label="Supprimer">🗑</button></div>`;
   }).join('');
+  renderPrescDone();
+}
+/* ── Séances réalisées (30 j), regroupées comme elles ont été saisies : une ligne = une séance ──
+   Une saisie (fenêtre « séance réalisée » ou validation d'une prescription) crée toutes ses lignes
+   joueur en une fois : même date, même type, même horodatage de création. */
+function chgGroupKey(s){ return s.date+'|'+(s.action_id||'')+'|'+(s.created_at?String(s.created_at).slice(0,19):''); }
+function renderPrescDone(){
+  const box=document.getElementById('prDone'); if(!box)return;
+  const lim=new Date(); lim.setDate(lim.getDate()-30); const limIso=lim.toISOString().slice(0,10);
+  const groups={};
+  CHG_SESSIONS.filter(s=>s.date&&s.date>=limIso).forEach(s=>(groups[chgGroupKey(s)]??=[]).push(s));
+  const list=Object.values(groups).sort((a,b)=>b[0].date.localeCompare(a[0].date)||String(b[0].created_at||'').localeCompare(String(a[0].created_at||''))).slice(0,12);
+  if(!list.length){box.innerHTML='<div class="chgEmpty">Aucune séance réalisée sur les 30 derniers jours.</div>';return;}
+  box.innerHTML=list.map(g=>{
+    const s=g[0], a=CHG_ACTIONS.find(x=>x.id===s.action_id);
+    const names=g.map(x=>{const pl=IPLAYERS.find(y=>y.id===x.player_id);return pl?pl.name.split(' ')[0]:'?';});
+    const mins=[...new Set(g.map(x=>x.duree_min).filter(v=>v!=null))];
+    const dur=mins.length?(mins.length===1?mins[0]+' min':Math.min(...mins)+'–'+Math.max(...mins)+' min'):'';
+    return `<div class="prUp done"><span class="d">${fmtDateFR(s.date)}</span>
+      <span class="n">${plEsc(a?a.nom:'Séance')}${dur?` <span class="cs">· ${dur}</span>`:''}<br>
+        <span class="cs" title="${plEsc(names.join(', '))}">${g.length} joueur${g.length>1?'s':''} · ${plEsc(names.slice(0,4).join(', '))}${names.length>4?'…':''}</span></span>
+      <button class="prDel" data-k="${plEsc(chgGroupKey(s))}" onclick="deleteDoneGroup(this.dataset.k)" title="Supprimer cette séance réalisée (tous les joueurs)" aria-label="Supprimer">🗑</button></div>`;
+  }).join('');
+}
+function prRefreshAll(){
+  renderPrescList(); renderPrescUpcoming();
+  if(typeof renderCharge==='function')renderCharge();
+  if(typeof renderPlayerLoad==='function')renderPlayerLoad();
+  if(typeof PSHEET!=='undefined'&&PSHEET)renderPlayerSheet();
+  if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
+}
+async function deletePlannedGroup(id){
+  const p=PRESC.find(x=>x.id===id); if(!p)return;
+  const g=p.statut==='prevu'?prescGroup(p):[p], ids=g.map(x=>x.id);
+  const names=g.map(x=>{const pl=IPLAYERS.find(y=>y.id===x.player_id);return pl?pl.name:'?';});
+  if(!await customConfirm(`<b>Supprimer la séance prévue « ${plEsc(p.objectif||p.titre||'Séance')} » du ${fmtDateFR(p.date)} ?</b>\n\nElle sera retirée pour ${g.length} joueur${g.length>1?'s':''} : ${plEsc(names.join(', '))}.\n\nAction définitive.`))return;
+  await supa.from('charge_sessions').delete().in('presc_session_id',ids);
+  await supa.from('presc_items').delete().in('session_id',ids);
+  await supa.from('presc_blocs').delete().in('session_id',ids);
+  const {error}=await supa.from('presc_sessions').delete().in('id',ids);
+  if(error){alert('Erreur : '+error.message);return;}
+  PRESC=PRESC.filter(x=>!ids.includes(x.id));
+  CHG_SESSIONS=CHG_SESSIONS.filter(c=>!ids.includes(c.presc_session_id));
+  prRefreshAll();
+}
+async function deleteDoneGroup(key){
+  const g=CHG_SESSIONS.filter(s=>chgGroupKey(s)===key); if(!g.length)return;
+  const a=CHG_ACTIONS.find(x=>x.id===g[0].action_id);
+  const pIds=[...new Set(g.map(s=>s.presc_session_id).filter(Boolean))];
+  const names=g.map(x=>{const pl=IPLAYERS.find(y=>y.id===x.player_id);return pl?pl.name:'?';});
+  if(!await customConfirm(`<b>Supprimer la séance réalisée « ${plEsc(a?a.nom:'Séance')} » du ${fmtDateFR(g[0].date)} ?</b>\n\nElle sera retirée pour ${g.length} joueur${g.length>1?'s':''} : ${plEsc(names.join(', '))} — charge de travail, fiches et analyses comprises${pIds.length?(pIds.length>1?`, ainsi que les ${pIds.length} prescriptions liées`:', ainsi que la prescription liée'):''}.\n\nAction définitive.`))return;
+  const ids=g.map(s=>s.id);
+  const {error}=await supa.from('charge_sessions').delete().in('id',ids);
+  if(error){alert('Erreur : '+error.message);return;}
+  CHG_SESSIONS=CHG_SESSIONS.filter(s=>!ids.includes(s.id));
+  if(pIds.length){
+    await supa.from('presc_items').delete().in('session_id',pIds);
+    await supa.from('presc_blocs').delete().in('session_id',pIds);
+    const {error:e2}=await supa.from('presc_sessions').delete().in('id',pIds);
+    if(e2)alert("Séance supprimée, mais la prescription liée n'a pas pu l'être : "+e2.message);
+    else PRESC=PRESC.filter(p=>!pIds.includes(p.id));
+  }
+  prRefreshAll();
 }
 function renderPrescList(){
   const pid=document.getElementById('prFilterPlayer').value;
@@ -6639,7 +6715,7 @@ async function addChargeSession(){
     if(typeof renderPrescList==='function'){renderPrescList();renderPrescUpcoming();}
   }
   QA.dur={}; MP_SEL.chg.clear(); mpRender('chg');
-  closeQuickAdd(); renderCharge();
+  closeQuickAdd(); renderCharge(); renderPrescDone();
   if(typeof renderPlayerLoad==='function')renderPlayerLoad();
   if(document.getElementById('indiv-analyse')?.style.display==='block')renderAnalyse();
 }
