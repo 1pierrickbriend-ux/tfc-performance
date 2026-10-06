@@ -1705,6 +1705,144 @@ a.bibVid:hover{transform:scale(1.08)}
 .fpFt{position:absolute;left:14.85mm;bottom:5.26mm;font-size:5.7pt;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--xt-mut);z-index:1}
 .fpFt b{color:var(--xt-rose)}
 
+
+/* ═══ Planification semaine (06/10, v62) — version codée + palette et typographie de la maquette Claude Design ═══
+   Tout est limité à #v-semaine : la page Types (aperçu des barres) et les PDF gardent leurs propres règles.
+   · coque sombre unie (#120A2E), cartes #1B1240, texte clair hiérarchisé ;
+   · bande « Charge prévue » : barres RPE alignées, repère à 5, type et curseur dessous ;
+   · ligne de contexte : match précédent / suivant / tests physiques ;
+   · créneaux en teinte douce + pastille de couleur, horaire « début – fin », note en clair (plus d'italique). */
+#v-semaine{--wk-ground:#120A2E;--wk-surf:#1B1240;--wk-surf2:#1F1548;--wk-line:rgba(255,255,255,.08);--wk-ink:#F3F0FB;--wk-ink2:#C9C1E6;--wk-mut:#A79DC9;--wk-mut2:#8F86B5;--wk-acc:#9B82E8}
+#v-semaine .wkShell{background:var(--wk-ground);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:22px 22px 24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 14px 36px rgba(0,0,0,.28);color:var(--wk-ink);margin-bottom:16px}
+#v-semaine .wkTop{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 22px}
+#v-semaine .wkTitleBox{flex:1 1 320px;min-width:0}
+#v-semaine .wkEyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--wk-mut)}
+#v-semaine .wkTitleRow{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px;margin-top:5px}
+#v-semaine #weekTitle{font-family:var(--font-display);font-weight:800;font-size:36px;line-height:1;margin:0;color:var(--wk-ink);letter-spacing:.01em}
+#v-semaine .wkRange{font-size:16px;font-weight:600;color:var(--wk-ink2)}
+#v-semaine .tag.sync{align-self:center;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.08em;color:#7EE2A0;background:rgba(46,158,91,.14);border:1px solid rgba(46,158,91,.4);padding:4px 10px}
+#v-semaine .tag.sync::before{content:'';width:7px;height:7px;border-radius:50%;background:#58D68D}
+#v-semaine .weekCtrls{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;margin:0}
+#v-semaine .wkNav{display:flex;align-items:center;gap:6px}
+#v-semaine .wkNavBtn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#241850;color:var(--wk-ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:none}
+#v-semaine .wkNavBtn svg{width:15px;height:15px}
+#v-semaine .wkNavBtn:hover:not(:disabled){background:var(--wk-acc);border-color:var(--wk-acc);color:#17122B}
+#v-semaine .wkNavBtn:disabled{opacity:.35;cursor:default}
+#v-semaine .weekCtrls select{background:#241850;border:1px solid rgba(255,255,255,.12);color:var(--wk-ink);border-radius:10px;padding:0 10px;height:36px;font:inherit;font-size:13px;font-weight:600}
+#v-semaine #weekSel{max-width:240px}
+#v-semaine .wkLbl{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--wk-mut)}
+#v-semaine .wkPdfBtn{display:inline-flex;align-items:center;gap:8px;background:var(--wk-acc);border-color:var(--wk-acc);color:#17122B;font-weight:800;font-size:14px;height:38px;padding:0 16px;border-radius:10px}
+#v-semaine .wkPdfBtn svg{width:16px;height:16px;flex:none}
+/* ligne de contexte */
+#v-semaine .wkCtx{display:flex;flex-wrap:wrap;gap:10px}
+#v-semaine .wkCtxM{display:contents}
+#v-semaine .wkChip{display:flex;align-items:center;gap:10px;background:var(--wk-surf);border:1px solid var(--wk-line);border-radius:12px;padding:9px 14px;font-size:12.5px;line-height:1.35;color:var(--wk-ink2);min-width:0}
+#v-semaine .wkChip b{color:var(--wk-ink);font-size:13.5px;font-weight:700}
+#v-semaine .wkChipK{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--wk-mut)}
+#v-semaine .wkChip .teamLogo{width:30px;height:30px;font-size:11px;border-width:1.5px}
+#v-semaine .wkChip .teamLogo.hasImg{border:none}
+#v-semaine .wkChip .rmMatch{position:static;flex:none;width:20px;height:20px;line-height:20px;font-size:12px;background:rgba(255,255,255,.08);margin-left:2px}
+#v-semaine .wkTests{flex:1 1 320px}
+#v-semaine .wkTests>svg{width:16px;height:16px;flex:none;color:var(--wk-mut)}
+/* défilement horizontal commun aux deux cartes (téléphone) : les barres restent alignées sur les jours */
+#v-semaine .weekWrapOuter{background:none;border:none;box-shadow:none;border-radius:0;padding:0 0 4px;margin:0;overflow-x:auto;overflow-y:visible}
+#v-semaine .wkInner{min-width:1122px;display:flex;flex-direction:column;gap:16px}
+#v-semaine .wkCard{background:var(--wk-surf);border:1px solid var(--wk-line);border-radius:16px}
+#v-semaine .wkLoad{padding:14px 0}
+#v-semaine .wkProg{overflow:hidden}
+#v-semaine .wkCardHd{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;padding:0 18px 12px}
+#v-semaine .wkCardHd h3{margin:0;font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:.02em;text-transform:uppercase;color:var(--wk-ink)}
+#v-semaine .wkCardHd span{font-size:12px;color:var(--wk-mut)}
+#v-semaine .wkCols{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;align-items:stretch}
+/* bande de charge */
+#v-semaine .wkLc{display:flex;flex-direction:column;gap:8px;padding:0 10px;min-width:0}
+#v-semaine .barZone{height:84px;display:flex;align-items:flex-end;justify-content:center;padding:0;border-radius:0;position:relative;border-bottom:2px solid rgba(255,255,255,.1);
+  background:linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05)) top/100% 1px no-repeat,
+             linear-gradient(to top,transparent calc(50% - .5px),rgba(255,255,255,.08) calc(50% - .5px),rgba(255,255,255,.08) calc(50% + .5px),transparent calc(50% + .5px))}
+#v-semaine .barZone.dragOver{outline:2px dashed var(--wk-acc);outline-offset:2px;background-color:rgba(155,130,232,.12)}
+#v-semaine .bar{width:58%;min-height:22px;border:none;border-radius:8px 8px 0 0;box-shadow:none;position:relative}
+#v-semaine .bar .rpeTip{position:absolute;top:5px;left:50%;transform:translateX(-50%);font-family:var(--font-ui);font-size:11px;font-weight:800;line-height:16px;color:#fff;background:rgba(18,10,46,.6);border-radius:9px;padding:1px 8px;white-space:nowrap}
+#v-semaine .wkRepos{width:58%;height:30px;border:1px dashed rgba(255,255,255,.25);border-bottom:none;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--wk-mut)}
+#v-semaine .barZone .matchIn{align-self:stretch;width:100%;height:auto;margin:3px 0 7px;border-radius:10px;border:1px solid color-mix(in srgb,var(--mc) 65%,transparent);background:color-mix(in srgb,var(--mc) 28%,#1B1240);display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:9px;padding:0 10px;box-shadow:none;position:relative;min-width:0}
+#v-semaine .matchIn .teamLogo{width:30px;height:30px;font-size:11px;border-width:1.5px}
+#v-semaine .matchIn .teamLogo.hasImg{border:none}
+#v-semaine .miTx{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+#v-semaine .miTx b{font-size:12.5px;font-weight:800;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#v-semaine .miTx span{font-size:11px;font-weight:600;color:var(--wk-ink2)}
+#v-semaine .matchIn .editMatchDate,#v-semaine .matchIn .rmMatch{position:absolute;top:4px;left:auto;width:20px;height:20px;border-radius:50%;border:none;padding:0;background:rgba(10,4,28,.6);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1;opacity:0;transition:opacity .15s;cursor:pointer}
+#v-semaine .matchIn .rmMatch{right:4px}
+#v-semaine .matchIn .editMatchDate{right:27px}
+#v-semaine .matchIn .editMatchDate svg{width:11px;height:11px}
+#v-semaine .matchIn:hover .editMatchDate,#v-semaine .matchIn:hover .rmMatch,#v-semaine .matchIn:focus-within .editMatchDate,#v-semaine .matchIn:focus-within .rmMatch{opacity:.95}
+#v-semaine .daySel{width:100%;background:color-mix(in srgb,var(--tc) 24%,#1B1240);border:1px solid color-mix(in srgb,var(--tc) 60%,transparent);color:#fff;font:inherit;font-size:12.5px;font-weight:700;border-radius:9px;padding:7px 8px;cursor:pointer}
+#v-semaine .daySel option{background:#1B1240;color:#fff}
+#v-semaine .rpeRow{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--wk-mut);padding:0 2px}
+#v-semaine .rpeRow input[type=range]{flex:1;min-width:0;accent-color:var(--wk-acc)}
+#v-semaine .rpeVal{min-width:30px;width:auto;text-align:center;background:rgba(255,255,255,.08);border-radius:8px;padding:2px 6px;font-size:11px;color:var(--wk-ink)}
+/* programme : une carte, colonnes séparées par un filet */
+#v-semaine .dayCol{background:none;border:none;border-left:1px solid rgba(255,255,255,.06);border-radius:0;box-shadow:none;padding:0;gap:0;display:flex;flex-direction:column;min-width:0;opacity:1}
+#v-semaine .dayCol:first-child{border-left:none}
+#v-semaine .dayCol.today{background:rgba(155,130,232,.06);box-shadow:none}
+#v-semaine .dayHead{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 6px;padding:10px 8px 10px 10px;background:var(--wk-surf2);border-bottom:1px solid var(--wk-line);min-height:0}
+#v-semaine .dayCol.today .dayHead{background:color-mix(in srgb,var(--wk-acc) 14%,var(--wk-surf2));box-shadow:inset 0 3px 0 var(--wk-acc)}
+#v-semaine .dayId{display:contents}
+#v-semaine .dayId .rel{grid-column:1;grid-row:1;font-family:var(--font-display);font-weight:800;font-size:20px;line-height:1;color:var(--wk-ink)}
+#v-semaine .dayId .rel.jdm{color:#7EE2A0}
+#v-semaine .dayId .cal{grid-column:1/-1;grid-row:2;margin:0;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3;color:var(--wk-mut)}
+#v-semaine .wkNow{font-style:normal;text-transform:none;letter-spacing:.01em;color:#CDBFFF}
+#v-semaine .dayTools{grid-column:2;grid-row:1;display:flex;gap:4px}
+#v-semaine .dayIco{width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#241850;color:var(--wk-ink);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+#v-semaine .dayIco svg{width:15px;height:15px}
+#v-semaine .dayIco:hover{background:var(--wk-acc);border-color:var(--wk-acc);color:#17122B}
+#v-semaine .sched{display:flex;flex-direction:column;gap:6px;padding:8px 6px 10px;min-height:120px;flex:1}
+#v-semaine .dayCol.repos .sched{background:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px)}
+#v-semaine .wkRestCol{flex:1;display:flex;align-items:center;justify-content:center;min-height:120px;font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:.08em;text-transform:uppercase;color:#6F6697}
+/* créneaux */
+#v-semaine .blk{position:relative;display:flex;flex-direction:column;gap:2px;border-radius:8px;padding:5px 8px;border:1px solid transparent;font-size:12px;line-height:1.25;color:var(--wk-ink);font-weight:400}
+#v-semaine .blkMain{display:flex;align-items:center;gap:7px;min-width:0}
+#v-semaine .blk .lbl{flex:1;min-width:0;padding:0;overflow-wrap:normal;word-break:normal;hyphens:auto}
+#v-semaine .blk input.t{width:36px;flex:none;background:transparent;border:1px solid transparent;border-radius:5px;color:inherit;font:inherit;font-size:11px;font-weight:600;padding:0 2px;margin-left:-3px;text-align:left}
+@supports (field-sizing:content){#v-semaine .blk input.t{width:auto;min-width:3ch;field-sizing:content}}
+#v-semaine .blk input.t:hover{border-color:rgba(255,255,255,.22)}
+#v-semaine .blk input.t:focus{outline:none;border-color:var(--wk-acc);background:rgba(0,0,0,.25)}
+/* routine (repas, wellness…) : une ligne neutre, l'œil va au contenu d'entraînement */
+#v-semaine .blk:not(.tint){background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.06);color:#B9B0DA;padding-top:5px;padding-bottom:5px}
+#v-semaine .blk:not(.tint) input.t{color:var(--wk-mut2);font-weight:700;font-size:10.5px}
+#v-semaine .blk:not(.tint) .lbl{font-size:11.5px;font-weight:600}
+#v-semaine .blk.action:not(.tint),#v-semaine .blk.seance:not(.tint){border-style:dashed;border-color:rgba(255,255,255,.18);color:var(--wk-ink)}
+#v-semaine .blk:not(.tint) .blkComment{padding-left:40px;color:#B9B0DA}
+/* créneau coloré : teinte douce, pastille, titre / horaire / note */
+#v-semaine .blk.tint{background:color-mix(in srgb,var(--bc) 24%,#1B1240);border-color:color-mix(in srgb,var(--bc) 60%,transparent);color:#fff}
+#v-semaine .blk.tint .blkMain{position:relative;padding-left:13px}
+#v-semaine .blk.tint .blkMain::before{content:'';position:absolute;left:0;top:5px;width:7px;height:7px;border-radius:50%;background:var(--bc)}
+#v-semaine .blk.tint .lbl{font-size:12.5px;font-weight:700}
+#v-semaine .blkTime{display:flex;align-items:baseline;gap:3px;padding-left:13px;font-size:11px;font-weight:600;color:rgba(255,255,255,.75)}
+#v-semaine .blkEnd{white-space:nowrap}
+#v-semaine .blkComment{padding-left:13px;font-size:11px;font-weight:600;font-style:normal;letter-spacing:0;opacity:1;color:rgba(255,255,255,.82);overflow-wrap:break-word}
+/* 💬 et × en surimpression dans le coin (visibles au survol) */
+#v-semaine .blk .cmtBlk,#v-semaine .blk .rmBlk{position:absolute;top:3px;width:20px;height:20px;border-radius:50%;padding:0;border:none;display:inline-flex;align-items:center;justify-content:center;background:rgba(10,4,28,.6);color:#fff;font-size:13px;line-height:1;opacity:0;transition:opacity .15s;cursor:pointer}
+#v-semaine .blk .rmBlk{right:3px}
+#v-semaine .blk .cmtBlk{right:26px}
+#v-semaine .blk .cmtBlk svg{width:11px;height:11px}
+#v-semaine .blk:hover .cmtBlk,#v-semaine .blk:hover .rmBlk,#v-semaine .blk:focus-within .cmtBlk,#v-semaine .blk:focus-within .rmBlk{opacity:.95}
+#v-semaine .addSeance{border:1px dashed rgba(255,255,255,.16);background:none;color:var(--wk-mut);border-radius:8px;padding:7px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;margin-top:2px}
+#v-semaine .addSeance:hover{color:var(--wk-ink);border-color:var(--wk-acc)}
+@media(hover:none){
+  #v-semaine .blk .cmtBlk,#v-semaine .blk .rmBlk,#v-semaine .matchIn .editMatchDate,#v-semaine .matchIn .rmMatch{opacity:.75}
+  #v-semaine .blkMain{padding-right:46px}
+}
+@media(max-width:600px){
+  #v-semaine .wkShell{padding:14px 12px 16px;border-radius:14px;gap:12px}
+  #v-semaine #weekTitle{font-size:30px}
+  #v-semaine .wkRange{font-size:14px}
+  #v-semaine .weekCtrls{width:100%;gap:8px}
+  #v-semaine .wkNav{flex:1 1 100%}
+  #v-semaine #weekSel{flex:1;min-width:0;max-width:none}
+  #v-semaine .wkLbl{flex:1 1 auto}
+  #v-semaine .wkLbl select{flex:1}
+  #v-semaine .wkPdfBtn{flex:1 1 auto;justify-content:center}
+  #v-semaine .wkChip{flex:1 1 100%}
+}
 /* PDF journée (micro-page 88 mm) au format extérieur */
 .dayPg{position:relative;overflow:hidden;background:var(--xt-bg)}
 .dayPg>*{position:relative;z-index:1}
@@ -1941,21 +2079,46 @@ a.bibVid:hover{transform:scale(1.08)}
 </section>
 
 <section class="view" id="v-semaine">
-  <div class="rowHead">
-    <h2 id="weekTitle">Planification</h2>
-    <span class="tag sync" id="syncTag">Synchronisé</span>
-    <button class="btn primary" style="margin-left:auto" onclick="genererPDF()">🖨 Générer le PDF</button>
+  <div class="wkShell">
+    <div class="wkTop">
+      <div class="wkTitleBox">
+        <div class="wkEyebrow">Planification · équipe réserve</div>
+        <div class="wkTitleRow">
+          <h2 id="weekTitle">Planification</h2>
+          <span class="wkRange" id="weekRange"></span>
+          <span class="tag sync" id="syncTag">Synchronisé</span>
+        </div>
+      </div>
+      <div class="weekCtrls">
+        <div class="wkNav">
+          <button type="button" class="wkNavBtn" id="weekPrev" onclick="stepWeek(-1)" aria-label="Semaine précédente"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>
+          <select id="weekSel" aria-label="Semaine" onchange="setWeek(parseInt(this.value))"></select>
+          <button type="button" class="wkNavBtn" id="weekNext" onclick="stepWeek(1)" aria-label="Semaine suivante"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
+        </div>
+        <label class="wkLbl">Profil
+          <select id="profilSel" onchange="applyProfil(this.value)">
+            <option value="">—</option><option value="normale">Normale (1-5)</option><option value="decharge">Décharge (2-4)</option>
+          </select>
+        </label>
+        <button type="button" class="btn primary wkPdfBtn" onclick="genererPDF()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6V2h8v4M4 12H2.5V7h11v5H12M4 10h8v4H4z"/></svg>Générer le PDF</button>
+      </div>
+    </div>
+    <div class="wkCtx">
+      <div class="wkCtxM" id="weekCtx"></div>
+      <div class="wkChip wkTests"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h4M7 2v4L3.5 12.5A1 1 0 0 0 4.4 14h7.2a1 1 0 0 0 .9-1.5L9 6V2"/></svg><span><span class="wkChipK">Tests physiques</span>Derniers : semaine 5 (force, vitesse, pesée) · prochaine fenêtre estimée&nbsp;: semaines&nbsp;10–11</span></div>
+    </div>
+    <div class="weekWrapOuter">
+      <div class="wkInner">
+        <section class="wkCard wkLoad" aria-label="Charge prévue de la semaine">
+          <div class="wkCardHd"><h3>Charge prévue</h3><span>RPE de chaque journée (0 à 10, repère à 5) · type et curseur pour l'ajuster</span></div>
+          <div class="wkCols" id="weekLoad"></div>
+        </section>
+        <section class="wkCard wkProg" aria-label="Programme de la semaine">
+          <div class="weekWrap wkCols" id="weekGrid"></div>
+        </section>
+      </div>
+    </div>
   </div>
-  <div class="weekCtrls">
-    <label class="note">Semaine :</label>
-    <select id="weekSel" onchange="setWeek(parseInt(this.value))"></select>
-    <label class="note">Profil :</label>
-    <select id="profilSel" onchange="applyProfil(this.value)">
-      <option value="">—</option><option value="normale">Normale (1-5)</option><option value="decharge">Décharge (2-4)</option>
-    </select>
-  </div>
-  <div class="testHint">🧪 Derniers tests physiques : Semaine 5 (force, vitesse, pesée) — prochaine fenêtre estimée vers la Semaine 10-11.</div>
-  <div class="weekWrapOuter"><div class="weekWrap" id="weekGrid"></div></div>
 
   <div class="panel gpsBlock">
     <div class="rowHead" style="margin-bottom:6px">
@@ -4355,7 +4518,7 @@ let curWeek=CURRENT_WEEK_N;
 function fillWeekSel(){
   const sel=document.getElementById('weekSel');sel.innerHTML='';
   WEEKS.filter(w=>w.n>=WMIN&&w.n<=WMAX).forEach(w=>{
-    sel.insertAdjacentHTML('beforeend',`<option value="${w.n}" ${w.n===curWeek?'selected':''}>Semaine ${w.n} (${fmtD(w.days[0])} – ${fmtD(w.days[6])})</option>`);
+    sel.insertAdjacentHTML('beforeend',`<option value="${w.n}" ${w.n===curWeek?'selected':''}>Semaine ${w.n} · ${wkRangeTxt(w.days[0],w.days[6])}</option>`);
   });
   const pat=document.getElementById('patronSel');pat.innerHTML='';
   WEEKS.filter(w=>w.n<curWeek&&w.n>=curWeek-8).forEach(w=>{
@@ -4364,12 +4527,55 @@ function fillWeekSel(){
 }
 function setWeek(n){curWeek=n;fillWeekSel();renderWeek()}
 
+/* ═══ Planification semaine (06/10, v62) : version codée + apports de la maquette Claude Design ═══
+   · bande « Charge prévue » : barres RPE alignées sur les 7 jours, type et curseur dessous ;
+   · ligne de contexte : match précédent / suivant (remplace les colonnes de bord) + tests physiques ;
+   · teintes douces : couleur d'affichage normalisée (wkTone) — les couleurs enregistrées et le PDF ne changent pas ;
+   · typographie : J± en Barlow Condensed, titre / horaire « début – fin » / note hiérarchisés, pastille de couleur au lieu de l'emoji. */
+const WK_MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const WK_JOUR=['lun.','mar.','mer.','jeu.','ven.','sam.','dim.'];
+const WK_JOUR_C=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const WK_ICO={
+  ball:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.3"/><path d="M8 5.2l2.6 1.9-1 3.1H6.4l-1-3.1z" fill="currentColor"/><path d="M8 5.2V1.8M10.6 7.1l3.2-1.1M9.6 10.2l2 2.7M6.4 10.2l-2 2.7M5.4 7.1L2.2 6"/></svg>',
+  print:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6V2h8v4M4 12H2.5V7h11v5H12M4 10h8v4H4z"/></svg>',
+  cmt:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3h11v7.5H7.2L4 13v-2.5H2.5z"/></svg>',
+  pen:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 2.5l3 3L6 13H3v-3z"/></svg>'
+};
+function wkHM(m){m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+function wkDayShort(d){return WK_JOUR[(d.getDay()+6)%7]+'\u00a0'+d.getDate()+'\u00a0'+WK_MOIS[d.getMonth()]}
+function wkRangeTxt(a,b,long){
+  const y=long?' '+b.getFullYear():'';
+  if(a.getMonth()!==b.getMonth()||a.getFullYear()!==b.getFullYear())
+    return `${a.getDate()} ${WK_MOIS[a.getMonth()]}${long&&a.getFullYear()!==b.getFullYear()?' '+a.getFullYear():''} – ${b.getDate()} ${WK_MOIS[b.getMonth()]}${y}`;
+  return `${a.getDate()} – ${b.getDate()} ${long?MOIS[b.getMonth()]:WK_MOIS[b.getMonth()]}${y}`;
+}
+/* Couleur d'affichage à l'écran : même teinte, luminosité ramenée entre 60 et 72 % (un bleu très foncé
+   devient lisible sur fond violet, un pastel gagne un peu de corps). Formats non hexadécimaux : inchangés. */
+function wkTone(c){
+  const m=/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(c||'').trim()); if(!m)return c||'#8F86B5';
+  let h=m[1]; if(h.length===3)h=h.split('').map(x=>x+x).join('');
+  const r=parseInt(h.slice(0,2),16)/255,g=parseInt(h.slice(2,4),16)/255,b=parseInt(h.slice(4,6),16)/255;
+  const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let H=0,S=0,L=(mx+mn)/2;
+  if(mx!==mn){const d=mx-mn;S=L>.5?d/(2-mx-mn):d/(mx+mn);H=(mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4)*60;}
+  L=Math.min(.72,Math.max(.6,L));
+  return `hsl(${Math.round(H)},${Math.round(S*100)}%,${Math.round(L*100)}%)`;
+}
+function stepWeek(d){const n=curWeek+d;if(n<WMIN||n>WMAX||!WEEKS.some(w=>w.n===n))return;setWeek(n);}
+function wkCtxChip(m,label){
+  if(!m)return `<div class="wkChip"><span><span class="wkChipK">${label}</span>—</span></div>`;
+  return `<div class="wkChip">${logoHTML(m.team,true)}<span><span class="wkChipK">${label}</span><b>${m.team}</b> · ${m.dom?'DOM':'EXT'} · ${COMP_LABEL[compOf(m)]} · ${wkDayShort(matchDate(m))} · ${matchTimeLabel(m)}</span>${m._manualId?`<button class="rmMatch" onclick="deleteManualMatch(${m._manualId})" title="Supprimer ce match" aria-label="Supprimer ce match">×</button>`:''}</div>`;
+}
+
 function renderWeek(){
   const wk=WEEKS.find(w=>w.n===curWeek);
-  document.getElementById('weekTitle').textContent=`Planification — Semaine ${wk.n} (${fmtD(wk.days[0])} – ${fmtD(wk.days[6])})`;
+  document.getElementById('weekTitle').textContent=`Semaine ${wk.n}`;
+  document.getElementById('weekRange').textContent=wkRangeTxt(wk.days[0],wk.days[6],true);
+  const pv=document.getElementById('weekPrev'),nx=document.getElementById('weekNext');
+  if(pv)pv.disabled=!(curWeek-1>=WMIN&&WEEKS.some(w=>w.n===curWeek-1));
+  if(nx)nx.disabled=!(curWeek+1<=WMAX&&WEEKS.some(w=>w.n===curWeek+1));
+  document.getElementById('weekCtx').innerHTML=wkCtxChip(matchBefore(wk.days[0]),'Match précédent')+wkCtxChip(matchAfter(addD(wk.days[6],1)),'Match suivant');
   const g=document.getElementById('weekGrid');
-  const prev=matchBefore(wk.days[0]),next=matchAfter(addD(wk.days[6],1));
-  const cols=[edgeCol(prev,'Match précédent')];
+  const load=[],cols=[];
   wk.days.forEach((d,i)=>{
     const key=wk.n+'-'+i;
     const tKey=WEEK_TYPES[wk.n][i],T=TYPES[tKey];
@@ -4377,61 +4583,53 @@ function renderWeek(){
     const h=Math.max(8,(rpe/10)*100);
     const bg=T.stripes?`repeating-linear-gradient(0deg,${T.stripes[0]} 0 12px,${T.stripes[1]} 12px 24px)`:T.color;
     const md=matchOnDay(wk,d); const isMatch=!!md;
+    const isToday=iso(d)===iso(TODAY);
     const dragKey=isMatch?(md._manualId?`manual::${md._manualId}`:`static::${md.team}||${md._origDate||md.d}`):null;
-    const barHTML=isMatch?`<div class="matchIn" draggable="true" ondragstart="matchDragStart('${dragKey}')" ondragend="matchDragEnd()" title="Glisser pour reporter sur un autre jour de la semaine" style="background:${COMP_COLOR[compOf(md)]}">${logoHTML(md.team)}<span style="font-size:9px;font-weight:700;color:#fff">${md.dom?'🏠 DOM':'✈️ EXT'}</span><span style="font-size:8px;font-weight:700;color:#fff;opacity:.85">${COMP_LABEL[compOf(md)]}${md._rescheduled?' · reporté':''}</span><button class="editMatchDate" onclick="event.stopPropagation();openMatchDateEdit('${dragKey}')" title="Changer la date (autre semaine)">✏️</button>${md._manualId?`<button class="rmMatch" onclick="event.stopPropagation();deleteManualMatch(${md._manualId})" title="Supprimer ce match">×</button>`:''}</div>`
-      :T.repos?`<div class="bar repos" style="height:24%">😴</div><button class="addMatchBtn" onclick="openMatchModal('${iso(d)}')">⚽ + Match</button>`
-      :`<div class="bar" id="bar-${i}" style="height:${h}%;background:${bg}"><span class="rpeTip" id="rpeTip-${i}">RPE ${rpe}</span></div><button class="addMatchBtn" onclick="openMatchModal('${iso(d)}')">⚽ + Match</button>`;
-    const blocks=blocksFor(wk,i);
-    const schedHTML=blocks.map((b,bi)=>{
-      const tc=(b.kind==='action'&&b.c)?jTextOn(b.c):b.tc;
-      const isMatch=b.kind==='match';
-      const pad=isMatch?3:Math.max(3,Math.min(14,3+((b.duree||30)/10)));
-      return `
-      <div class="blk ${b.kind}" style="padding-top:${pad}px;padding-bottom:${pad}px;${b.c?`background:${b.c}${tc?`;color:${tc}`:''}`:''}">
-        <div class="blkMain">
-          <input class="t" value="${b.time}" onchange="setBlockTime('${key}',${bi},this.value)">
-          <span class="lbl"${isMatch?'':` onclick="openBlockDureeEditor('${key}',${bi})" style="cursor:pointer" title="Cliquer pour régler les horaires (de... à...)"`}>${b.ic||''} ${isMatch?(b.dom?'🏠 ':'✈️ ')+"Coup d'envoi — "+b.n+(b.approx?' (h. à confirmer)':''):b.n}</span>
-          ${isMatch?'':`<button class="cmtBlk" onclick="editBlockComment('${key}',${bi})" title="Ajouter / modifier un commentaire">💬</button>`}
-          <button class="rmBlk" onclick="removeBlock('${key}',${bi})">×</button>
-        </div>
-        ${b.comment?`<div class="blkComment">${b.comment}</div>`:''}
-      </div>`;
-    }).join('');
-    cols.push(`
-      <div class="dayCol${iso(d)===iso(TODAY)?' today':''}">
-        <div class="dayLabel"><button class="dayPdfBtn" onclick="genererPDFJournee(${i})" title="PDF de cette journée (micro-page à envoyer par message)">🖨 Jour</button><div class="rel">${dayLabel(d,wk)}</div><div class="cal">${DAYN[i]} ${d.getDate()} ${MOIS[d.getMonth()].slice(0,4)}.</div></div>
-        <div class="barZone" ondragover="event.preventDefault();this.classList.add('dragOver')" ondragleave="this.classList.remove('dragOver')" ondrop="this.classList.remove('dragOver');matchDropOn('${iso(d)}',event)">${barHTML}</div>
-        <select class="daySel" onchange="setDayType(${i},this.value)">
+    const zone=isMatch?`<div class="matchIn" draggable="true" ondragstart="matchDragStart('${dragKey}')" ondragend="matchDragEnd()" title="Glisser pour reporter sur un autre jour de la semaine" style="--mc:${wkTone(COMP_COLOR[compOf(md)])}">${logoHTML(md.team,true)}<span class="miTx"><b>${md.team}</b><span>${md.dom?'DOM':'EXT'} · ${matchTimeLabel(md)} · ${COMP_LABEL[compOf(md)]}${md._rescheduled?' · reporté':''}</span></span><button class="editMatchDate" onclick="event.stopPropagation();openMatchDateEdit('${dragKey}')" title="Changer la date (autre semaine)" aria-label="Changer la date">${WK_ICO.pen}</button>${md._manualId?`<button class="rmMatch" onclick="event.stopPropagation();deleteManualMatch(${md._manualId})" title="Supprimer ce match" aria-label="Supprimer ce match">×</button>`:''}</div>`
+      :T.repos?`<div class="wkRepos">repos</div>`
+      :`<div class="bar" id="bar-${i}" style="height:${h}%;background:${bg}"><span class="rpeTip" id="rpeTip-${i}">${rpe}</span></div>`;
+    load.push(`
+      <div class="wkLc${isToday?' today':''}">
+        <div class="barZone" ondragover="event.preventDefault();this.classList.add('dragOver')" ondragleave="this.classList.remove('dragOver')" ondrop="this.classList.remove('dragOver');matchDropOn('${iso(d)}',event)">${zone}</div>
+        <select class="daySel" style="--tc:${wkTone(T.color||'#888888')}" onchange="setDayType(${i},this.value)" aria-label="Type de journée — ${DAYFULL[i]}">
           ${Object.entries(TYPES).map(([k,v])=>`<option value="${k}" ${k===tKey?'selected':''}>${v.nom}</option>`).join('')}
         </select>
-        ${(T.repos||isMatch)?'':`<div class="rpeRow">RPE <input type="range" min="0" max="10" step="0.5" value="${rpe}" oninput="liveRpePreview(${i},this.value)" onchange="setDayRpe(${i},this.value)"><span class="rpeVal" id="rpeVal-${i}">${rpe}</span></div>`}
-        <div class="sched">${schedHTML}${T.repos?'':`<button class="addSeance" onclick="openModal('${key}')">+ Ajouter</button>`}</div>
+        ${(T.repos||isMatch)?'':`<div class="rpeRow"><span>RPE</span><input type="range" min="0" max="10" step="0.5" value="${rpe}" oninput="liveRpePreview(${i},this.value)" onchange="setDayRpe(${i},this.value)" aria-label="RPE prévu — ${DAYFULL[i]}"><span class="rpeVal" id="rpeVal-${i}">${rpe}</span></div>`}
+      </div>`);
+    const blocks=blocksFor(wk,i);
+    const schedHTML=blocks.map((b,bi)=>{
+      const isM=b.kind==='match';
+      const tone=b.c?wkTone(b.c):isM?wkTone(COMP_COLOR[b.comp||'n2']):b.kind==='test'?'#FF8A8A':null;
+      const tIn=`<input class="t" value="${b.time}" onchange="setBlockTime('${key}',${bi},this.value)" aria-label="Heure de début">`;
+      const cmt=isM?'':`<button class="cmtBlk" onclick="editBlockComment('${key}',${bi})" title="Ajouter / modifier un commentaire" aria-label="Commentaire">${WK_ICO.cmt}</button>`;
+      const del=`<button class="rmBlk" onclick="removeBlock('${key}',${bi})" title="Retirer ce créneau" aria-label="Retirer">×</button>`;
+      const lblAttr=isM?'':` onclick="openBlockDureeEditor('${key}',${bi})" title="Cliquer pour régler les horaires (de... à...)"`;
+      const note=b.comment?`<div class="blkComment">${b.comment}</div>`:'';
+      if(!tone)  // routine (repas, wellness…) ou créneau sans couleur : une ligne discrète
+        return `<div class="blk ${b.kind}"><div class="blkMain">${tIn}<span class="lbl"${lblAttr}>${b.n}</span>${cmt}${del}</div>${note}</div>`;
+      // hauteur toujours proportionnelle à la durée
+      const pad=isM?7:Math.max(6,Math.min(16,4+((b.duree||30)/10)));
+      const s=timeToMin(b.time);
+      const end=(!isM&&b.duree&&s!==9999)?wkHM(s+b.duree):null;
+      const sub=isM?`<span class="blkEnd">· ${b.dom?'domicile':'extérieur'}${b.approx?' · horaire à confirmer':''}</span>`:end?`<span class="blkEnd">– ${end}</span>`:'';
+      return `<div class="blk ${b.kind} tint" style="padding-top:${pad}px;padding-bottom:${pad}px;--bc:${tone}">
+        <div class="blkMain"><span class="lbl"${lblAttr}>${isM?"Coup d'envoi · "+b.n:b.n}</span>${cmt}${del}</div>
+        <div class="blkTime">${tIn}${sub}</div>${note}
+      </div>`;
+    }).join('');
+    const rel=dayLabel(d,wk);
+    cols.push(`
+      <div class="dayCol${isToday?' today':''}${T.repos?' repos':''}">
+        <div class="dayHead"><div class="dayId"><div class="rel${rel==='JDM'?' jdm':''}">${rel}</div><div class="cal">${WK_JOUR_C[i]} ${d.getDate()} ${WK_MOIS[d.getMonth()]}${isToday?'<i class="wkNow"> · aujourd\'hui</i>':''}</div></div>
+          <div class="dayTools">${isMatch?'':`<button class="dayIco" onclick="openMatchModal('${iso(d)}')" title="Ajouter un match ce jour-là" aria-label="Ajouter un match">${WK_ICO.ball}</button>`}<button class="dayIco" onclick="genererPDFJournee(${i})" title="PDF de cette journée (micro-page à envoyer par message)" aria-label="PDF de la journée">${WK_ICO.print}</button></div></div>
+        <div class="sched">${schedHTML}${T.repos?'<div class="wkRestCol">Repos</div>':`<button class="addSeance" onclick="openModal('${key}')">+ Ajouter</button>`}</div>
       </div>`);
   });
-  cols.push(edgeCol(next,'Match suivant'));
-  // minmax() garantit une largeur minimale lisible par colonne : sur un
-  // écran étroit (téléphone), la grille dépasse alors la largeur visible et
-  // devient scrollable horizontalement (voir .weekWrapOuter) au lieu de
-  // comprimer les colonnes jusqu'à faire chevaucher le texte des séances et
-  // les boutons 💬/× — ce qui rendait les cartes illisibles (ex.
-  // "Individualisation technique" coupée lettre par lettre).
-  // 190px minimum : assez pour que des intitulés longs (« Individualisation
-  // technique ») tiennent sur une ou deux lignes sans se couper en plein
-  // milieu d'un mot, tout en laissant les boutons 💬/× toujours au-dessus,
-  // jamais au milieu du texte.
-  g.style.gridTemplateColumns=`minmax(78px,0.62fr) repeat(${cols.length-2},minmax(190px,1fr)) minmax(78px,0.62fr)`;
+  document.getElementById('weekLoad').innerHTML=load.join('');
+  g.style.gridTemplateColumns='';
   g.innerHTML=cols.join('');
   document.getElementById('profilSel').value='';
   renderGps();
-}
-function edgeCol(m,label){
-  if(!m)return `<div class="dayCol edge"><div class="dayLabel"><div class="rel">JDM</div><div class="cal">${label}</div></div><div class="barZone"><div class="bar" style="height:20%;background:#555"></div></div><div class="note" style="text-align:center">—</div></div>`;
-  const d=matchDate(m);
-  return `<div class="dayCol edge">
-    <div class="dayLabel"><div class="rel">JDM</div><div class="cal">${label}<br>${fmtD(d)}</div></div>
-    <div class="barZone"><div class="matchIn" style="background:#1e6b1e">${logoHTML(m.team)}<span style="font-size:9px;font-weight:700;color:#fff">${m.dom?'🏠 DOM':'✈️ EXT'}</span>${m._manualId?`<button class="rmMatch" onclick="deleteManualMatch(${m._manualId})" title="Supprimer ce match">×</button>`:''}</div></div>
-    <div class="note" style="text-align:center">${m.team}<br><b style="color:${COMP_COLOR[compOf(m)]}">${COMP_LABEL[compOf(m)]}</b> · ${matchTimeLabel(m)}</div>
-  </div>`;
 }
 
 /* ═══════ MODAL AJOUT DE MATCH MANUEL ═══════ */
@@ -4725,7 +4923,7 @@ function liveRpePreview(i,v){
   const rpe=parseFloat(v);
   const h=Math.max(8,(rpe/10)*100);
   const bar=document.getElementById('bar-'+i); if(bar)bar.style.height=h+'%';
-  const tip=document.getElementById('rpeTip-'+i); if(tip)tip.textContent='RPE '+rpe;
+  const tip=document.getElementById('rpeTip-'+i); if(tip)tip.textContent=rpe;
   const val=document.getElementById('rpeVal-'+i); if(val)val.textContent=rpe;
 }
 function setDayRpe(i,v){(RPE_OVR[curWeek]??={})[i]=parseFloat(v);renderWeek();saveWeekDay(curWeek,i);}
