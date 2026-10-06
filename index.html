@@ -1406,6 +1406,10 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 .xtPg:last-child{break-after:auto;page-break-after:auto}
 .xtPg.P{page:xtP;width:210mm;height:296.5mm;padding:14mm 14mm 18mm}
 .xtPg.L{page:xtL;width:297mm;height:209.5mm;padding:13mm 15mm 17mm}
+.xtPg.auto{page:xtAuto;height:auto}
+.xtPg.auto .xtIn{height:auto}
+.xbSecT{margin:7mm 0 4mm}
+.xbSecT .xtRule{margin-top:1.6mm}
 .xtIn{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
 .xtHead{display:flex;align-items:flex-start;gap:6mm;margin-bottom:6mm}
 .xtHead .xtTitle{font-size:24pt;margin-top:1.6mm}
@@ -7994,10 +7998,27 @@ async function xtReady(root){
   }
   await waitForImages(root);
 }
-function xtPage(orient,inner,foot){
+function xtPage(orient,inner,foot,style){
   const stripes=[1,2,3,4,5].map(k=>`<i style="left:${(k*100/6).toFixed(4)}%"></i>`).join('');
-  return `<section class="xtPg ${orient}"><div class="xtStripes">${stripes}</div><div class="xtWaveCorner"></div>
+  return `<section class="xtPg ${orient}"${style?` style="${style}"`:''}><div class="xtStripes">${stripes}</div><div class="xtWaveCorner"></div>
     <div class="xtIn">${inner}</div><div class="xtFoot">${foot||''}</div></section>`;
+}
+/* Une seule page par document, hauteur ajustée au contenu (06/10, Pierrick) — même principe que la fiche de séance.
+   Largeur fixe (A4 : 210 mm portrait, 297 mm paysage), hauteur mesurée hors écran ; jamais moins qu'un format 16:9 de même largeur. */
+async function xtPrintOne(orient,inner,foot,title){
+  const W=orient==='P'?210:297;
+  const meas=document.createElement('div');
+  meas.style.cssText='position:fixed;left:-10000px;top:0;visibility:hidden';
+  meas.innerHTML=xtPage(orient+' auto',inner,foot);
+  document.body.appendChild(meas);
+  await xtReady(meas);
+  const hMm=meas.firstElementChild.getBoundingClientRect().height*25.4/96;
+  meas.remove();
+  const H=Math.max(Math.round(W*9/16*10)/10,Math.ceil(hMm*10)/10+.5);
+  let tag=document.getElementById('xtPageSize');
+  if(!tag){tag=document.createElement('style');tag.id='xtPageSize';document.head.appendChild(tag);}
+  tag.textContent=`@page xtAuto{size:${W}mm ${H}mm;margin:0}`;
+  await xtPrint(xtPage(orient+' auto',inner,foot,`height:${(H-.4).toFixed(1)}mm`),title);
 }
 function xtPrint(html,title){
   const sheet=document.getElementById('printSheet');
@@ -8011,9 +8032,8 @@ function xtPrint(html,title){
 }
 const XT_SEASON='Saison 2026–2027 · Staff performance';
 
-/* ── Fiches de la Séance du jour : A4 portrait, cartes jamais coupées ──
-   Les cartes sont d'abord mesurées hors écran, puis réparties page par page
-   (2 colonnes). Chaque page porte rayures, vague et pied de page du template. */
+/* ── Fiches de la Séance du jour : une seule page de 210 mm de large (06/10), hauteur selon le nombre de joueurs ──
+   2 colonnes de cartes ; rayures, vague et pied de page du template. */
 async function iPrintFiches(){
   if(!ILAST)return;
   const mode=IMODE, st=ISTATE;
@@ -8034,32 +8054,12 @@ async function iPrintFiches(){
   });
   const headBig=`<div class="xtHead"><div><div class="xtEyebrow">${XT_SEASON}</div><h1 class="xtTitle">${iEsc(label)}</h1><div class="xtRule"></div>
       <div class="xtSub">Séance n°${num}${date?' · '+iEsc(date):''} · ${players.length} joueur${players.length>1?'s':''}</div></div><div class="xtCrest"></div></div>`;
-  const headSm=`<div class="xtHead sm"><div><div class="xtEyebrow">${iEsc(label)} · n°${num} · suite</div></div><div class="xtCrest"></div></div>`;
-  // mesure hors écran (mêmes largeurs que la page réelle)
-  const meas=document.createElement('div');
-  meas.className='xtPg P'; meas.style.cssText='position:fixed;left:-10000px;top:0;height:auto;visibility:hidden';
-  meas.innerHTML=`<div class="hb">${headBig}</div><div class="hs">${headSm}</div><div class="xtGrid">${cards.join('')}</div>`;
-  document.body.appendChild(meas);
-  await xtReady(meas);
-  const mm=el=>{ const r=el.getBoundingClientRect(), cs=getComputedStyle(el); return (r.height+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom))*25.4/96; };
-  const hBig=mm(meas.querySelector('.hb .xtHead')), hSm=mm(meas.querySelector('.hs .xtHead'));
-  const hs=[...meas.querySelectorAll('.xtGrid .xtCard')].map(mm);
-  meas.remove();
-  const AVAIL=296.5-14-18-1, GAP=5;
-  const pages=[]; let cur=[], used=hBig;
-  for(let i=0;i<cards.length;i+=2){
-    const rowH=Math.max(hs[i],hs[i+1]||0), need=rowH+(cur.length?GAP:0);
-    if(cur.length&&used+need>AVAIL){ pages.push(cur); cur=[]; used=hSm; }
-    cur.push(cards.slice(i,i+2)); used+=rowH+(cur.length>1?GAP:0);
-  }
-  if(cur.length)pages.push(cur);
-  const html=pages.map((rows,k)=>xtPage('P',
-    (k===0?headBig:headSm)+`<div class="xtGrid">${rows.flat().join('')}</div>`,
-    `${iEsc(label)} · n°${num} · ${k+1}/${pages.length}`)).join('');
-  await xtPrint(html,`${label} n°${num}${date?' - '+date.replace(/\//g,'-'):''}`);
+  // une seule page pour tout le groupe, hauteur ajustée au nombre de joueurs
+  await xtPrintOne('P',headBig+`<div class="xtGrid">${cards.join('')}</div>`,`${iEsc(label)} · n°${num}${date?' · '+iEsc(date):''}`,
+    `${label} n°${num}${date?' - '+date.replace(/\//g,'-'):''}`);
 }
 
-/* ── Fiche bilan joueur : 2 pages A4 paysage au format du template ── */
+/* ── Fiche bilan joueur : une seule page de 297 mm de large au format du template, hauteur selon le contenu ── */
 const XB_KIND_COL={phys:'#5A2399',terr:'#E5409A',autre:'#C8BFC4',prev:'#FF7A59',auto:'#F7A6CF',coll:'#9C93B5'};
 const XB_SEV={R:'#B3123F',O:'#B5520A',J:'#8A6D00',V:'#1F7A4D','V?':'#8E86A0'};
 async function exportBilan(pid){
@@ -8122,14 +8122,13 @@ async function exportBilan(pid){
         <td class="r" style="color:${asymCol(t2.asym)};font-weight:700">${t2.asym!=null?t2.asym.toFixed(0)+' %':'—'}</td>
         <td class="r" style="font-weight:700;color:${good==null?'var(--xt-mut)':(good?XB_SEV.V:XB_SEV.R)}">${evo==null?'1ᵉʳ test':(evo>0?'+':'')+evo.toFixed(1)+' %'}</td></tr>`;}).join('')}</tbody></table>`
     :'<div class="xbEmpty">Aucun test enregistré pour ce joueur.</div>';
-  const page2=`<div class="xtHead sm"><div><div class="xtEyebrow">Bilan joueur · Tests & zones</div><h2 class="xtTitle">${iEsc(p.name)}</h2></div><div class="xtCrest"></div></div>
+  const part2=`<div class="xbSecT"><div class="xtEyebrow">Tests &amp; zones</div><div class="xtRule"></div></div>
     <div class="xbCols" style="grid-template-columns:.9fr 1.1fr;align-items:start">
       <div class="xbBox"><h4>Zones évaluées · les plus sévères d'abord</h4>${zonesHTML}</div>
       <div class="xbBox"><h4>Tests physiques · deux dernières campagnes</h4>${testsHTML}</div></div>`;
   const hasP2=zRows.length||rows.length;
-  const foot=k=>`Bilan joueur · ${iEsc(p.name)} · ${today} · ${k}/${hasP2?2:1}`;
-  const html=xtPage('L',page1,foot(1))+(hasP2?xtPage('L',page2,foot(2)):'');
-  await xtPrint(html,`Bilan ${p.name} ${today.replace(/\//g,'-')}`);
+  // une seule page par joueur (06/10) : hauteur ajustée à ce qu'il y a à montrer
+  await xtPrintOne('L',page1+(hasP2?part2:''),`Bilan joueur · ${iEsc(p.name)} · ${today}`,`Bilan ${p.name} ${today.replace(/\//g,'-')}`);
 }
 
 function renderIndiv(){
