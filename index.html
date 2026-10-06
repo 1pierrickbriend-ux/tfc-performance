@@ -624,6 +624,8 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .bibCur.warn{color:var(--warn);border-color:var(--warn)}
 .bibActions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .bibActions .btn.primary{min-width:140px}
+@media(max-width:600px){.bibTabs{display:grid;grid-template-columns:repeat(3,1fr);width:100%}.bibTab{justify-content:center;padding:9px 6px;font-size:12.5px;gap:6px}.bibTabX{display:none}}
+.bibTabX{font-style:normal}
 @media(max-width:600px){.bibAdd{margin-left:0;flex:1 1 100%}.bibSearch{margin-left:0;flex:1 1 100%}.bibGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bibThumb{height:96px}.bibSegs{grid-template-columns:repeat(2,1fr)}}
 .qaType small{font-weight:500;color:var(--muted);font-size:10.5px}
 .qaSegs2{grid-template-columns:repeat(2,1fr)}
@@ -1461,6 +1463,165 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 .xbLeg span{display:inline-flex;align-items:center;gap:1.2mm}.xbLeg i{width:2.4mm;height:2.4mm;border-radius:.6mm}
 .xbEmpty{font-size:8pt;color:var(--xt-mut);font-style:italic}
 
+/* ═══ Fiches de séance : éditeur (06/10) ═══ */
+#fsOverlay{z-index:125}
+.fsPanel{max-width:1180px;max-height:none;height:calc(100vh - 40px);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.fsEdScroll{flex:1;overflow-y:auto;min-height:0}
+.fsEd{padding-bottom:22px}
+.fsFoot{display:flex;gap:10px;align-items:center;padding:12px 18px;border-top:1px solid var(--card-line);background:var(--panel)}
+.fsFootSp{flex:1}
+.fsFoot .btn.primary{min-width:130px}
+.fsQs{display:flex;flex-wrap:wrap;gap:6px}
+.fsQs.sub{margin-top:8px;align-items:center}
+.fsQsLbl{font-size:11px;font-weight:700;color:var(--muted);margin-right:4px}
+.fsQ{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:inherit;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer}
+.fsQ:hover{border-color:var(--accent)}
+.fsQ.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fsQ.sm{font-size:11.5px;padding:5px 11px}
+.fsQInfo{margin-top:10px;font-size:12px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-left:3px solid #E5409A;border-radius:8px;padding:8px 11px;line-height:1.45}
+.fsQInfo b{color:var(--ink)}
+.fsHeadGrid{display:grid;grid-template-columns:2fr 1fr 110px 1.4fr;gap:10px}
+.fsLbl{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:700;color:var(--muted)}
+.fsNeedQ{font-size:12.5px;color:var(--warn);border:1px dashed var(--warn);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.fsBlocEd{background:var(--panel2);border:1px solid var(--line);border-left:4px solid #5A2399;border-radius:12px;padding:10px 12px 12px;margin-bottom:12px}
+.fsBlocH{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fsBlocN{width:26px;height:26px;border-radius:7px;background:linear-gradient(180deg,#5A2399,#2B1569);color:#fff;font-family:var(--font-display);font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.qaBody .fsBlocL{flex:1 1 200px;width:auto;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.fsMode{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+.fsMode button{background:none;border:none;border-radius:6px;padding:6px 10px;font:inherit;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}
+.fsMode button.on{background:var(--accent);color:#fff}
+.fsMini{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted)}
+.qaBody .fsMini input{width:64px;padding:6px 8px}
+.fsActs{display:inline-flex;gap:4px;margin-left:auto}
+.fsActs button{width:30px;height:30px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font-size:13px}
+.fsActs button:hover:not(:disabled){border-color:var(--accent);color:var(--ink)}
+.fsActs button:disabled{opacity:.3;cursor:default}
+.fsActs button[hidden]{display:none}
+.fsActs .fsReset{color:#f7a6cf;border-color:rgba(229,64,154,.5)}
+.fsRows{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.fsRowsEmpty{font-size:12px;color:var(--muted);padding:6px 2px}
+.fsRow{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 10px;display:flex;flex-direction:column;gap:8px}
+.fsRowTop{display:flex;align-items:center;gap:9px}
+.fsRowTh{position:relative;width:46px;height:38px;border-radius:7px;background:#F4EEF7;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:var(--font-display);font-weight:800;font-size:17px;color:#8E86A0;text-decoration:none}
+.fsRowTh img{width:100%;height:100%;object-fit:cover}
+.fsRowTh i{position:absolute;width:20px;height:20px;border-radius:50%;background:#E5409A;color:#fff;font-style:normal;font-size:9px;display:flex;align-items:center;justify-content:center;padding-left:2px;box-shadow:0 2px 6px rgba(229,64,154,.5)}
+.fsRowNm{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.qaBody .fsRowNm .fsNm{font-weight:800;padding:6px 9px}
+.qaBody .fsRowNm .fsSub{font-size:11.5px;padding:4px 9px;color:#f7a6cf}
+.qaBody .fsRowQ{width:auto;max-width:200px;font-size:12px;padding:6px 8px}
+.qaBody .fsRowQ.set{border-color:#E5409A}
+.fsParams{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.fsParams.succ{grid-template-columns:repeat(7,minmax(0,1fr))}
+.fsTexts{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.fsTexts .fsVidIn{grid-column:1/-1}
+.fsP{display:flex;flex-direction:column;gap:4px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);min-width:0}
+.qaBody .fsP input{padding:6px 8px;font-size:12.5px;text-transform:none;letter-spacing:0;font-weight:600}
+.qaBody .fsP input.man,.qaBody .fsMini input.man{border-color:#E5409A;box-shadow:0 0 0 1px #E5409A inset;background:rgba(229,64,154,.1)}
+.fsP.fixed b{display:block;line-height:31px;height:31px;white-space:nowrap;font-size:12.5px;color:var(--ink);text-transform:none;letter-spacing:0;padding:0 2px}
+.fsAddEx,.fsAddBloc{font-weight:700}
+.fsAddBloc{width:100%;border-style:dashed}
+.fsPick{background:var(--panel);border:1px solid var(--accent);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:9px}
+.fsPickBar,.fsPickFree{display:flex;gap:8px}
+.fsPickBar .btn,.fsPickFree .btn{flex:none}
+.fsPickList{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;max-height:300px;overflow-y:auto}
+.fsPickIt{display:flex;align-items:center;gap:9px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:6px 8px;cursor:pointer;text-align:left;font:inherit;color:var(--ink)}
+.fsPickIt:hover{border-color:var(--accent)}
+.fsPickIt.used{border-color:rgba(79,209,145,.55)}
+.fsPickIt .th{width:38px;height:32px;border-radius:6px;background:#F4EEF7;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:var(--font-display);font-weight:800;color:#8E86A0}
+.fsPickIt .th img{width:100%;height:100%;object-fit:cover}
+.fsPickIt .tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.fsPickIt b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fsPickIt small{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fsPickIt .vd{color:#E5409A;font-size:11px}
+.fsPickIt .ok{color:var(--ok);font-weight:800;font-size:12px}
+.fsPickEmpty{grid-column:1/-1;font-size:12px;color:var(--muted);padding:8px}
+.fsToast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:var(--ok);color:#0b1f14;font-weight:800;font-size:12.5px;padding:8px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s}
+.fsToast.on{opacity:1}
+/* Bibliothèque : cartes « fiche » et repères de la banque */
+.fsThumb{flex-direction:column;gap:6px;padding:10px;text-align:center}
+.fsThumb .q{font-family:var(--font-display);font-weight:800;font-size:19px;text-transform:uppercase;color:var(--id-ink);line-height:1.05}
+.fsThumb .d{font-size:11px;font-weight:700;color:var(--id-sub)}
+.fsCardActs{display:flex;gap:6px;margin-top:4px}
+.fsCardActs .btn{flex:1;padding:6px 8px;font-size:12px}
+.bibVid{position:absolute;top:8px;left:8px;width:26px;height:26px;border-radius:50%;background:#E5409A;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;padding-left:2px;box-shadow:0 2px 8px rgba(229,64,154,.45)}
+.c-plan.bibTag{background:rgba(229,64,154,.14);color:#f7a6cf}
+.bibFsHead{margin:22px 0 2px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;font-weight:800;color:var(--ink);display:flex;flex-direction:column;gap:3px}
+.bibPlans{display:flex;flex-wrap:wrap;gap:6px}
+.bibPlans .qaSeg{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px}
+.bibPlans .qaSeg.on{background:var(--accent);border-color:var(--accent)}
+/* Séances prévues : bouton Fiche */
+.prUp .prFs{flex:none;background:transparent;border:1px solid var(--line);border-radius:7px;color:var(--ink);font:inherit;font-size:11px;font-weight:700;padding:5px 9px;cursor:pointer;white-space:nowrap}
+.prUp .prFs:hover{border-color:var(--accent)}
+.prUp .prFs.has{border-color:#E5409A;color:#f7a6cf}
+@media(max-width:600px){.prUp .prFs .lbl{display:none}.prUp .prFs{padding:5px 7px}.prUp{gap:7px}}
+@media(max-width:760px){
+  #fsOverlay{padding:0}
+  .fsPanel{height:100vh;height:100dvh;border-radius:0}
+  .fsHeadGrid{grid-template-columns:1fr 1fr}
+  .fsLblT{grid-column:1/-1}
+  .fsParams,.fsParams.succ{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .fsTexts{grid-template-columns:1fr}
+  .fsRowTop{flex-wrap:wrap}
+  .fsRowNm{flex:1 1 calc(100% - 60px)}
+  .qaBody .fsRowQ{order:3;flex:1 1 120px;max-width:none}
+  .fsRowTop .fsActs{order:4}
+  .fsBlocH .fsActs{margin-left:0}
+  .fsFoot{flex-wrap:wrap;padding:10px 12px}
+  .fsPickList{grid-template-columns:1fr}
+}
+@media print{#fsOverlay,#bibOverlay,#qaOverlay{display:none !important}}
+
+/* ═══ Fiches de séance : PDF 16:9 — 297 × 167 mm (06/10) ═══ */
+@page fsW{size:297mm 167.06mm;margin:0}
+.fpPg{page:fsW;position:relative;overflow:hidden;width:297mm;height:166.6mm;background:var(--xt-bg);color:var(--xt-ink);font-family:'DM Sans',Arial,sans-serif;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:page;page-break-after:always}
+.fpPg:last-child{break-after:auto;page-break-after:auto}
+.fpPg *{box-sizing:border-box}
+.fpBg{position:absolute;inset:0;pointer-events:none;z-index:0}
+.fpBg .fpS1,.fpBg .fpS2{position:absolute;top:0;bottom:0;width:.46mm;background:var(--xt-stripe)}   /* fond plein et non bordure : Chrome arrondit les bordures au pixel (0,26 mm), ce qui décalait les rayures */
+.fpBg .fpS1{left:263.12mm}
+.fpBg .fpS2{left:282.15mm}
+.fpBg .fpLine{position:absolute;left:14.85mm;width:248.27mm;top:30.94mm;height:.46mm;background:var(--xt-stripe)}
+.fpBg .xtCrest{position:absolute;left:263.49mm;top:11.05mm;width:18.75mm;height:18.75mm}   /* cercle visible = 99 % de l'image : ses bords touchent exactement les 2 rayures (263,58 → 282,15 mm) */
+.fpBg .xtWaveCorner{width:42%}
+.fpHd{position:absolute;left:14.85mm;width:244.56mm;top:5.26mm;height:23.2mm;display:flex;gap:3.4mm;align-items:flex-end;z-index:1}
+.fpHd .fpPP{width:17.3mm;height:23.2mm;font-size:16pt;border-radius:1.9mm 1.9mm 0 0}
+.fpTtl{flex:1;min-width:0;padding-bottom:1.2mm}
+.fpTtl .xtEyebrow{font-size:6.6pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fpTtl .xtTitle{margin:.9mm 0 1.9mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fpChips{display:flex;gap:1.5mm;flex-wrap:wrap}
+.fpChip{font-size:6.6pt;font-weight:700;background:#fff;border:.23mm solid var(--xt-line);border-radius:5mm;padding:.9mm 2.2mm;color:var(--xt-ink2);white-space:nowrap;line-height:1.2}
+.fpChip b{color:var(--xt-ink)}
+.fpChip.q{background:var(--xt-deep);border-color:var(--xt-deep);color:#fff}
+.fpBody{position:absolute;left:14.85mm;top:34.96mm;width:244.56mm;display:flex;flex-direction:column;gap:3.4mm;z-index:1}
+.fpBlocW{background:#fff;border-radius:2.2mm;overflow:hidden;box-shadow:0 .6mm 2.8mm rgba(36,20,70,.10)}
+.fpTbl{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
+.fpTbl th{background:var(--xt-deep);color:#fff;font-size:5.7pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase;height:8.66mm;padding:0 1mm;text-align:center;vertical-align:middle;line-height:1.15}
+.fpTbl th small{display:block;font-size:4.7pt;font-weight:500;letter-spacing:.02em;text-transform:none;opacity:.75;margin-top:.4mm}
+.fpTbl th.fpBand{background:linear-gradient(180deg,#5A2399,#2B1569);padding:0}
+.fpBand span{display:inline-block;writing-mode:vertical-rl;transform:rotate(180deg);font-family:'Oswald',Arial,sans-serif;font-weight:700;letter-spacing:.12em;line-height:1.05;white-space:nowrap;color:#fff}
+.fpTbl td{height:16.1mm;font-size:6.6pt;line-height:1.3;padding:1mm 1.85mm;text-align:center;vertical-align:middle;border-bottom:.15mm solid #F1E6EF;color:var(--xt-ink2);overflow-wrap:anywhere}
+.fpTbl tr:last-child td{border-bottom:none}
+.fpTbl td.fpThC{padding:1.55mm 2.17mm}
+.fpTh{position:relative;display:flex;align-items:flex-end;justify-content:center;height:13mm;border-radius:1.55mm;background:#F4EEF7;border:.23mm dashed #D9C8EC;padding-bottom:.9mm;text-decoration:none;overflow:hidden}
+.fpTh.img{border:none;background:#fff;padding:0}
+.fpTh img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.fpTh em{font-size:4.8pt;color:#8E86A0;font-style:normal}
+.fpPlay{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:5.9mm;height:5.9mm;border-radius:50%;background:var(--xt-rose);display:flex;align-items:center;justify-content:center;box-shadow:0 .45mm 1.5mm rgba(229,64,154,.4)}
+.fpPlay svg{width:2.9mm;height:2.9mm;display:block}
+.fpTh.img .fpPlay{top:50%}
+.fpTbl td.fpNm{font-family:'Oswald',Arial,sans-serif;font-weight:600;font-size:9.2pt;text-transform:uppercase;color:var(--xt-ink);line-height:1.1;overflow-wrap:normal}
+.fpNm i{display:block;font-family:'DM Sans',Arial,sans-serif;font-style:normal;font-weight:700;font-size:5.5pt;text-transform:none;color:var(--xt-mag);margin-top:.5mm}
+.fpTbl td.fpIt{font-style:italic}
+.fpTbl td.fpNum{font-family:'Oswald',Arial,sans-serif;font-weight:600;font-size:9.6pt;color:var(--xt-vio);line-height:1.15;overflow-wrap:normal}
+.fpNum span{display:block;font-family:'DM Sans',Arial,sans-serif;font-size:5.3pt;font-weight:700;color:var(--xt-mut)}
+.fpTbl td.fpNum.s{font-family:'DM Sans',Arial,sans-serif;font-weight:700;font-size:7.9pt}
+.fpTbl td.fpNum.l{font-family:'DM Sans',Arial,sans-serif;font-weight:700;font-size:6.6pt}
+.fpTbl td.fpRest{background:#FBF1F7;border-left:.23mm solid var(--xt-stripe);border-bottom:none}
+.fpRest b{display:block;font-family:'Oswald',Arial,sans-serif;font-weight:700;font-size:19pt;color:var(--xt-mag);line-height:1}
+.fpRest small{display:block;font-size:5pt;color:var(--xt-mut);margin-top:.9mm;line-height:1.3}
+.fpFt{position:absolute;left:14.85mm;bottom:5.26mm;font-size:5.7pt;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--xt-mut);z-index:1}
+.fpFt b{color:var(--xt-rose)}
+
 /* PDF journée (micro-page 88 mm) au format extérieur */
 .dayPg{position:relative;overflow:hidden;background:var(--xt-bg)}
 .dayPg>*{position:relative;z-index:1}
@@ -1913,7 +2074,7 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
   <div class="rowHead"><h2>Bibliothèque</h2><span class="tag live">Données partagées Supabase</span></div>
   <div class="bibBar">
     <div class="bibTabs" id="bibTabs" role="tablist"></div>
-    <button class="btn primary bibAdd" id="bibAddBtn" onclick="bibOpen(BIB.tab,null)">＋ Ajouter</button>
+    <button class="btn primary bibAdd" id="bibAddBtn" onclick="BIB.tab==='fiches'?fsOpen(null):bibOpen(BIB.tab,null)">＋ Ajouter</button>
   </div>
   <div class="bibFilters">
     <div class="bibCats" id="bibCats"></div>
@@ -1936,6 +2097,14 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 <div class="qaOverlay" id="bibOverlay" onclick="if(event.target===this)bibClose()">
   <div class="qaPanel bibPanel"><div class="qaHead"><span id="bibTitle"></span><button onclick="bibClose()" aria-label="Fermer">✕</button></div>
   <div class="qaBody" id="bibForm"></div></div>
+</div>
+<div class="qaOverlay" id="fsOverlay" onclick="if(event.target===this)fsClose()">
+  <div class="qaPanel fsPanel" role="dialog" aria-modal="true" aria-labelledby="fsTitle">
+    <div class="qaHead"><span id="fsTitle">Fiche de séance</span><button onclick="fsClose()" aria-label="Fermer">✕</button></div>
+    <div class="fsEdScroll"><div class="qaBody fsEd" id="fsBody"></div></div>
+    <div class="fsFoot" id="fsFoot"></div>
+    <div class="fsToast" id="fsToast" role="status"></div>
+  </div>
 </div>
 <!-- Fenêtre de saisie « séance réalisée » : au niveau de la page pour être utilisable depuis n'importe quel onglet (fiche joueur, Individualisation). -->
 <div class="qaOverlay" id="qaOverlay" onclick="if(event.target===this)closeQuickAdd()">
@@ -2510,6 +2679,8 @@ function setupSharedRealtime(){
     .on('postgres_changes',{event:'*',schema:'public',table:'programmes'},p=>sync(PROGRAMMES,p,()=>{
       if(typeof renderProgList==='function')renderProgList();
     })).subscribe();
+  supa.channel('fiches-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'fiches_seance'},fsOnRealtime).subscribe();
   supa.channel('exbank-changes')
     .on('postgres_changes',{event:'*',schema:'public',table:'exercise_bank'},p=>sync(EXBANK,p,()=>{
       if(typeof renderExerciseBank==='function')renderExerciseBank();
@@ -2564,6 +2735,7 @@ async function loadProgrammes(){
   if(e2)console.error(e2);
   PROGRAMMES=pr||[];
   EXBANK=ex||[];
+  await loadFiches();
 }
 function bibUrl(bucket,path){ return path?supa.storage.from(bucket).getPublicUrl(path).data.publicUrl:null; }
 function bibIsImg(path){ return /\.(png|jpe?g|webp)$/i.test(path||''); }
@@ -2573,11 +2745,19 @@ function renderExerciseBank(){ renderBib(); }  // idem
 function renderBib(){
   const tabs=document.getElementById('bibTabs'); if(!tabs)return;
   const t=(k,l,n)=>`<button type="button" role="tab" class="bibTab${BIB.tab===k?' on':''}" aria-selected="${BIB.tab===k}" onclick="bibSetTab('${k}')">${l}<span>${n}</span></button>`;
-  tabs.innerHTML=t('docs','Documents',PROGRAMMES.length)+t('ex','Exercices',EXBANK.length);
-  document.getElementById('bibAddBtn').textContent=BIB.tab==='docs'?'＋ Ajouter un document':'＋ Ajouter un exercice';
-  const src=BIB.tab==='docs'?PROGRAMMES:EXBANK;
-  const cnt=k=>src.filter(x=>bibCat(x.categorie)===k).length;
-  document.getElementById('bibCats').innerHTML=[['','Tout',src.length],...BIB_CATS.map(([k,l])=>[k,l,cnt(k)])]
+  tabs.innerHTML=t('docs','Documents',PROGRAMMES.length)+t('ex','Exercices',EXBANK.length)+t('fiches','Fiches<i class="bibTabX"> de séance</i>',FICHES.length);
+  document.getElementById('bibAddBtn').textContent={docs:'＋ Ajouter un document',ex:'＋ Ajouter un exercice',fiches:'＋ Nouvelle fiche'}[BIB.tab];
+  let chips;
+  if(BIB.tab==='fiches'){
+    // filtres = familles de préréglage réellement utilisées
+    const fams=FS_FAMILIES.map(([k,l])=>[k,l,FICHES.filter(f=>fsFamily(f.preset)===k).length]).filter(x=>x[2]);
+    chips=[['','Toutes',FICHES.length],...fams];
+  }else{
+    const src=BIB.tab==='docs'?PROGRAMMES:EXBANK;
+    const cnt=k=>src.filter(x=>bibCat(x.categorie)===k).length;
+    chips=[['','Tout',src.length],...BIB_CATS.map(([k,l])=>[k,l,cnt(k)])];
+  }
+  document.getElementById('bibCats').innerHTML=chips
     .map(([k,l,n])=>`<button type="button" class="bibCat${BIB.cat===k?' on':''}" onclick="bibSetCat('${k}')">${l} <span>${n}</span></button>`).join('');
   renderBibGrid();
 }
@@ -2587,6 +2767,23 @@ function renderBibGrid(){
   const box=document.getElementById('bibGrid'); if(!box)return;
   const q=BIB.q.trim().toLowerCase();
   const tag=c=>`<span class="bibTag c-${bibCat(c)}">${BIB_CAT_LABEL[bibCat(c)]}</span>`;
+  if(BIB.tab==='fiches'){
+    if(FS_MISSING){box.innerHTML='<div class="bibEmpty">Les fiches de séance ne sont pas encore activées : exécute le script <b>schema_supabase_v43_fiches_seance.sql</b> dans Supabase.</div>';return;}
+    const who=f=>{ const pl=f.player_id?IPLAYERS.find(x=>x.id===f.player_id):null; const j=(f.contenu&&f.contenu.joueurs)||[];
+      return pl?pl.name:(j.length>1?j.length+' joueurs':'Collectif'); };
+    const list=FICHES.filter(f=>(!BIB.cat||fsFamily(f.preset)===BIB.cat)&&(!q||[f.titre,fsPL(f.preset),who(f)].join(' ').toLowerCase().includes(q)));
+    if(!list.length){box.innerHTML=`<div class="bibEmpty">${FICHES.length?'Aucune fiche ne correspond.':'Aucune fiche. Crée la première avec « ＋ Nouvelle fiche », ou depuis une séance prévue (Prescription › 📄 Fiche).'}</div>`;return;}
+    box.innerHTML=list.map(f=>{
+      const bl=((f.contenu&&f.contenu.blocs)||[]), nE=bl.reduce((n,b)=>n+((b.rows||[]).length),0);
+      return `<div class="bibCard fsCard" role="button" tabindex="0" onclick="fsOpen('${f.id}')" onkeydown="if(event.key==='Enter')fsOpen('${f.id}')" title="Ouvrir la fiche">
+        <div class="bibThumb fsThumb fam-${fsFamily(f.preset)||'x'}"><span class="q">${plEsc(fsPL(f.preset)||'Sans préréglage')}</span><span class="d">${f.date?plEsc(fsLongDate(f.date)):''}</span></div>
+        <div class="bibInfo"><b>${plEsc(f.titre||fsPL(f.preset)||'Séance')}</b>
+          <div class="bibMeta"><small>${plEsc(who(f))} · ${bl.length} bloc${bl.length>1?'s':''} · ${nE} exercice${nE>1?'s':''}${f.duree_min?' · '+f.duree_min+' min':''}</small></div>
+          <div class="fsCardActs"><button type="button" class="btn" onclick="event.stopPropagation();fsPrintId('${f.id}')">PDF</button><button type="button" class="btn" onclick="event.stopPropagation();fsDuplicate('${f.id}')">Dupliquer</button></div></div>
+      </div>`;
+    }).join('');
+    return;
+  }
   if(BIB.tab==='docs'){
     const list=PROGRAMMES.filter(p=>(!BIB.cat||bibCat(p.categorie)===BIB.cat)&&(!q||(p.titre||'').toLowerCase().includes(q)));
     if(!list.length){box.innerHTML=`<div class="bibEmpty">${PROGRAMMES.length?'Aucun document ne correspond.':'Aucun document. Ajoute le premier avec « ＋ Ajouter un document ».'}</div>`;return;}
@@ -2609,7 +2806,8 @@ function renderBibGrid(){
       const url=bibUrl('exercise-images',e.image_path);
       return `<div class="bibCard bibEx" role="button" tabindex="0" onclick="bibOpen('ex','${e.id}')" onkeydown="if(event.key==='Enter')bibOpen('ex','${e.id}')" title="Modifier">
         <div class="bibThumb">${url?`<img src="${url}" alt="" loading="lazy">`:`<span class="bibNoFile">${plEsc((e.nom||'?').slice(0,1).toUpperCase())}</span>`}</div>
-        <div class="bibInfo"><b>${plEsc(e.nom||'')}</b><div class="bibMeta">${tag(e.categorie)}</div></div>
+        <div class="bibInfo"><b>${plEsc(e.nom||'')}</b><div class="bibMeta">${tag(e.categorie)}${e.plan&&FS_PLAN_LABEL[e.plan]?`<span class="bibTag c-plan">${FS_PLAN_LABEL[e.plan]}</span>`:''}</div></div>
+        ${e.video_url?'<span class="bibVid" title="Vidéo enregistrée">▶</span>':''}
       </div>`;
     }).join('');
   }
@@ -2640,17 +2838,33 @@ function bibOpen(kind,id){
     <div class="qaStep"><span class="qaNum">3</span>${isDoc?'Fichier <span class="qaSub">PDF, PNG ou JPEG</span>':'Photo <span class="qaSub">facultative</span>'}</div>
     ${cur}
     <input type="file" id="bibFile" class="bibInput" accept="${isDoc?'application/pdf,image/png,image/jpeg':'image/*'}">
+    ${isDoc?'':`<div class="bibFsHead">Pour les fiches de séance <span class="qaSub">facultatif — rempli une fois, repris automatiquement dans chaque fiche</span></div>
+    <div class="qaStep"><span class="qaNum">4</span>Plan de sollicitation</div>
+    <div class="bibPlans" id="bibPlanBox"></div>
+    <div class="qaStep"><span class="qaNum">5</span>Lien vidéo <span class="qaSub">YouTube non répertorié, Google Drive… ouvert au clic sur la vignette</span></div>
+    <input type="url" id="bibVideo" class="bibInput" value="${plEsc(it?.video_url||'')}" placeholder="https://…">
+    <div class="qaStep"><span class="qaNum">6</span>Variante / matériel</div>
+    <input type="text" id="bibMat" class="bibInput" value="${plEsc(it?.materiel||'')}" placeholder="Ex. pieds décalés · aquabag">
+    <div class="qaStep"><span class="qaNum">7</span>Consignes</div>
+    <input type="text" id="bibCons" class="bibInput" value="${plEsc(it?.consignes||'')}" placeholder="Ex. Réagir au signal sonore">
+    <div class="qaStep"><span class="qaNum">8</span>Intentions</div>
+    <input type="text" id="bibInt" class="bibInput" value="${plEsc(it?.intentions||'')}" placeholder="Ex. Le plus haut possible (vitesse max)">`}
     <div class="bibActions">
       ${it?`<button type="button" class="btn danger" onclick="bibDelete()">Supprimer</button>`:''}
       <button type="button" class="btn primary" id="bibSaveBtn" onclick="bibSave()">Enregistrer</button>
     </div>`;
-  bibRenderCatBox();
+  BIB.formPlan=it?.plan||'';
+  bibRenderCatBox(); bibRenderPlanBox();
   document.getElementById('bibOverlay').classList.add('on');
   setTimeout(()=>document.getElementById('bibName')?.focus(),30);
 }
 function bibRenderCatBox(){
   const box=document.getElementById('bibCatBox'); if(!box)return;
   box.innerHTML=BIB_CATS.map(([k,l])=>`<button type="button" class="qaSeg${BIB.formCat===k?' on':''}" onclick="BIB.formCat='${k}';bibRenderCatBox()">${l}</button>`).join('');
+}
+function bibRenderPlanBox(){
+  const box=document.getElementById('bibPlanBox'); if(!box)return;
+  box.innerHTML=FS_PLANS.map(([k,l])=>`<button type="button" class="qaSeg${BIB.formPlan===k?' on':''}" onclick="BIB.formPlan=BIB.formPlan==='${k}'?'':'${k}';bibRenderPlanBox()">${l}</button>`).join('');
 }
 function bibClose(){ document.getElementById('bibOverlay').classList.remove('on'); BIB.edit=null; }
 async function bibUpload(bucket,name,file,maxDim,q){
@@ -2677,6 +2891,8 @@ async function bibSave(){
     if(isDoc&&file.size>60*1024*1024){alert('Fichier trop lourd (60 Mo max).');return;}
     if(!isDoc&&!file.type.startsWith('image/')){alert('Choisis une image.');return;}
   }
+  const vid0=(document.getElementById('bibVideo')?.value||'').trim();
+  if(!isDoc&&vid0&&!/^https?:\/\//i.test(vid0)){alert('Le lien vidéo doit commencer par https:// (copie le lien de partage complet).');return;}
   const btn=document.getElementById('bibSaveBtn'); btn.disabled=true; btn.textContent='Enregistrement…';
   const bucket=isDoc?'programmes':'exercise-images';
   // documents : 1600 px (texte scanné encore lisible) · exercices : 700 px
@@ -2685,10 +2901,20 @@ async function bibSave(){
   const table=isDoc?'programmes':'exercise_bank';
   const row=isDoc?{titre:name,categorie:BIB.formCat}:{nom:name,categorie:BIB.formCat};
   if(path)row[isDoc?'pdf_path':'image_path']=path;
+  // champs « fiches de séance » (script v43) : envoyés à part pour ne jamais bloquer
+  // l'enregistrement de base si le script n'a pas encore été exécuté
+  let extra=null;
+  if(!isDoc){
+    const v=id=>(document.getElementById(id)?.value||'').trim()||null;
+    extra={plan:BIB.formPlan||null,video_url:v('bibVideo'),materiel:v('bibMat'),consignes:v('bibCons'),intentions:v('bibInt')};
+  }
   const oldPath=it?(isDoc?it.pdf_path:it.image_path):null;
-  const {error}=it
-    ?await supa.from(table).update(row).eq('id',it.id)
-    :await supa.from(table).insert({...row,created_by:CURRENT_USER_LABEL});
+  const save=r=>it?supa.from(table).update(r).eq('id',it.id):supa.from(table).insert({...r,created_by:CURRENT_USER_LABEL});
+  let {error}=await save(extra?{...row,...extra}:row);
+  if(error&&extra&&/column|schema cache/i.test(error.message)){
+    ({error}=await save(row));
+    if(!error)setTimeout(()=>alert("Exercice enregistré, mais sans la vidéo, le plan, les consignes, les intentions ni le matériel : exécute le script schema_supabase_v43_fiches_seance.sql dans Supabase."),50);
+  }
   if(error){
     if(path)supa.storage.from(bucket).remove([path]);   // pas de fichier orphelin
     alert('Erreur d\'enregistrement : '+error.message+(/check|violates|policy|row-level/i.test(error.message)?'\n\nExécute le script schema_supabase_v42_bibliotheque.sql dans Supabase.':''));
@@ -2711,6 +2937,532 @@ async function bibDelete(){
   bibClose();
   await loadProgrammes(); renderBib();
 }
+
+/* ═══════ FICHES DE SÉANCE (v52 · 06/10) ═══════
+   Générateur sur le modèle de la fiche Force-Vitesse de Julien (PowerPoint) :
+   · un paramètre de travail (préréglage) pré-remplit séries, rép., tempo, intensité, VBT, RPE/RIR et R′ ;
+   · les exercices viennent de la banque : consignes, intentions, variante et vidéo saisies une seule fois ;
+   · chaque case reste modifiable ; une case modifiée à la main n'est plus écrasée par le préréglage ;
+   · blocs par plan de sollicitation : « enchaîné » (séries = tours, R′ après le bloc) ou « séries successives » ;
+   · sortie PDF 16:9 au format maillot extérieur ; la vignette d'un exercice ouvre sa vidéo (lien actif dans le PDF). */
+let FICHES=[], FS_MISSING=false, FS=null, FS_PICK=null;
+const FS_PLANS=[['vertical','Vertical'],['horizontal','Horizontal'],['lateral','Latéral'],['rotation','Rotation'],
+  ['anti_ext','Anti-extension'],['anti_rot','Anti-rotation'],['anti_lat','Anti-flexion latérale'],['multi','Multi-plan']];
+const FS_PLAN_LABEL=Object.fromEntries(FS_PLANS);
+// exercice de la banque classé « anti-… » → préréglage gainage correspondant, quel que soit celui de la fiche
+const FS_PLAN_GAIN={anti_ext:'g_aext',anti_rot:'g_arot',anti_lat:'g_alat'};
+const FS_FIELDS=[['series','Séries'],['reps','Rép. / durée'],['tempo','Tempo'],['intensite','Intensité'],['vbt','VBT m/s'],['rpe','RPE / RIR'],['recup','R′']];
+const FS_FIELD_KEYS=FS_FIELDS.map(f=>f[0]);
+/* Préréglages validés le 06/10 (Pierrick) : force en dégressif 5-4-3 à charge croissante,
+   gainage en 5 modalités (iso, dynamique, anti-extension, anti-rotation, anti-flexion latérale). */
+const FS_PRESETS=[
+  {k:'force', l:'Force max',     mode:'succ', v:{series:'3',reps:'5-4-3',tempo:'30X0',intensite:'80 → 85 → 90 %',vbt:'0,50 → 0,35',rpe:'7 → 9 · RIR 2 → 1',recup:'3′'}},
+  {k:'fv',    l:'Force-vitesse', mode:'succ', v:{series:'3',reps:'3-5',tempo:'20X0',intensite:'60-75 %',vbt:'0,75-1,0',rpe:'7 · RIR 3',recup:'2′30'}},
+  {k:'explo', l:'Explosivité',   mode:'ench', v:{series:'3',reps:'4-6',tempo:'10X0',intensite:'30-50 %',vbt:'1,0-1,5',rpe:'6 · RIR 4+',recup:'2′'}},
+  {k:'plio',  l:'Pliométrie',    mode:'ench', v:{series:'3',reps:'5-8 contacts',tempo:'contact < 250 ms',intensite:'Poids de corps',vbt:'',rpe:'6',recup:'1′30'}},
+  {k:'hyper', l:'Hypertrophie',  mode:'succ', v:{series:'4',reps:'8-12',tempo:'3010',intensite:'70-80 %',vbt:'',rpe:'8 · RIR 2',recup:'1′30'}},
+  {k:'renfo', l:'Renforcement',  mode:'ench', v:{series:'3',reps:'12-15',tempo:'2020',intensite:'55-65 %',vbt:'',rpe:'7 · RIR 3',recup:'1′'}},
+  {k:'prev',  l:'Prévention',    mode:'ench', v:{series:'3',reps:'6-8',tempo:'4010',intensite:'PDC / élastique',vbt:'',rpe:'6-7',recup:'1′'}},
+  {k:'g_iso', l:'Gainage', gl:'Isométrique',           mode:'ench', v:{series:'3',reps:'20-30″',tempo:'Iso',intensite:'PDC → lesté',vbt:'',rpe:'6-7',recup:'45″'}},
+  {k:'g_dyn', l:'Gainage', gl:'Dynamique',             mode:'ench', v:{series:'3',reps:'8-12',tempo:'2020',intensite:'PDC → lesté',vbt:'',rpe:'6-7',recup:'45″'}},
+  {k:'g_aext',l:'Gainage', gl:'Anti-extension',        mode:'ench', v:{series:'3',reps:'6-10',tempo:'3010',intensite:'PDC → roue / lest',vbt:'',rpe:'7',recup:'45″'}},
+  {k:'g_arot',l:'Gainage', gl:'Anti-rotation',         mode:'ench', v:{series:'3',reps:'8-10/côté',tempo:'tenue 2″',intensite:'Élastique / poulie',vbt:'',rpe:'6-7',recup:'45″'}},
+  {k:'g_alat',l:'Gainage', gl:'Anti-flexion latérale', mode:'ench', v:{series:'3',reps:'20-30″/côté',tempo:'Iso',intensite:'PDC → kettlebell',vbt:'',rpe:'6-7',recup:'45″'}},
+  {k:'vit',   l:'Vitesse / COD', mode:'succ', v:{series:'3',reps:'3-4',tempo:'',intensite:'Vitesse max',vbt:'',rpe:'',recup:'2′ (complète)'}},
+  {k:'activ', l:'Activation / mobilité', mode:'ench', v:{series:'2',reps:'8-10',tempo:'Contrôlé',intensite:'PDC / élastique',vbt:'',rpe:'4-5',recup:'30″'}},
+];
+const FS_P=Object.fromEntries(FS_PRESETS.map(p=>[p.k,p]));
+const FS_FAMILIES=[['force','Force max'],['fv','Force-vitesse'],['explo','Explosivité'],['plio','Pliométrie'],['hyper','Hypertrophie'],
+  ['renfo','Renforcement'],['prev','Prévention'],['gainage','Gainage'],['vit','Vitesse / COD'],['activ','Activation / mobilité']];
+// type de séance prévue (charge_actions : groupe, sinon nom) → préréglage proposé
+const FS_FROM_TYPE={'Force max':'force','Puissance / force-vitesse':'fv','Hypertrophie':'hyper','Prévention / renforcement':'prev',
+  'Réathlétisation salle':'renfo','Vitesse':'vit','COD':'vit'};
+function fsPL(k){ const p=FS_P[k]; return !p?'':(p.gl?'Gainage · '+p.gl:p.l); }
+function fsFamily(k){ return /^g_/.test(k||'')?'gainage':(k||''); }
+function fsFamilyLabel(f){ const x=FS_FAMILIES.find(y=>y[0]===f); return x?x[1]:'Sans préréglage'; }
+let fsSeq=0; const fsUid=()=>'u'+Date.now().toString(36)+(++fsSeq);
+function fsToday(){ return new Date().toISOString().slice(0,10); }
+
+async function loadFiches(){
+  const {data,error}=await supa.from('fiches_seance').select('*').order('date',{ascending:false});
+  if(error){
+    FS_MISSING=/relation|does not exist|schema cache|not find|404/i.test(error.message||'');
+    if(!FS_MISSING)console.error(error);
+    FICHES=[]; return;
+  }
+  FS_MISSING=false; FICHES=data||[];
+}
+function fsOnRealtime(payload){
+  if(payload.eventType==='DELETE'){ FICHES=FICHES.filter(f=>f.id!==payload.old.id); }
+  else{ const i=FICHES.findIndex(f=>f.id===payload.new.id); if(i>-1)FICHES[i]=payload.new; else FICHES.unshift(payload.new); }
+  fsRefreshLists();
+}
+function fsRefreshLists(){
+  if(BIB.tab==='fiches')renderBib();
+  if(document.getElementById('prUpcoming'))renderPrescUpcoming();
+}
+
+/* ── état de l'éditeur ── */
+function fsNewBloc(presetKey){
+  const p=FS_P[presetKey];
+  return {uid:fsUid(),label:'',mode:p?p.mode:'ench',tours:p?p.v.series:'',recup:p?p.v.recup:'',man:[],rows:[]};
+}
+function fsBlank(over){
+  const st={id:null,titre:'',titreAuto:true,preset:'',date:fsToday(),duree_min:null,player_id:null,presc_key:null,joueurs:[],blocs:[],dirty:false,...over};
+  if(!st.blocs.length)st.blocs=[fsNewBloc(st.preset)];
+  return st;
+}
+function fsFromDb(f){
+  const c=f.contenu||{};
+  return {id:f.id,titre:f.titre||'',titreAuto:!f.titre||f.titre===fsPL(f.preset),preset:f.preset||'',date:f.date||'',duree_min:f.duree_min||null,
+    player_id:f.player_id||null,presc_key:f.presc_key||null,joueurs:Array.isArray(c.joueurs)?c.joueurs:[],dirty:false,
+    blocs:(c.blocs||[]).map(b=>({label:'',mode:'ench',tours:'',recup:'',...b,uid:fsUid(),man:Array.isArray(b.man)?b.man:[],
+      rows:(b.rows||[]).map(r=>({nom:'',sub:'',consignes:'',intentions:'',video:'',q:f.preset||'',qSet:false,...r,uid:fsUid(),man:Array.isArray(r.man)?r.man:[]}))}))};
+}
+function fsMan(o,f,on){ o.man=(o.man||[]).filter(x=>x!==f); if(on)o.man.push(f); }
+function fsApplyRow(r){ const p=FS_P[r.q]; if(!p)return; FS_FIELD_KEYS.forEach(f=>{ if(!r.man.includes(f))r[f]=p.v[f]||''; }); }
+function fsApplyBloc(b){
+  const p=FS_P[FS.preset]; if(!p)return;
+  if(!b.man.includes('mode'))b.mode=p.mode;
+  if(!b.man.includes('tours'))b.tours=p.v.series;
+  if(!b.man.includes('recup'))b.recup=p.v.recup;
+}
+function fsDirty(){ if(FS)FS.dirty=true; }
+function fsEx(r){ return r&&r.ex_id?EXBANK.find(e=>e.id===r.ex_id)||null:null; }
+function fsVideo(r,ex){ const u=String((r&&r.video)||(ex&&ex.video_url)||'').trim(); return /^https?:\/\//i.test(u)?u:''; }
+function fsImg(ex){ return ex&&ex.image_path?bibUrl('exercise-images',ex.image_path):null; }
+
+/* ── ouverture / fermeture ── */
+function fsOpen(id){
+  if(id){ const f=FICHES.find(x=>x.id===id); if(!f)return; FS=fsFromDb(f); }
+  else FS=fsBlank();
+  FS_PICK=null; fsShow();
+}
+function fsShow(){
+  fsRender();
+  document.getElementById('fsOverlay').classList.add('on');
+  document.getElementById('fsOverlay').querySelector('.fsEdScroll').scrollTop=0;
+}
+async function fsClose(force){
+  if(!FS){document.getElementById('fsOverlay').classList.remove('on');return;}
+  if(!force&&FS.dirty&&!await customConfirm('<b>Fermer sans enregistrer ?</b>\n\nLes modifications de cette fiche seront perdues.'))return;
+  document.getElementById('fsOverlay').classList.remove('on');
+  FS=null; FS_PICK=null;
+}
+function fsFromPresc(id){
+  const p=PRESC.find(x=>x.id===id); if(!p)return;
+  const key=prescKey(p), ex=FICHES.find(f=>f.presc_key===key);
+  if(ex)return fsOpen(ex.id);
+  const g=prescGroup(p), a=CHG_ACTIONS.find(x=>x.id===p.action_id);
+  const preset=a?(FS_FROM_TYPE[a.groupe]||FS_FROM_TYPE[a.nom]||''):'';
+  FS=fsBlank({titre:a?a.nom:(p.objectif||p.titre||''),titreAuto:!(a||p.objectif||p.titre),date:p.date,duree_min:p.duree_prevue_min||null,
+    presc_key:key,player_id:g.length===1?g[0].player_id:null,joueurs:g.map(x=>x.player_id).filter(Boolean),dirty:true});
+  FS_PICK=null;
+  if(preset)fsSetPreset(preset,true);
+  fsShow();
+}
+function fsDuplicate(id){
+  const src=id?FICHES.find(x=>x.id===id):null;
+  const st=src?fsFromDb(src):(FS?JSON.parse(JSON.stringify(FS)):null); if(!st)return;
+  st.id=null; st.presc_key=null; st.date=fsToday(); st.titre=(st.titre||fsPL(st.preset))+' (copie)'; st.titreAuto=false; st.dirty=true;
+  st.blocs.forEach(b=>{b.uid=fsUid();b.rows.forEach(r=>r.uid=fsUid());});
+  FS=st; FS_PICK=null; fsShow();
+}
+
+/* ── préréglage ── */
+function fsSetPreset(k,silent){
+  if(!FS)return;
+  if(k==='gainage')k=/^g_/.test(FS.preset)?FS.preset:'g_iso';
+  if(!FS_P[k])return;
+  FS.preset=k;
+  FS.blocs.forEach(b=>{
+    fsApplyBloc(b);
+    b.rows.forEach(r=>{ if(!r.qSet){r.q=k;fsApplyRow(r);} else if(r.q===k)r.qSet=false; });
+  });
+  if(FS.titreAuto)FS.titre=fsPL(k);
+  fsDirty();
+  if(!silent)fsRender();
+}
+function fsPresetSummary(k){
+  const p=FS_P[k]; if(!p)return '';
+  const v=p.v, parts=[`${v.series} × ${v.reps}`];
+  if(v.tempo)parts.push('tempo '+v.tempo);
+  if(v.intensite)parts.push(v.intensite);
+  if(v.vbt)parts.push('VBT '+v.vbt+' m/s');
+  if(v.rpe)parts.push('RPE '+v.rpe);
+  parts.push('R′ '+v.recup);
+  parts.push(p.mode==='ench'?'exercices enchaînés':'séries successives');
+  return parts.join(' · ');
+}
+function fsQOptions(sel){
+  const o=p=>`<option value="${p.k}"${p.k===sel?' selected':''}>${plEsc(p.gl||p.l)}</option>`;
+  return FS_PRESETS.filter(p=>!p.gl).map(o).join('')+`<optgroup label="Gainage">${FS_PRESETS.filter(p=>p.gl).map(o).join('')}</optgroup>`;
+}
+
+/* ── rendu de l'éditeur ── */
+function fsRender(){
+  const st=FS; if(!st)return;
+  document.getElementById('fsTitle').textContent=st.id?'Modifier la fiche de séance':'Nouvelle fiche de séance';
+  const fam=fsFamily(st.preset);
+  const players=IPLAYERS.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'','fr'));
+  const grpLbl=st.joueurs.length>1?`Groupe — ${st.joueurs.length} joueurs`:'Groupe — sans joueur';
+  document.getElementById('fsBody').innerHTML=`
+    <div class="qaStep"><span class="qaNum">1</span>Paramètre de travail <span class="qaSub">pré-remplit séries, répétitions, tempo, intensité, VBT, RPE / RIR et récupération</span></div>
+    <div class="fsQs">${FS_FAMILIES.map(([k,l])=>`<button type="button" class="fsQ${fam===k?' on':''}" onclick="fsSetPreset('${k}')">${l}</button>`).join('')}</div>
+    ${fam==='gainage'?`<div class="fsQs sub"><span class="fsQsLbl">Modalité</span>${FS_PRESETS.filter(p=>p.gl).map(p=>`<button type="button" class="fsQ sm${st.preset===p.k?' on':''}" onclick="fsSetPreset('${p.k}')">${p.gl}</button>`).join('')}</div>`:''}
+    ${st.preset?`<div class="fsQInfo"><b>${plEsc(fsPL(st.preset))}</b> · ${plEsc(fsPresetSummary(st.preset))}</div>`:''}
+    <div class="qaStep"><span class="qaNum">2</span>En-tête</div>
+    <div class="fsHeadGrid">
+      <label class="fsLbl fsLblT">Titre<input type="text" id="fsTitre" value="${plEsc(st.titre)}" placeholder="${plEsc(fsPL(st.preset)||'Ex. Force-vitesse')}" oninput="fsHeadIn(this)"></label>
+      <label class="fsLbl">Date<input type="date" id="fsDate" value="${plEsc(st.date||'')}" onchange="fsHeadIn(this)"></label>
+      <label class="fsLbl">Durée (min)<input type="number" id="fsDuree" min="0" step="5" value="${st.duree_min??''}" oninput="fsHeadIn(this)"></label>
+      <label class="fsLbl">Joueur<select id="fsPlayer" onchange="fsHeadIn(this)"><option value="">${grpLbl}</option>${players.map(p=>`<option value="${p.id}"${p.id===st.player_id?' selected':''}>${plEsc(p.name)}</option>`).join('')}</select></label>
+    </div>
+    <div class="qaStep"><span class="qaNum">3</span>Blocs et exercices <span class="qaSub">une case modifiée à la main est encadrée en rose : le préréglage ne l'écrase plus</span></div>
+    <div id="fsBlocs"></div>
+    <button type="button" class="btn fsAddBloc" onclick="fsAddBloc()">＋ Ajouter un bloc</button>
+    <datalist id="fsPlanList">${FS_PLANS.map(([,l])=>`<option value="${l}">`).join('')}</datalist>`;
+  fsRenderBlocs();
+  document.getElementById('fsFoot').innerHTML=`
+    ${st.id?`<button type="button" class="btn danger" onclick="fsDelete()">Supprimer</button><button type="button" class="btn" onclick="fsDuplicate()">Dupliquer</button>`:''}
+    <span class="fsFootSp"></span>
+    <button type="button" class="btn" onclick="fsPrint(FS)">PDF</button>
+    <button type="button" class="btn primary" id="fsSaveBtn" onclick="fsSave()">Enregistrer</button>`;
+}
+function fsRenderBlocs(focusPick){
+  const box=document.getElementById('fsBlocs'); if(!box||!FS)return;
+  const st=FS, ready=!!st.preset;
+  box.innerHTML=(ready?'':'<div class="fsNeedQ">Choisis d\'abord le paramètre de travail : les charges se rempliront dès que tu ajoutes un exercice.</div>')+
+    st.blocs.map((b,bi)=>fsBlocEdHTML(b,bi,ready)).join('');
+  if(FS_PICK){
+    fsPickList();
+    const q=document.getElementById('fsPickQ'); if(q){q.value=FS_PICK.q||''; if(focusPick)q.focus();}
+  }
+}
+function fsBlocEdHTML(b,bi,ready){
+  const ench=b.mode!=='succ', n=FS.blocs.length;
+  const m=f=>b.man.includes(f)?' man':'';
+  return `<section class="fsBlocEd" data-b="${bi}">
+    <div class="fsBlocH">
+      <span class="fsBlocN">${bi+1}</span>
+      <input type="text" class="fsBlocL" list="fsPlanList" value="${plEsc(b.label)}" placeholder="Plan : Vertical, Horizontal…" data-b="${bi}" data-f="label" oninput="fsIn(this)">
+      <div class="fsMode" role="group" aria-label="Organisation du bloc">
+        <button type="button" class="${ench?'on':''}" onclick="fsSetMode(${bi},'ench')" title="Exercices enchaînés, récupération après le bloc">Enchaîné</button>
+        <button type="button" class="${ench?'':'on'}" onclick="fsSetMode(${bi},'succ')" title="Toutes les séries d'un exercice, puis le suivant">Séries successives</button>
+      </div>
+      ${ench?`<label class="fsMini">Tours<input type="text" class="${m('tours').trim()}" value="${plEsc(b.tours)}" data-b="${bi}" data-f="tours" oninput="fsIn(this)"></label>
+      <label class="fsMini">R′ après le bloc<input type="text" class="${m('recup').trim()}" value="${plEsc(b.recup)}" data-b="${bi}" data-f="recup" oninput="fsIn(this)"></label>`:''}
+      <span class="fsActs">
+        <button type="button" onclick="fsMoveBloc(${bi},-1)" ${bi?'':'disabled'} title="Monter le bloc" aria-label="Monter le bloc">↑</button>
+        <button type="button" onclick="fsMoveBloc(${bi},1)" ${bi<n-1?'':'disabled'} title="Descendre le bloc" aria-label="Descendre le bloc">↓</button>
+        <button type="button" onclick="fsDelBloc(${bi})" title="Supprimer le bloc" aria-label="Supprimer le bloc">🗑</button>
+      </span>
+    </div>
+    <div class="fsRows">${b.rows.length?b.rows.map((r,ri)=>fsRowEdHTML(b,bi,r,ri)).join(''):'<div class="fsRowsEmpty">Aucun exercice dans ce bloc.</div>'}</div>
+    ${FS_PICK&&FS_PICK.b===bi?fsPickerHTML():`<button type="button" class="btn fsAddEx" onclick="fsPickOpen(${bi})" ${ready?'':'disabled'}>＋ Exercice</button>`}
+  </section>`;
+}
+function fsRowEdHTML(b,bi,r,ri){
+  const ex=fsEx(r), img=fsImg(ex), vid=fsVideo(r,ex), succ=b.mode==='succ', nr=b.rows.length;
+  const fld=(f,l)=>`<label class="fsP"><span>${l}</span><input type="text" class="${r.man.includes(f)?'man':''}" value="${plEsc(r[f]||'')}" placeholder="—" data-b="${bi}" data-r="${ri}" data-f="${f}" oninput="fsIn(this)"></label>`;
+  const th=img?`<img src="${img}" alt="">`:`<span>${plEsc((r.nom||'?').slice(0,1).toUpperCase())}</span>`;
+  return `<div class="fsRow" data-b="${bi}" data-r="${ri}">
+    <div class="fsRowTop">
+      ${vid?`<a class="fsRowTh" href="${plEsc(vid)}" target="_blank" rel="noopener" title="Voir la vidéo">${th}<i>▶</i></a>`:`<span class="fsRowTh" title="${ex?'Pas encore de vidéo : ajoute le lien dans Bibliothèque › Exercices':'Exercice hors banque'}">${th}</span>`}
+      <div class="fsRowNm">
+        <input type="text" class="fsNm" value="${plEsc(r.nom)}" data-b="${bi}" data-r="${ri}" data-f="nom" oninput="fsIn(this)" aria-label="Exercice">
+        <input type="text" class="fsSub" value="${plEsc(r.sub||'')}" placeholder="variante / matériel" data-b="${bi}" data-r="${ri}" data-f="sub" oninput="fsIn(this)" aria-label="Variante ou matériel">
+      </div>
+      <select class="fsRowQ${r.qSet?' set':''}" onchange="fsRowQ(${bi},${ri},this.value)" title="Préréglage de cet exercice">${fsQOptions(r.q)}</select>
+      <span class="fsActs">
+        <button type="button" class="fsReset" onclick="fsResetRow(${bi},${ri})" ${r.man.length?'':'hidden'} title="Revenir aux valeurs du préréglage" aria-label="Revenir au préréglage">↺</button>
+        <button type="button" onclick="fsMoveRow(${bi},${ri},-1)" ${ri?'':'disabled'} aria-label="Monter">↑</button>
+        <button type="button" onclick="fsMoveRow(${bi},${ri},1)" ${ri<nr-1?'':'disabled'} aria-label="Descendre">↓</button>
+        <button type="button" onclick="fsDelRow(${bi},${ri})" aria-label="Retirer l'exercice">✕</button>
+      </span>
+    </div>
+    <div class="fsParams${succ?' succ':''}">
+      ${succ?fld('series','Séries'):`<div class="fsP fixed"><span>Séries</span><b><span class="fsToursV">${plEsc(b.tours||'—')}</span> tours</b></div>`}
+      ${fld('reps','Rép. / durée')}${fld('tempo','Tempo')}${fld('intensite','Intensité')}${fld('vbt','VBT m/s')}${fld('rpe','RPE / RIR')}${succ?fld('recup','R′'):''}
+    </div>
+    <div class="fsTexts">
+      <label class="fsP"><span>Consignes</span><input type="text" value="${plEsc(r.consignes||'')}" data-b="${bi}" data-r="${ri}" data-f="consignes" oninput="fsIn(this)"></label>
+      <label class="fsP"><span>Intentions</span><input type="text" value="${plEsc(r.intentions||'')}" data-b="${bi}" data-r="${ri}" data-f="intentions" oninput="fsIn(this)"></label>
+      ${ex?'':`<label class="fsP fsVidIn"><span>Lien vidéo</span><input type="url" value="${plEsc(r.video||'')}" placeholder="https://…" data-b="${bi}" data-r="${ri}" data-f="video" oninput="fsIn(this)"></label>`}
+    </div>
+  </div>`;
+}
+function fsHeadIn(el){
+  if(!FS)return;
+  const v=el.value; fsDirty();
+  if(el.id==='fsTitre'){ FS.titre=v; FS.titreAuto=!v.trim(); }
+  else if(el.id==='fsDate')FS.date=v;
+  else if(el.id==='fsDuree')FS.duree_min=v===''?null:Math.max(0,parseInt(v,10)||0);
+  else if(el.id==='fsPlayer')FS.player_id=v||null;
+}
+function fsIn(el){
+  if(!FS)return;
+  const bi=+el.dataset.b, ri=el.dataset.r, f=el.dataset.f, v=el.value, b=FS.blocs[bi]; if(!b)return;
+  fsDirty();
+  if(ri===undefined||ri===''){
+    b[f]=v;
+    if(f==='tours'||f==='recup'){
+      const p=FS_P[FS.preset], pv=p?(f==='tours'?p.v.series:p.v.recup):'';
+      fsMan(b,f,v.trim()!==String(pv)); el.classList.toggle('man',b.man.includes(f));
+      if(f==='tours')el.closest('.fsBlocEd').querySelectorAll('.fsToursV').forEach(x=>x.textContent=v.trim()||'—');
+    }
+    return;
+  }
+  const r=b.rows[+ri]; if(!r)return;
+  r[f]=v;
+  if(FS_FIELD_KEYS.includes(f)){
+    const pv=(FS_P[r.q]&&FS_P[r.q].v[f])||'';
+    fsMan(r,f,v.trim()!==pv); el.classList.toggle('man',r.man.includes(f));
+    const rs=el.closest('.fsRow').querySelector('.fsReset'); if(rs)rs.hidden=!r.man.length;
+  }
+}
+function fsSetMode(bi,m){
+  const b=FS.blocs[bi]; if(!b)return;
+  b.mode=m; const p=FS_P[FS.preset]; fsMan(b,'mode',!!p&&m!==p.mode);
+  fsDirty(); fsRenderBlocs();
+}
+function fsRowQ(bi,ri,k){
+  const r=FS.blocs[bi]?.rows[ri]; if(!r||!FS_P[k])return;
+  r.q=k; r.qSet=k!==FS.preset; fsApplyRow(r); fsDirty(); fsRenderBlocs();
+}
+function fsResetRow(bi,ri){
+  const r=FS.blocs[bi]?.rows[ri]; if(!r)return;
+  r.man=[]; fsApplyRow(r); fsDirty(); fsRenderBlocs();
+}
+function fsMoveRow(bi,ri,d){
+  const rows=FS.blocs[bi]?.rows, j=ri+d; if(!rows||j<0||j>=rows.length)return;
+  [rows[ri],rows[j]]=[rows[j],rows[ri]]; fsDirty(); fsRenderBlocs();
+}
+function fsDelRow(bi,ri){
+  const rows=FS.blocs[bi]?.rows; if(!rows)return;
+  rows.splice(ri,1); fsDirty(); fsRenderBlocs();
+}
+function fsAddBloc(){
+  FS.blocs.push(fsNewBloc(FS.preset)); fsDirty(); FS_PICK=null; fsRenderBlocs();
+  const all=document.querySelectorAll('#fsBlocs .fsBlocEd'); all[all.length-1]?.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function fsMoveBloc(bi,d){
+  const j=bi+d; if(j<0||j>=FS.blocs.length)return;
+  [FS.blocs[bi],FS.blocs[j]]=[FS.blocs[j],FS.blocs[bi]]; FS_PICK=null; fsDirty(); fsRenderBlocs();
+}
+async function fsDelBloc(bi){
+  const b=FS.blocs[bi]; if(!b)return;
+  if(b.rows.length&&!await customConfirm(`Supprimer le bloc ${bi+1}${b.label?' « '+plEsc(b.label)+' »':''} et ses ${b.rows.length} exercice${b.rows.length>1?'s':''} ?`))return;
+  FS.blocs.splice(bi,1); if(!FS.blocs.length)FS.blocs.push(fsNewBloc(FS.preset));
+  FS_PICK=null; fsDirty(); fsRenderBlocs();
+}
+
+/* ── choix des exercices (dans le bloc) ── */
+function fsPickOpen(bi){ if(!FS.preset)return; FS_PICK={b:bi,q:''}; fsRenderBlocs(true); }
+function fsPickClose(){ FS_PICK=null; fsRenderBlocs(); }
+function fsPickerHTML(){
+  return `<div class="fsPick">
+    <div class="fsPickBar"><input type="search" id="fsPickQ" placeholder="Rechercher dans la banque…" oninput="FS_PICK.q=this.value;fsPickList()" aria-label="Rechercher un exercice">
+      <button type="button" class="btn primary" onclick="fsPickClose()">Terminé</button></div>
+    <div class="fsPickList" id="fsPickList"></div>
+    <div class="fsPickFree"><input type="text" id="fsPickFree" placeholder="Exercice hors banque (ex. Duel aérien)" onkeydown="if(event.key==='Enter'){event.preventDefault();fsAddFree();}">
+      <button type="button" class="btn" onclick="fsAddFree()">Ajouter</button></div>
+  </div>`;
+}
+function fsPlanKeyOf(label){
+  const t=String(label||'').trim().toLowerCase(); if(!t)return '';
+  const x=FS_PLANS.find(([k,l])=>l.toLowerCase()===t||k===t); return x?x[0]:'';
+}
+function fsPickList(){
+  const box=document.getElementById('fsPickList'); if(!box||!FS_PICK)return;
+  if(!EXBANK.length){box.innerHTML='<div class="fsPickEmpty">La banque est vide : ajoute tes exercices dans Bibliothèque › Exercices, ou saisis un exercice hors banque ci-dessous.</div>';return;}
+  const b=FS.blocs[FS_PICK.b], plan=fsPlanKeyOf(b&&b.label), q=(FS_PICK.q||'').trim().toLowerCase();
+  const used={}; FS.blocs.forEach(x=>x.rows.forEach(r=>{ if(r.ex_id)used[r.ex_id]=(used[r.ex_id]||0)+1; }));
+  const list=EXBANK.filter(e=>!q||((e.nom||'')+' '+(e.materiel||'')+' '+(FS_PLAN_LABEL[e.plan]||'')+' '+(e.tags||[]).join(' ')).toLowerCase().includes(q))
+    .sort((a,c)=>(plan?((c.plan===plan)-(a.plan===plan)):0)||(a.nom||'').localeCompare(c.nom||'','fr'));
+  if(!list.length){box.innerHTML='<div class="fsPickEmpty">Aucun exercice ne correspond. Saisis-le ci-dessous comme exercice hors banque.</div>';return;}
+  box.innerHTML=list.slice(0,60).map(e=>{
+    const img=fsImg(e);
+    return `<button type="button" class="fsPickIt${used[e.id]?' used':''}" onclick="fsAddEx('${e.id}')">
+      <span class="th">${img?`<img src="${img}" alt="" loading="lazy">`:plEsc((e.nom||'?').slice(0,1).toUpperCase())}</span>
+      <span class="tx"><b>${plEsc(e.nom||'')}</b><small>${[FS_PLAN_LABEL[e.plan],e.materiel].filter(Boolean).map(plEsc).join(' · ')||BIB_CAT_LABEL[bibCat(e.categorie)]}</small></span>
+      ${e.video_url?'<span class="vd" title="Vidéo disponible">▶</span>':''}${used[e.id]?`<span class="ok" title="Déjà dans la fiche">✓${used[e.id]>1?used[e.id]:''}</span>`:''}</button>`;
+  }).join('');
+}
+function fsPushRow(row,plan){
+  const b=FS.blocs[FS_PICK.b]; if(!b)return;
+  fsApplyRow(row); b.rows.push(row);
+  if(!b.label.trim()&&plan&&FS_PLAN_LABEL[plan])b.label=FS_PLAN_LABEL[plan];
+  fsDirty(); fsRenderBlocs();
+}
+function fsAddEx(id){
+  const e=EXBANK.find(x=>x.id===id); if(!e||!FS_PICK)return;
+  const q=FS_PLAN_GAIN[e.plan]||FS.preset;
+  fsPushRow({uid:fsUid(),ex_id:e.id,nom:e.nom||'',sub:e.materiel||'',consignes:e.consignes||'',intentions:e.intentions||'',video:'',q,qSet:q!==FS.preset,man:[]},e.plan);
+}
+function fsAddFree(){
+  const inp=document.getElementById('fsPickFree'), nom=(inp?.value||'').trim(); if(!nom||!FS_PICK)return;
+  fsPushRow({uid:fsUid(),ex_id:null,nom,sub:'',consignes:'',intentions:'',video:'',q:FS.preset,qSet:false,man:[]},'');
+}
+
+/* ── enregistrer / supprimer ── */
+function fsSerialize(st){
+  return {v:1,joueurs:st.joueurs||[],blocs:st.blocs.map(b=>({label:b.label||'',mode:b.mode,tours:b.tours||'',recup:b.recup||'',man:b.man||[],
+    rows:b.rows.map(r=>{ const o={ex_id:r.ex_id||null,nom:r.nom||'',sub:r.sub||'',consignes:r.consignes||'',intentions:r.intentions||'',video:r.video||'',q:r.q,qSet:!!r.qSet,man:r.man||[]};
+      FS_FIELD_KEYS.forEach(f=>o[f]=r[f]||''); return o; })}))};
+}
+async function fsSave(){
+  const st=FS; if(!st)return false;
+  if(!st.preset){alert('Choisis le paramètre de travail.');return false;}
+  if(!st.date){alert('Indique la date de la séance.');return false;}
+  const vids=st.blocs.flatMap(b=>b.rows).map(r=>(r.video||'').trim()).filter(Boolean);
+  if(vids.some(u=>!/^https?:\/\//i.test(u))){alert('Un lien vidéo ne commence pas par https:// : copie le lien de partage complet.');return false;}
+  const titre=(st.titre||'').trim()||fsPL(st.preset);
+  const row={titre,preset:st.preset,date:st.date,duree_min:st.duree_min||null,player_id:st.player_id||null,presc_key:st.presc_key||null,
+    contenu:fsSerialize(st),updated_at:new Date().toISOString()};
+  const btn=document.getElementById('fsSaveBtn'); if(btn){btn.disabled=true;btn.textContent='Enregistrement…';}
+  const res=st.id?await supa.from('fiches_seance').update(row).eq('id',st.id)
+                 :await supa.from('fiches_seance').insert({...row,created_by:CURRENT_USER_LABEL}).select().single();
+  if(btn){btn.disabled=false;btn.textContent='Enregistrer';}
+  if(res.error){
+    alert("Erreur d'enregistrement : "+res.error.message+(/relation|does not exist|schema cache|not find/i.test(res.error.message)?'\n\nExécute le script schema_supabase_v43_fiches_seance.sql dans Supabase.':''));
+    return false;
+  }
+  if(st.id){ const i=FICHES.findIndex(f=>f.id===st.id); if(i>-1)FICHES[i]={...FICHES[i],...row}; }
+  else{ const saved=(Array.isArray(res.data)?res.data[0]:res.data)||{...row,id:'tmp'+Date.now()}; st.id=saved.id; if(!FICHES.some(f=>f.id===saved.id))FICHES.unshift(saved); }
+  FICHES.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+  st.titre=titre; st.dirty=false; FS_MISSING=false;
+  fsRender(); fsRefreshLists(); fsToast('Fiche enregistrée');
+  return true;
+}
+function fsToast(msg){
+  const t=document.getElementById('fsToast'); if(!t)return;
+  t.textContent=msg; t.classList.add('on'); clearTimeout(fsToast._t); fsToast._t=setTimeout(()=>t.classList.remove('on'),1800);
+}
+async function fsDelete(){
+  const st=FS; if(!st||!st.id)return;
+  if(!await customConfirm(`<b>Supprimer la fiche « ${plEsc(st.titre||fsPL(st.preset))} » du ${st.date?fmtDateFR(st.date):'—'} ?</b>\n\nAction définitive. Les exercices restent dans la banque.`))return;
+  const {error}=await supa.from('fiches_seance').delete().eq('id',st.id);
+  if(error){alert('Erreur : '+error.message);return;}
+  FICHES=FICHES.filter(f=>f.id!==st.id);
+  fsClose(true); fsRefreshLists();
+}
+
+/* ═══ PDF 16:9 (297 × 167 mm), template maillot extérieur ═══
+   Géométrie reprise du fond « fond_fiche_seance_epure » (1920 × 1080 → 297 × 167 mm) :
+   marge 14,85 mm · filet d'en-tête à 30,9 mm · écusson 18,6 mm entre deux rayures tangentes. */
+const FP_COLS=[8.66,23.2,38.67,38.67,32.48,18.56,13.92,20.88,15.47,15.47,18.56];
+function fsLongDate(iso){
+  if(!iso)return '';
+  const d=new Date(iso+'T12:00:00'); if(isNaN(d))return '';
+  const s=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  return s.charAt(0).toUpperCase()+s.slice(1);
+}
+function fpSR(series,reps){
+  const R=String(reps||'').trim(), S=String(series||'').trim();
+  if(!R&&!S)return '—';
+  const m=R.match(/^(\d[\d\s\-–,.→>]*(?:″|"|′|'|s\b|m\b)?)(.*)$/);
+  const main=m?m[1].trim():R, rest=m?m[2].trim():'';
+  return `${S?iEsc(S)+' × ':''}${iEsc(main)}${rest?`<span>${iEsc(rest)}</span>`:''}`;
+}
+function fpCell(v,cls){
+  const t=String(v||'').trim();
+  if(!t)return `<td class="fpNum">—</td>`;
+  const long=t.length>7;
+  // « 5 kg », « 40 % », « 20 m » ne sont jamais coupés en fin de ligne
+  const txt=iEsc(t).replace(/(\d)\s+(kg|cm|m\/s|m|%)(?![A-Za-zÀ-ÿ])/g,'$1\u00a0$2');
+  return `<td class="fpNum${cls?' '+cls:''}${long&&!cls?' l':''}">${txt}</td>`;
+}
+function fpThumb(r){
+  const ex=fsEx(r), img=fsImg(ex), vid=fsVideo(r,ex);
+  const play=vid?'<span class="fpPlay"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3.4 2.2 8.2 5 3.4 7.8Z" fill="#fff"/></svg></span>':'';
+  const inner=(img?`<img src="${iEsc(img)}" alt="">`:'<em>photo à venir</em>')+play;
+  return vid?`<a class="fpTh${img?' img':''}" href="${iEsc(vid)}" target="_blank" rel="noopener">${inner}</a>`:`<div class="fpTh${img?' img':''}">${inner}</div>`;
+}
+/* Libellé vertical du bloc : coupé en 2 lignes s'il est long, taille ajustée à la hauteur du bloc
+   (≈ en-tête 8,7 mm + 16,1 mm par ligne ; Oswald capitales ≈ 0,236 mm par caractère et par point). */
+function fpBandParts(label){
+  if(label.length<=14||!label.includes(' '))return [label];
+  const i=label.lastIndexOf(' ',Math.ceil(label.length/2)+3);
+  return i>0?[label.slice(0,i),label.slice(i+1)]:[label];
+}
+function fpBandSize(parts,nRows){
+  const longest=Math.max(1,...parts.map(x=>x.length)), avail=(8.7+16.1*nRows)*.88;
+  return Math.max(6,Math.min(11.4,avail/(longest*.236)));
+}
+function fpBlocHTML(b,idx,from,to,cont){
+  const rows=b.rows.slice(from,to), n=rows.length, ench=b.mode!=='succ';
+  const label=(String(b.label||'').trim()||('Bloc '+(idx+1))).toUpperCase()+(cont?' · SUITE':'');
+  const parts=fpBandParts(label), pt=fpBandSize(parts,n);
+  const head=`<tr><th class="fpBand" rowspan="${n+1}"><span style="font-size:${pt.toFixed(1)}pt">${parts.map(iEsc).join('<br>')}</span></th>
+    <th>Vidéo</th><th>Exercice</th><th>Consignes</th><th>Intentions</th><th>Séries × rép.</th>
+    <th>Tempo<small>temps sous tension</small></th><th>Intensité<small>%RM · charge · hauteur</small></th>
+    <th>VBT<small>m/s</small></th><th>RPE / RIR<small>effort perçu</small></th><th>R′</th></tr>`;
+  const body=rows.map((r,k)=>{
+    const series=ench?b.tours:r.series;
+    const rest=ench?(k===0?`<td class="fpRest" rowspan="${n}"><b>${iEsc(String(b.recup||'—').trim()||'—')}</b><small>après le bloc<br>(enchaîné avant)</small></td>`:''):fpCell(r.recup);
+    return `<tr><td class="fpThC">${fpThumb(r)}</td>
+      <td class="fpNm">${iEsc(r.nom||'')}${r.sub?`<i>${iEsc(r.sub)}</i>`:''}</td>
+      <td>${iEsc(r.consignes||'')||'—'}</td><td class="fpIt">${iEsc(r.intentions||'')||'—'}</td>
+      <td class="fpNum">${fpSR(series,r.reps)}</td>${fpCell(r.tempo)}${fpCell(r.intensite,'s')}${fpCell(r.vbt)}${fpCell(r.rpe)}${rest}</tr>`;
+  }).join('');
+  return `<div class="fpBlocW"><table class="fpTbl"><colgroup>${FP_COLS.map(w=>`<col style="width:${w}mm">`).join('')}</colgroup>${head}${body}</table></div>`;
+}
+function fpHead(st,nbB,nbE){
+  const p=st.player_id?IPLAYERS.find(x=>x.id===st.player_id):null;
+  const titre=String(st.titre||'').trim()||fsPL(st.preset)||'Séance';
+  const tsz=titre.length>40?16:titre.length>28?20:27;
+  const who=p?`Joueur : <b>${iEsc(p.name)}</b>`:(st.joueurs&&st.joueurs.length>1?`Groupe : <b>${st.joueurs.length} joueurs</b>`:'<b>Séance collective</b>');
+  const d=fsLongDate(st.date);
+  return `<header class="fpHd">${p?xtPhoto(p,'fpPP'):''}<div class="fpTtl">
+    <div class="xtEyebrow">${p?'Séance individualisée':'Séance collective'} · ${iEsc(XT_SEASON)}</div>
+    <h1 class="xtTitle" style="font-size:${tsz}pt">${iEsc(titre)}</h1>
+    <div class="fpChips">${st.preset?`<span class="fpChip q">Préréglage : ${iEsc(fsPL(st.preset).toLowerCase())}</span>`:''}${d?`<span class="fpChip"><b>${iEsc(d)}</b></span>`:''}${st.duree_min?`<span class="fpChip"><b>${st.duree_min} minutes</b></span>`:''}<span class="fpChip">${who}</span><span class="fpChip">${nbB} bloc${nbB>1?'s':''} · ${nbE} exercice${nbE>1?'s':''}</span></div>
+  </div></header>`;
+}
+function fpBg(){ return `<div class="fpBg" aria-hidden="true"><i class="fpS1"></i><i class="fpS2"></i><i class="fpLine"></i><span class="xtCrest"></span><div class="xtWaveCorner"></div></div>`; }
+async function fsPrint(st){
+  if(!st)return;
+  const blocs=st.blocs.map((b,i)=>({b,i})).filter(x=>x.b.rows.length);
+  if(!blocs.length){alert('Ajoute au moins un exercice avant de générer le PDF.');return;}
+  const nbE=blocs.reduce((n,x)=>n+x.b.rows.length,0);
+  const head=fpHead(st,blocs.length,nbE);
+  const anyVid=blocs.some(x=>x.b.rows.some(r=>fsVideo(r,fsEx(r))));
+  // 1. mesure hors écran, à la largeur réelle de la page
+  const meas=document.createElement('div');
+  meas.className='fpPg'; meas.style.cssText='position:fixed;left:-10000px;top:0;visibility:hidden;height:auto';
+  meas.innerHTML=`<div class="fpBody">${blocs.map(x=>fpBlocHTML(x.b,x.i,0,x.b.rows.length,false)).join('')}</div>`;
+  document.body.appendChild(meas);
+  await xtReady(meas);
+  const mm=px=>px*25.4/96;
+  const dims=[...meas.querySelectorAll('.fpTbl')].map(t=>{ const trs=[...t.rows]; return {h:mm(trs[0].getBoundingClientRect().height),rows:trs.slice(1).map(tr=>mm(tr.getBoundingClientRect().height))}; });
+  meas.remove();
+  // 2. répartition : un bloc reste entier s'il tient sur une page, sinon il est coupé entre deux lignes
+  const AVAIL=158.6-34.96, GAP=3.4;
+  const pages=[]; let cur=[], used=0;
+  const newPage=()=>{ if(cur.length)pages.push(cur); cur=[]; used=0; };
+  blocs.forEach((x,k)=>{
+    const d=dims[k], total=d.h+d.rows.reduce((a,v)=>a+v,0);
+    if(cur.length&&used+GAP+total>AVAIL&&total<=AVAIL)newPage();
+    let i=0;
+    while(i<d.rows.length){
+      const room=AVAIL-used-(cur.length?GAP:0);
+      let n=0,h=d.h;
+      while(i+n<d.rows.length&&h+d.rows[i+n]<=room){h+=d.rows[i+n];n++;}
+      if(!n){ if(cur.length){newPage();continue;} n=1; h=d.h+d.rows[i]; }
+      cur.push({b:x.b,i:x.i,from:i,to:i+n,cont:i>0}); used+=(cur.length>1?GAP:0)+h; i+=n;
+      if(i<d.rows.length)newPage();
+    }
+  });
+  newPage();
+  const titre=String(st.titre||'').trim()||fsPL(st.preset)||'Séance';
+  const ds=st.date?fmtDateFR(st.date).replace(/\/(\d\d)$/,'/20$1'):'';
+  const html=pages.map((chunks,k)=>`<section class="fpPg">${fpBg()}${head}
+    <div class="fpBody">${chunks.map(c=>fpBlocHTML(c.b,c.i,c.from,c.to,c.cont)).join('')}</div>
+    <div class="fpFt">${iEsc(titre)}${ds?' · '+ds:''}${pages.length>1?` · ${k+1}/${pages.length}`:''}${anyVid?' · <b>▶&#xFE0E; clic sur une vignette = vidéo de l\'exercice</b>':''}</div></section>`).join('');
+  await xtPrint(html,`${titre}${ds?' - '+ds.replace(/\//g,'-'):''}`);
+}
+function fsPrintId(id){ const f=FICHES.find(x=>x.id===id); if(f)fsPrint(fsFromDb(f)); }
 
 function extMatchesForWeek(team,w){
   const d0=iso(w.days[0]),d1=iso(w.days[6]);
@@ -4149,12 +4901,15 @@ function closeSeanceModal(){document.getElementById('seanceModal').classList.rem
    Échap ferme le panneau le plus haut, un clic hors du panneau ferme
    les fenêtres modales. */
 function closeTopLayer(){
+  if(typeof __ccResolve!=='undefined'&&__ccResolve){ccResolve(false);return true;}   // une confirmation ouverte se ferme d'abord (= Annuler)
   const modal=document.getElementById('modal');
   const seanceModal=document.getElementById('seanceModal');
   const qa=document.getElementById('qaOverlay');
   if(qa&&qa.classList.contains('on')){closeQuickAdd();return true;}
   if(seanceModal&&seanceModal.classList.contains('on')){closeSeanceModal();return true;}
   if(modal&&modal.classList.contains('on')){closeModal();return true;}
+  const fo=document.getElementById('fsOverlay');
+  if(fo&&fo.classList.contains('on')){ if(FS_PICK)fsPickClose(); else fsClose(); return true; }
   const bo=document.getElementById('bibOverlay');
   if(bo&&bo.classList.contains('on')){bibClose();return true;}
   const pb=document.getElementById('prBuilder');
@@ -6002,6 +6757,7 @@ function renderPrescUpcoming(){
     return `<div class="prUp${late?' late':''}"><span class="d">${fmtDateFR(p.date)}</span>
       <span class="n">${plEsc(p.objectif||p.titre)}${p.duree_prevue_min?` <span class="cs">· ${p.duree_prevue_min} min</span>`:''}<br>
         <span class="cs" title="${plEsc(names.join(', '))}">${g.length} joueur${g.length>1?'s':''} · ${plEsc(names.slice(0,4).join(', '))}${names.length>4?'…':''}</span></span>
+      <button class="prFs${FICHES.some(f=>f.presc_key===prescKey(p))?' has':''}" onclick="fsFromPresc('${p.id}')" title="${FICHES.some(f=>f.presc_key===prescKey(p))?'Ouvrir la fiche de cette séance':'Créer la fiche de cette séance'}" aria-label="Fiche de séance">📄<span class="lbl"> Fiche</span></button>
       <button class="prGo" onclick="markPrescDone('${p.id}')">${late?'⚠︎ ':''}Réalisée</button>
       <button class="prDel" onclick="deletePlannedGroup('${p.id}')" title="Supprimer cette séance prévue (tous les joueurs)" aria-label="Supprimer">🗑</button></div>`;
   }).join('');
