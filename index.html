@@ -626,6 +626,7 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .bibActions .btn.primary{min-width:140px}
 @media(max-width:600px){.bibTabs{display:grid;grid-template-columns:repeat(3,1fr);width:100%}.bibTab{justify-content:center;padding:9px 6px;font-size:12.5px;gap:6px}.bibTabX{display:none}}
 .bibTabX{font-style:normal}
+@media(max-width:600px){.bibAddVid{margin-left:0;flex:1 1 calc(50% - 6px);padding:9px 6px}.bibAddVid+.bibAdd{flex:1 1 calc(50% - 6px);padding:9px 6px}}
 @media(max-width:600px){.bibAdd{margin-left:0;flex:1 1 100%}.bibSearch{margin-left:0;flex:1 1 100%}.bibGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bibThumb{height:96px}.bibSegs{grid-template-columns:repeat(2,1fr)}}
 .qaType small{font-weight:500;color:var(--muted);font-size:10.5px}
 .qaSegs2{grid-template-columns:repeat(2,1fr)}
@@ -1560,6 +1561,20 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
   .fsEb{font-size:9.5px}.phf.fsL{width:54px;height:68px}.phf.fsM{width:38px;height:48px;font-size:12px}.fsPhs .phf.fsM+.phf.fsM{margin-left:-11px}.fsMore{font-size:12px;padding:2px 5px}.fsCrest{width:44px;height:44px}}
 .bibVid{position:absolute;top:8px;left:8px;width:26px;height:26px;border-radius:50%;background:#E5409A;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;padding-left:2px;box-shadow:0 2px 8px rgba(229,64,154,.45)}
 .c-plan.bibTag{background:rgba(229,64,154,.14);color:#f7a6cf}
+.bibAddVid{margin-left:auto;font-weight:700}
+.bibAddVid+.bibAdd{margin-left:0}
+.bibVidSegs{margin-bottom:8px}
+.bibVidPane[hidden]{display:none}
+.bibVidHint{font-size:11px;color:var(--muted);margin-top:6px}
+.bibVidFile{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:11.5px;color:var(--muted);line-height:1.4}
+.bibVidFile video{width:120px;height:80px;object-fit:cover;border-radius:8px;background:#000;flex:none}
+.bibVidFile b{color:var(--ink);word-break:break-all}
+.bibVidFile.warn{color:var(--warn)}
+.bibCurVid{width:26px;height:26px;border-radius:50%;background:#E5409A;color:#fff;font-size:10px;display:inline-flex;align-items:center;justify-content:center;padding-left:2px;flex:none}
+.bibVidRm{margin-left:auto;flex:none;background:none;border:1px solid var(--line);border-radius:7px;color:var(--ink);font:inherit;font-size:11.5px;font-weight:700;padding:5px 10px;cursor:pointer}
+.bibVidRm:hover{border-color:var(--bad)}
+a.bibVid{text-decoration:none}
+a.bibVid:hover{transform:scale(1.08)}
 .bibFsHead{margin:22px 0 2px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;font-weight:800;color:var(--ink);display:flex;flex-direction:column;gap:3px}
 .bibPlans{display:flex;flex-wrap:wrap;gap:6px}
 .bibPlans .qaSeg{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px}
@@ -2089,6 +2104,7 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
   <div class="rowHead"><h2>Bibliothèque</h2><span class="tag live">Données partagées Supabase</span></div>
   <div class="bibBar">
     <div class="bibTabs" id="bibTabs" role="tablist"></div>
+    <button class="btn bibAddVid" id="bibAddVid" onclick="bibOpen('ex',null,{video:true})" style="display:none">🎬 Ajouter une vidéo</button>
     <button class="btn primary bibAdd" id="bibAddBtn" onclick="BIB.tab==='fiches'?fsOpen(null):bibOpen(BIB.tab,null)">＋ Ajouter</button>
   </div>
   <div class="bibFilters">
@@ -2762,6 +2778,7 @@ function renderBib(){
   const t=(k,l,n)=>`<button type="button" role="tab" class="bibTab${BIB.tab===k?' on':''}" aria-selected="${BIB.tab===k}" onclick="bibSetTab('${k}')">${l}<span>${n}</span></button>`;
   tabs.innerHTML=t('docs','Documents',PROGRAMMES.length)+t('ex','Exercices',EXBANK.length)+t('fiches','Fiches<i class="bibTabX"> de séance</i>',FICHES.length);
   document.getElementById('bibAddBtn').textContent={docs:'＋ Ajouter un document',ex:'＋ Ajouter un exercice',fiches:'＋ Nouvelle fiche'}[BIB.tab];
+  const av=document.getElementById('bibAddVid'); if(av)av.style.display=BIB.tab==='ex'?'':'none';
   let chips;
   if(BIB.tab==='fiches'){
     // filtres = familles de préréglage réellement utilisées
@@ -2825,7 +2842,7 @@ function renderBibGrid(){
       return `<div class="bibCard bibEx" role="button" tabindex="0" onclick="bibOpen('ex','${e.id}')" onkeydown="if(event.key==='Enter')bibOpen('ex','${e.id}')" title="Modifier">
         <div class="bibThumb">${url?`<img src="${url}" alt="" loading="lazy">`:`<span class="bibNoFile">${plEsc((e.nom||'?').slice(0,1).toUpperCase())}</span>`}</div>
         <div class="bibInfo"><b>${plEsc(e.nom||'')}</b><div class="bibMeta">${tag(e.categorie)}${e.plan&&FS_PLAN_LABEL[e.plan]?`<span class="bibTag c-plan">${FS_PLAN_LABEL[e.plan]}</span>`:''}</div></div>
-        ${e.video_url?'<span class="bibVid" title="Vidéo enregistrée">▶</span>':''}
+        ${bibExVideo(e)?`<a class="bibVid" href="${plEsc(bibExVideo(e))}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Voir la vidéo" aria-label="Voir la vidéo">▶</a>`:''}
       </div>`;
     }).join('');
   }
@@ -2836,45 +2853,126 @@ function bibOpenDoc(id){
   else bibOpen('docs',id);
 }
 /* Fenêtre unique d'ajout / modification (document ou exercice) */
-function bibOpen(kind,id){
-  const isDoc=kind==='docs';
+function bibOpen(kind,id,opts){
+  const isDoc=kind==='docs', vidFirst=!isDoc&&!!(opts&&opts.video);
   const it=id?(isDoc?PROGRAMMES:EXBANK).find(x=>x.id===id):null;
   if(id&&!it)return;
-  BIB.edit={kind,id:id||null};
+  BIB.edit={kind,id:id||null,video:vidFirst};
   BIB.formCat=it?bibCat(it.categorie):(BIB.cat||'physique');
-  document.getElementById('bibTitle').textContent=(it?'Modifier ':'Ajouter ')+(isDoc?'un document':'un exercice');
+  BIB.vidMode=it&&!it.video_path&&it.video_url?'link':'file'; BIB.vidRemove=false;
+  document.getElementById('bibTitle').textContent=vidFirst?'Ajouter une vidéo':(it?'Modifier ':'Ajouter ')+(isDoc?'un document':'un exercice');
   const path=it?(isDoc?it.pdf_path:it.image_path):null;
   const url=path?bibUrl(isDoc?'programmes':'exercise-images',path):null;
   const cur=!it?'':isDoc
     ?(path?`<div class="bibCur">Fichier actuel : <a href="${url}" target="_blank" rel="noopener">ouvrir ↗</a> — choisis un fichier ci-dessous seulement pour le remplacer.</div>`:'<div class="bibCur warn">Aucun fichier joint à ce document.</div>')
     :(path?`<div class="bibCur"><img src="${url}" alt="">Photo actuelle — choisis une image ci-dessous seulement pour la remplacer.</div>`:'');
-  document.getElementById('bibForm').innerHTML=`
-    <div class="qaStep"><span class="qaNum">1</span>${isDoc?'Titre':'Nom'}</div>
-    <input type="text" id="bibName" class="bibInput" value="${it?plEsc(isDoc?it.titre||'':it.nom||''):''}" placeholder="${isDoc?'Ex. Programme force bas du corps — Julien':'Ex. Copenhague court levier'}">
-    <div class="qaStep"><span class="qaNum">2</span>Catégorie</div>
-    <div class="qaSegs bibSegs" id="bibCatBox"></div>
-    <div class="qaStep"><span class="qaNum">3</span>${isDoc?'Fichier <span class="qaSub">PDF, PNG ou JPEG</span>':'Photo <span class="qaSub">facultative</span>'}</div>
-    ${cur}
-    <input type="file" id="bibFile" class="bibInput" accept="${isDoc?'application/pdf,image/png,image/jpeg':'image/*'}">
-    ${isDoc?'':`<div class="bibFsHead">Pour les fiches de séance <span class="qaSub">facultatif — rempli une fois, repris automatiquement dans chaque fiche</span></div>
-    <div class="qaStep"><span class="qaNum">4</span>Plan de sollicitation</div>
+  const n=k=>`<span class="qaNum">${k}</span>`;
+  const nameBlk=k=>`<div class="qaStep">${n(k)}${isDoc?'Titre':'Nom'}</div>
+    <input type="text" id="bibName" class="bibInput" value="${it?plEsc(isDoc?it.titre||'':it.nom||''):''}" placeholder="${isDoc?'Ex. Programme force bas du corps — Julien':'Ex. Copenhague court levier'}">`;
+  const catBlk=k=>`<div class="qaStep">${n(k)}Catégorie</div><div class="qaSegs bibSegs" id="bibCatBox"></div>`;
+  const photoBlk=k=>`<div class="qaStep">${n(k)}${isDoc?'Fichier <span class="qaSub">PDF, PNG ou JPEG</span>':'Photo <span class="qaSub">facultative — sans photo, une image de la vidéo est utilisée</span>'}</div>
+    ${cur}<input type="file" id="bibFile" class="bibInput" accept="${isDoc?'application/pdf,image/png,image/jpeg':'image/*'}">`;
+  const vidBlk=k=>`<div class="qaStep">${n(k)}Vidéo <span class="qaSub">${vidFirst?'obligatoire':'facultative'} — ouverte au clic sur la vignette de l'exercice</span></div>
+    <div id="bibVidBox"></div>`;
+  const fsBlk=k=>`<div class="bibFsHead">Pour les fiches de séance <span class="qaSub">facultatif — rempli une fois, repris automatiquement dans chaque fiche</span></div>
+    <div class="qaStep">${n(k)}Plan de sollicitation</div>
     <div class="bibPlans" id="bibPlanBox"></div>
-    <div class="qaStep"><span class="qaNum">5</span>Lien vidéo <span class="qaSub">YouTube non répertorié, Google Drive… ouvert au clic sur la vignette</span></div>
-    <input type="url" id="bibVideo" class="bibInput" value="${plEsc(it?.video_url||'')}" placeholder="https://…">
-    <div class="qaStep"><span class="qaNum">6</span>Variante / matériel</div>
+    <div class="qaStep">${n(k+1)}Variante / matériel</div>
     <input type="text" id="bibMat" class="bibInput" value="${plEsc(it?.materiel||'')}" placeholder="Ex. pieds décalés · aquabag">
-    <div class="qaStep"><span class="qaNum">7</span>Consignes</div>
+    <div class="qaStep">${n(k+2)}Consignes</div>
     <input type="text" id="bibCons" class="bibInput" value="${plEsc(it?.consignes||'')}" placeholder="Ex. Réagir au signal sonore">
-    <div class="qaStep"><span class="qaNum">8</span>Intentions</div>
-    <input type="text" id="bibInt" class="bibInput" value="${plEsc(it?.intentions||'')}" placeholder="Ex. Le plus haut possible (vitesse max)">`}
+    <div class="qaStep">${n(k+3)}Intentions</div>
+    <input type="text" id="bibInt" class="bibInput" value="${plEsc(it?.intentions||'')}" placeholder="Ex. Le plus haut possible (vitesse max)">`;
+  const body=isDoc?nameBlk(1)+catBlk(2)+photoBlk(3)
+    :vidFirst?vidBlk(1)+nameBlk(2)+catBlk(3)+photoBlk(4)+fsBlk(5)
+    :nameBlk(1)+catBlk(2)+vidBlk(3)+photoBlk(4)+fsBlk(5);
+  document.getElementById('bibForm').innerHTML=body+`
     <div class="bibActions">
       ${it?`<button type="button" class="btn danger" onclick="bibDelete()">Supprimer</button>`:''}
       <button type="button" class="btn primary" id="bibSaveBtn" onclick="bibSave()">Enregistrer</button>
     </div>`;
   BIB.formPlan=it?.plan||'';
-  bibRenderCatBox(); bibRenderPlanBox();
+  bibRenderCatBox(); bibRenderPlanBox(); bibRenderVidBox();
   document.getElementById('bibOverlay').classList.add('on');
-  setTimeout(()=>document.getElementById('bibName')?.focus(),30);
+  if(vidFirst)document.getElementById('bibVidFile')?.click();   // « Ajouter une vidéo » : le choix du fichier s'ouvre tout de suite
+  else setTimeout(()=>document.getElementById('bibName')?.focus(),30);
+}
+/* ── Vidéo d'un exercice (06/10) : fichier envoyé dans la plateforme (dossier exercise-videos, script v44)
+   ou lien collé (YouTube non répertorié, Drive…). Un fichier remplace un lien et inversement. ── */
+const BIB_VID_MAX=50*1024*1024;
+function bibExVideo(e){
+  if(!e)return '';
+  if(e.video_path)return bibUrl('exercise-videos',e.video_path)||'';
+  return /^https?:\/\//i.test(e.video_url||'')?e.video_url:'';
+}
+function bibRenderVidBox(){
+  const box=document.getElementById('bibVidBox'); if(!box)return;
+  const e=BIB.edit, it=e&&e.id?EXBANK.find(x=>x.id===e.id):null;
+  box.innerHTML=`<div id="bibVidCur"></div>
+    <div class="qaSegs qaSegs2 bibVidSegs">
+      <button type="button" class="qaSeg${BIB.vidMode==='file'?' on':''}" onclick="bibVidMode('file')">Fichier vidéo</button>
+      <button type="button" class="qaSeg${BIB.vidMode==='link'?' on':''}" onclick="bibVidMode('link')">Lien</button>
+    </div>
+    <div class="bibVidPane"${BIB.vidMode==='file'?'':' hidden'}>
+      <input type="file" id="bibVidFile" class="bibInput" accept="video/mp4,video/quicktime,video/webm,video/x-m4v,video/*" onchange="bibVidPicked(this)">
+      <div class="bibVidHint">MP4 ou MOV depuis ton téléphone, 50 Mo maximum : un clip de 10 à 15 s suffit.</div>
+      <div id="bibVidPrev"></div>
+    </div>
+    <div class="bibVidPane"${BIB.vidMode==='link'?'':' hidden'}>
+      <input type="url" id="bibVideo" class="bibInput" value="${plEsc(it&&!it.video_path?it.video_url||'':'')}" placeholder="https://… (YouTube non répertorié, Google Drive…)">
+    </div>`;
+  bibRenderVidCur();
+}
+function bibRenderVidCur(){
+  const box=document.getElementById('bibVidCur'); if(!box)return;
+  const e=BIB.edit, it=e&&e.id?EXBANK.find(x=>x.id===e.id):null, url=bibExVideo(it);
+  box.innerHTML=!url?''
+    :BIB.vidRemove?`<div class="bibCur warn"><span>La vidéo actuelle sera retirée à l'enregistrement.</span><button type="button" class="bibVidRm" onclick="BIB.vidRemove=false;bibRenderVidCur()">Annuler</button></div>`
+    :`<div class="bibCur"><span class="bibCurVid">▶</span><span>Vidéo actuelle (${it.video_path?'fichier':'lien'}) : <a href="${plEsc(url)}" target="_blank" rel="noopener">voir ↗</a> — en choisir une autre ci-dessous la remplace.</span>
+      <button type="button" class="bibVidRm" onclick="BIB.vidRemove=true;bibRenderVidCur()">Retirer</button></div>`;
+}
+function bibVidMode(m){
+  // garde ce qui a déjà été saisi (fichier choisi, lien collé) en changeant d'onglet
+  BIB.vidMode=m;
+  document.querySelectorAll('#bibVidBox .bibVidSegs .qaSeg').forEach((b,k)=>b.classList.toggle('on',(k===0)===(m==='file')));
+  const panes=document.querySelectorAll('#bibVidBox .bibVidPane'); panes[0].hidden=m!=='file'; panes[1].hidden=m!=='link';
+}
+function bibVidPicked(inp){
+  const f=inp.files[0], prev=document.getElementById('bibVidPrev'); if(!prev)return;
+  if(prev._url){URL.revokeObjectURL(prev._url);prev._url=null;}
+  if(!f){prev.innerHTML='';return;}
+  const mo=(f.size/1048576).toFixed(f.size<10485760?1:0);
+  const tooBig=f.size>BIB_VID_MAX;
+  prev._url=URL.createObjectURL(f);
+  prev.innerHTML=`<div class="bibVidFile${tooBig?' warn':''}"><video src="${prev._url}" muted playsinline controls preload="metadata"></video>
+    <span><b>${plEsc(f.name)}</b><br>${mo} Mo${tooBig?' — trop lourde (50 Mo max) : filme un clip plus court ou en 1080p.':''}</span></div>`;
+  const nm=document.getElementById('bibName');
+  if(nm&&!nm.value.trim()){
+    const base=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
+    if(base&&!/^(img|vid|mov|pxl|dsc|video|trim)\s*\d/i.test(base))nm.value=base.charAt(0).toUpperCase()+base.slice(1);
+    if(BIB.edit&&BIB.edit.video)setTimeout(()=>nm.focus(),30);
+  }
+}
+/* Image tirée de la vidéo (≈ 1 s) pour la vignette, quand l'exercice n'a pas de photo. null si le navigateur ne sait pas la lire. */
+function bibVideoFrame(file){
+  return new Promise(resolve=>{
+    let done=false; const url=URL.createObjectURL(file), v=document.createElement('video');
+    const fin=b=>{ if(done)return; done=true; URL.revokeObjectURL(url); v.removeAttribute('src'); resolve(b); };
+    v.muted=true; v.playsInline=true; v.preload='auto';
+    v.addEventListener('loadeddata',()=>{ try{ v.currentTime=Math.min(1,(v.duration||2)/2); }catch(e){fin(null);} });
+    v.addEventListener('seeked',()=>{
+      try{
+        const w=v.videoWidth,h=v.videoHeight; if(!w||!h)return fin(null);
+        const sc=Math.min(1,700/Math.max(w,h)), c=document.createElement('canvas');
+        c.width=Math.round(w*sc); c.height=Math.round(h*sc);
+        c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+        c.toBlob(b=>fin(b&&b.size>2000?b:null),'image/jpeg',.85);
+      }catch(e){fin(null);}
+    });
+    v.addEventListener('error',()=>fin(null));
+    setTimeout(()=>fin(null),8000);
+    v.src=url; v.load();
+  });
 }
 function bibRenderCatBox(){
   const box=document.getElementById('bibCatBox'); if(!box)return;
@@ -2900,45 +2998,85 @@ async function bibSave(){
   const e=BIB.edit; if(!e)return;
   const isDoc=e.kind==='docs';
   const name=document.getElementById('bibName').value.trim();
-  if(!name){alert(isDoc?'Le titre est obligatoire.':'Le nom est obligatoire.');return;}
   const file=document.getElementById('bibFile').files[0]||null;
   const it=e.id?(isDoc?PROGRAMMES:EXBANK).find(x=>x.id===e.id):null;
+  // vidéo (exercices) : fichier choisi, lien collé, ou rien
+  const vf=!isDoc&&BIB.vidMode==='file'?document.getElementById('bibVidFile')?.files[0]||null:null;
+  const link=!isDoc&&BIB.vidMode==='link'?(document.getElementById('bibVideo')?.value||'').trim():'';
+  if(!isDoc&&e.video&&!vf&&!link){alert('Choisis la vidéo (fichier depuis ton téléphone) ou colle son lien.');return;}
+  if(!name){alert(isDoc?'Le titre est obligatoire.':'Le nom est obligatoire.');return;}
   if(isDoc&&!it&&!file){alert('Choisis le fichier à archiver (PDF, PNG ou JPEG).');return;}
   if(file){
     if(isDoc&&!['application/pdf','image/png','image/jpeg'].includes(file.type)){alert('Choisis un fichier PDF, PNG ou JPEG.');return;}
     if(isDoc&&file.size>60*1024*1024){alert('Fichier trop lourd (60 Mo max).');return;}
-    if(!isDoc&&!file.type.startsWith('image/')){alert('Choisis une image.');return;}
+    if(!isDoc&&!file.type.startsWith('image/')){alert('Choisis une image pour la photo.');return;}
   }
-  const vid0=(document.getElementById('bibVideo')?.value||'').trim();
-  if(!isDoc&&vid0&&!/^https?:\/\//i.test(vid0)){alert('Le lien vidéo doit commencer par https:// (copie le lien de partage complet).');return;}
+  if(vf){
+    if(!/^video\//.test(vf.type)&&!/\.(mp4|mov|m4v|webm)$/i.test(vf.name)){alert('Choisis un fichier vidéo (MP4 ou MOV).');return;}
+    if(vf.size>BIB_VID_MAX){alert(`Vidéo trop lourde (${Math.round(vf.size/1048576)} Mo, 50 Mo maximum).\n\nFilme un clip plus court (10-15 s) ou en 1080p.`);return;}
+  }
+  if(link&&!/^https?:\/\//i.test(link)){alert('Le lien vidéo doit commencer par https:// (copie le lien de partage complet).');return;}
   const btn=document.getElementById('bibSaveBtn'); btn.disabled=true; btn.textContent='Enregistrement…';
+  const reset=()=>{btn.disabled=false;btn.textContent='Enregistrer';};
   const bucket=isDoc?'programmes':'exercise-images';
   // documents : 1600 px (texte scanné encore lisible) · exercices : 700 px
-  const path=file?await bibUpload(bucket,name,file,isDoc?1600:700,isDoc?.88:.85):null;
-  if(file&&!path){btn.disabled=false;btn.textContent='Enregistrer';return;}
+  let path=file?await bibUpload(bucket,name,file,isDoc?1600:700,isDoc?.88:.85):null;
+  if(file&&!path){reset();return;}
+  // envoi de la vidéo
+  let vpath=null;
+  if(vf){
+    btn.textContent=`Envoi de la vidéo (${Math.max(1,Math.round(vf.size/1048576))} Mo)…`;
+    const ext=((vf.name.match(/\.(mp4|mov|m4v|webm)$/i)||[])[1]||(vf.type==='video/quicktime'?'mov':vf.type==='video/webm'?'webm':'mp4')).toLowerCase();
+    vpath=`${slugify(name)}-${Date.now()}.${ext}`;
+    const {error:ve}=await supa.storage.from('exercise-videos').upload(vpath,vf,{upsert:true,contentType:vf.type||'video/mp4'});
+    if(ve){
+      if(path)supa.storage.from(bucket).remove([path]);
+      alert("La vidéo n'a pas pu être envoyée : "+ve.message+(/bucket|not found|policy|row-level|exceeded|size|mime/i.test(ve.message)?'\n\nVérifie que le script schema_supabase_v44_videos_exercices.sql a été exécuté dans Supabase (50 Mo maximum, MP4 / MOV).':''));
+      reset(); return;
+    }
+    // pas de photo : une image de la vidéo sert de vignette
+    if(!path&&!(it&&it.image_path)){
+      btn.textContent='Création de la vignette…';
+      const frame=await bibVideoFrame(vf);
+      if(frame){ const ip=`${slugify(name)}-${Date.now()}.jpg`; const {error:ie}=await supa.storage.from('exercise-images').upload(ip,frame,{upsert:true,contentType:'image/jpeg'}); if(!ie)path=ip; }
+    }
+    btn.textContent='Enregistrement…';
+  }
   const table=isDoc?'programmes':'exercise_bank';
   const row=isDoc?{titre:name,categorie:BIB.formCat}:{nom:name,categorie:BIB.formCat};
   if(path)row[isDoc?'pdf_path':'image_path']=path;
-  // champs « fiches de séance » (script v43) : envoyés à part pour ne jamais bloquer
-  // l'enregistrement de base si le script n'a pas encore été exécuté
-  let extra=null;
+  // champs « fiches de séance » (v43) et vidéo envoyée (v44) : séparés pour ne jamais bloquer l'enregistrement de base
+  let extra=null, vidCols=null;
   if(!isDoc){
     const v=id=>(document.getElementById(id)?.value||'').trim()||null;
-    extra={plan:BIB.formPlan||null,video_url:v('bibVideo'),materiel:v('bibMat'),consignes:v('bibCons'),intentions:v('bibInt')};
+    extra={plan:BIB.formPlan||null,materiel:v('bibMat'),consignes:v('bibCons'),intentions:v('bibInt')};
+    if(BIB.vidRemove&&!vf&&!link)vidCols={video_url:null,video_path:null};
+    else if(vf)vidCols={video_path:vpath,video_url:null};
+    else if(BIB.vidMode==='link'&&(link||(it&&it.video_url&&!it.video_path)))vidCols={video_url:link||null,video_path:null};
   }
-  const oldPath=it?(isDoc?it.pdf_path:it.image_path):null;
+  const oldPath=it?(isDoc?it.pdf_path:it.image_path):null, oldVid=it&&!isDoc?it.video_path||null:null;
   const save=r=>it?supa.from(table).update(r).eq('id',it.id):supa.from(table).insert({...r,created_by:CURRENT_USER_LABEL});
-  let {error}=await save(extra?{...row,...extra}:row);
-  if(error&&extra&&/column|schema cache/i.test(error.message)){
+  const strip=o=>{ if(!o)return o; const c={...o}; delete c.video_path; return c; };
+  let {error}=await save({...row,...(extra||{}),...(vidCols||{})}), lost='';
+  if(error&&!isDoc&&/column|schema cache/i.test(error.message)&&/video_path/.test(error.message)){
+    if(vpath)supa.storage.from('exercise-videos').remove([vpath]);
+    ({error}=await save({...row,...extra,...strip(vidCols)}));
+    if(!error)lost=vf?"Exercice enregistré, mais sans la vidéo envoyée : exécute le script schema_supabase_v44_videos_exercices.sql dans Supabase (ou colle un lien à la place).":'';
+  }
+  if(error&&!isDoc&&/column|schema cache/i.test(error.message)){
     ({error}=await save(row));
-    if(!error)setTimeout(()=>alert("Exercice enregistré, mais sans la vidéo, le plan, les consignes, les intentions ni le matériel : exécute le script schema_supabase_v43_fiches_seance.sql dans Supabase."),50);
+    if(!error)lost="Exercice enregistré, mais sans la vidéo, le plan, les consignes, les intentions ni le matériel : exécute les scripts schema_supabase_v43_fiches_seance.sql puis schema_supabase_v44_videos_exercices.sql dans Supabase.";
   }
   if(error){
     if(path)supa.storage.from(bucket).remove([path]);   // pas de fichier orphelin
+    if(vpath)supa.storage.from('exercise-videos').remove([vpath]);
     alert('Erreur d\'enregistrement : '+error.message+(/check|violates|policy|row-level/i.test(error.message)?'\n\nExécute le script schema_supabase_v42_bibliotheque.sql dans Supabase.':''));
-    btn.disabled=false; btn.textContent='Enregistrer'; return;
+    reset(); return;
   }
+  if(lost)setTimeout(()=>alert(lost),50);
   if(it&&path&&oldPath&&oldPath!==path)supa.storage.from(bucket).remove([oldPath]);
+  // ancienne vidéo envoyée remplacée ou retirée : fichier supprimé
+  if(oldVid&&vidCols&&!lost&&vidCols.video_path!==oldVid)supa.storage.from('exercise-videos').remove([oldVid]);
   bibClose();
   if(!it&&BIB.cat&&BIB.cat!==row.categorie)BIB.cat='';   // l'élément ajouté reste visible
   await loadProgrammes(); renderBib();
@@ -2952,6 +3090,7 @@ async function bibDelete(){
   if(error){alert('Erreur : '+error.message);return;}
   const path=isDoc?it.pdf_path:it.image_path;
   if(path)supa.storage.from(isDoc?'programmes':'exercise-images').remove([path]);
+  if(!isDoc&&it.video_path)supa.storage.from('exercise-videos').remove([it.video_path]);
   bibClose();
   await loadProgrammes(); renderBib();
 }
@@ -3047,7 +3186,7 @@ function fsApplyBloc(b){
 }
 function fsDirty(){ if(FS)FS.dirty=true; }
 function fsEx(r){ return r&&r.ex_id?EXBANK.find(e=>e.id===r.ex_id)||null:null; }
-function fsVideo(r,ex){ const u=String((r&&r.video)||(ex&&ex.video_url)||'').trim(); return /^https?:\/\//i.test(u)?u:''; }
+function fsVideo(r,ex){ const u=String((r&&r.video)||bibExVideo(ex)||'').trim(); return /^https?:\/\//i.test(u)?u:''; }
 function fsImg(ex){ return ex&&ex.image_path?bibUrl('exercise-images',ex.image_path):null; }
 
 /* ── ouverture / fermeture ── */
@@ -3334,7 +3473,7 @@ function fsPickList(){
     return `<button type="button" class="fsPickIt${used[e.id]?' used':''}" onclick="fsAddEx('${e.id}')">
       <span class="th">${img?`<img src="${img}" alt="" loading="lazy">`:plEsc((e.nom||'?').slice(0,1).toUpperCase())}</span>
       <span class="tx"><b>${plEsc(e.nom||'')}</b><small>${[FS_PLAN_LABEL[e.plan],e.materiel].filter(Boolean).map(plEsc).join(' · ')||BIB_CAT_LABEL[bibCat(e.categorie)]}</small></span>
-      ${e.video_url?'<span class="vd" title="Vidéo disponible">▶</span>':''}${used[e.id]?`<span class="ok" title="Déjà dans la fiche">✓${used[e.id]>1?used[e.id]:''}</span>`:''}</button>`;
+      ${bibExVideo(e)?'<span class="vd" title="Vidéo disponible">▶</span>':''}${used[e.id]?`<span class="ok" title="Déjà dans la fiche">✓${used[e.id]>1?used[e.id]:''}</span>`:''}</button>`;
   }).join('');
 }
 function fsPushRow(row,plan){
