@@ -1653,6 +1653,7 @@ a.bibVid:hover{transform:scale(1.08)}
   .fsPickList{grid-template-columns:1fr}
 }
 @media print{#fsOverlay,#bibOverlay,#qaOverlay{display:none !important}}
+@media print{.pg.wkTall{page:wkTall}}   /* page semaine allongée (voir fitWeekSchedPage) */
 
 /* ═══ Fiches de séance : PDF 1 page — 297 mm de large, hauteur fixée en JS selon le nombre de blocs (06/10) ═══ */
 @page fsW{size:297mm 167.06mm;margin:0}
@@ -8392,7 +8393,9 @@ function barBg(T){
   return T.stripes?`repeating-linear-gradient(0deg,${T.stripes[0]} 0 3mm,${T.stripes[1]} 3mm 6mm)`:T.color;
 }
 function pdfAssets(){
-  const crest=document.querySelector('.crest');
+  // Écusson d'origine (violet) : celui de la barre du haut de l'application. Ne pas prendre le premier .crest
+  // de la page : depuis la v49, c'est l'écusson rose de l'écran de connexion (modèle « maillot extérieur »).
+  const crest=document.querySelector('#app header.top .crest')||document.querySelector('.crest');
   const cs=crest?getComputedStyle(crest).backgroundImage:'';
   const m=cs.match(/url\(["']?(data:[^"')]+)["']?\)/);
   const crestSrc=m?m[1]:'';
@@ -8783,7 +8786,51 @@ function genererPDF(){
   document.title='S'+(wk?wk.n:curWeek);
   const restore=()=>{document.title=prevTitle;window.removeEventListener('afterprint',restore);};
   window.addEventListener('afterprint',restore);
-  waitForImages(sheet).then(()=>window.print());
+  waitForImages(sheet).then(()=>{fitWeekSchedPage(sheet);window.print();});
+}
+/* Page « Planning semaine » : A4 paysage tant que tout tient (rendu strictement inchangé) ; si une journée
+   déborde, CETTE page seule s'allonge à la hauteur exacte du contenu (page nommée wkTall), sans réduire le texte.
+   Les styles du PDF sont dans @media print : pour mesurer à l'écran, on les recopie une fois, limités à #pdfMeasure. */
+let PDF_MEASURE_CSS=null;
+function pdfMeasureCss(){
+  if(PDF_MEASURE_CSS!==null)return PDF_MEASURE_CSS;
+  const out=[],skip=/^(body|html)\b|#loginScreen|#loadingScreen|#app\b|#modal|nav\.tabs|header\.top/;
+  for(const sh of document.styleSheets){
+    let rules;try{rules=sh.cssRules;}catch(e){continue;}
+    for(const r of rules){
+      if(r.type!==CSSRule.MEDIA_RULE||!/\bprint\b/.test(r.media.mediaText))continue;
+      for(const ir of r.cssRules){
+        if(ir.type!==CSSRule.STYLE_RULE)continue;
+        const sel=ir.selectorText.split(',').map(x=>x.trim()).filter(x=>x&&!skip.test(x))
+          .map(x=>x.startsWith('#printSheet')?x.replace('#printSheet','#pdfMeasure'):'#pdfMeasure '+x);
+        if(sel.length)out.push(sel.join(',')+'{'+ir.style.cssText+'}');
+      }
+    }
+  }
+  return PDF_MEASURE_CSS=out.join('\n');
+}
+function fitWeekSchedPage(sheet){
+  let tag=document.getElementById('wkPdfPageSize');
+  if(!tag){tag=document.createElement('style');tag.id='wkPdfPageSize';document.head.appendChild(tag);}
+  tag.textContent='';
+  const pg=[...sheet.querySelectorAll('.pg')].find(p=>p.querySelector('.wGrid'));
+  if(!pg)return;
+  pg.classList.remove('wkTall');pg.style.height='';
+  try{
+    let css=document.getElementById('pdfMeasureCss');
+    if(!css){css=document.createElement('style');css.id='pdfMeasureCss';css.media='screen';css.textContent=pdfMeasureCss();document.head.appendChild(css);}
+    const box=document.createElement('div');box.id='pdfMeasure';
+    box.style.cssText='position:fixed;left:-20000px;top:0;width:297mm;display:block;pointer-events:none';
+    const clone=pg.cloneNode(true);clone.style.height='auto';clone.style.overflow='visible';
+    box.appendChild(clone);document.body.appendChild(box);
+    const top=clone.getBoundingClientRect().top,bottom=clone.querySelector('.wGrid').getBoundingClientRect().bottom;
+    box.remove();
+    // 12,8 mm sous la grille : pied de page (filet à 10,8 mm du bas) + 2 mm d'air ; 209 mm = hauteur A4 paysage actuelle
+    const H=Math.ceil(((bottom-top)*25.4/96+12.8)*2)/2;
+    if(!(H>209))return;
+    pg.classList.add('wkTall');pg.style.height=H+'mm';
+    tag.textContent=`@page wkTall{size:297mm ${H+1}mm;margin:0}`;
+  }catch(e){console.error('Mesure de la page semaine impossible, format A4 conservé',e);}
 }
 </script>
 </body>
