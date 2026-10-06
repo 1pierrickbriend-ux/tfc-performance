@@ -1282,6 +1282,12 @@ article.pCard h3 .pcHName{align-self:center;display:flex;align-items:center;gap:
 .avatarEdit{border-radius:10px 10px 0 0}
 .pcBand .nm{flex:1;align-self:center;padding:0 0 6px;font-family:var(--font-display);font-size:17px;font-weight:800;line-height:1.05;color:var(--id-ink)}
 .pcBand .rmPlayer{align-self:flex-start;color:var(--id-sub)}
+.rnPlayer{flex:none;align-self:flex-start;background:none;border:none;color:var(--id-sub);font-size:15px;line-height:1;padding:3px 4px;opacity:.7;cursor:pointer}
+.rnPlayer:hover{opacity:1;color:var(--id-ink)}
+.psNameRow{display:flex;align-items:center;gap:8px;margin:0 0 8px}
+.psNameRow h2{margin:0!important;min-width:0}
+.psRename{flex:none;background:rgba(42,26,74,.08);border:1px solid rgba(42,26,74,.18);border-radius:8px;color:#2a1a4a;font-size:14px;line-height:1;padding:5px 7px;cursor:pointer;opacity:.75}
+.psRename:hover{opacity:1;background:#fff}
 .playerCard .pInfo{padding:10px 12px 12px}
 
 /* ── En-têtes de cartes et de panneaux → bandeau d'identité ── */
@@ -5535,7 +5541,7 @@ function renderPlayerSheet(){
   box.innerHTML=`
   <header class="psHead">
     ${plAvatar(p,'psAv')}
-    <div class="psId"><h2 id="psTitle">${plEsc(p.name)}</h2>
+    <div class="psId"><div class="psNameRow"><h2 id="psTitle">${plEsc(p.name)}</h2><button class="psRename" onclick="renamePlayer('${p.id}')" title="Corriger le nom" aria-label="Corriger le nom">✎</button></div>
       <div class="psBadges"><span class="plBadge ${st.cls}">${st.lbl}</span><span class="plBadge ${gr.cls}">${gr.lbl}</span>
         ${p.statut?`<span class="plBadge plS-neu"><span class="sdot" style="background:${STATUT_COLOR[p.statut]||'#888'}"></span>Individualisation : ${STATUT_LABEL[p.statut]||p.statut}</span>`:''}</div></div>
     <button class="btn psBilan" onclick="exportBilan('${p.id}')" title="PDF 2 pages au format du maillot extérieur : charge, vigilance, tests et zones">⬇ Fiche bilan</button>
@@ -5613,7 +5619,8 @@ function renderPlayers(){
     return `<div class="playerCard playerCardEdit">
       <div class="pcBand">
         <div class="avatarUp" title="Cliquer pour changer la photo" onclick="pickPlayerPhoto('${p.id}')" style="${photoUrl?`background-image:url('${photoUrl}')`:''}">${photoUrl?'':`<span>${initials}</span>`}<span class="avatarEdit">📷</span></div>
-        <span class="nm">${n}</span>
+        <span class="nm">${plEsc(n)}</span>
+        <button class="rnPlayer" title="Corriger le nom" aria-label="Corriger le nom de ${plEsc(n)}" onclick="renamePlayer('${p.id}')">✎</button>
         <button class="rmPlayer" title="Retirer de l'effectif" onclick="removePlayer('${p.id}','${n.replace(/'/g,"\\'")}')">×</button>
       </div>
       <input type="file" accept="image/*" id="photoInput-${p.id}" style="display:none" onchange="uploadPlayerPhoto(event,'${p.id}')">
@@ -5725,6 +5732,34 @@ async function addPlayer(){
     if(error){alert('Erreur d\'ajout : '+error.message);return;}
     IPLAYERS.push(row); renderPlayers(); renderIndiv();
   });
+}
+/* Corriger le nom d'un joueur (faute, prénom / nom inversés) sans le supprimer (06/10).
+   Le joueur garde son identifiant : séances, tests, fiches et historique restent rattachés. */
+async function renamePlayer(id){
+  const p=IPLAYERS.find(x=>x.id===id); if(!p)return;
+  const v=await customPrompt('Nom du joueur (Prénom Nom) :',p.name);
+  if(v===null)return;
+  const name=v.replace(/\s+/g,' ').trim();
+  if(!name){alert('Le nom ne peut pas être vide.');return;}
+  if(name===p.name)return;
+  const twin=IPLAYERS.find(x=>x.id!==id&&x.actif!==false&&(x.name||'').toLowerCase()===name.toLowerCase());
+  if(twin&&!await customConfirm(`Un autre joueur de l'effectif s'appelle déjà « ${plEsc(twin.name)} ».\n\nRenommer quand même ?`))return;
+  const {error}=await supa.from('indiv_players').update({name}).eq('id',id);
+  if(error){alert('Erreur : le nom n\'a pas été modifié ('+error.message+').');return;}
+  p.name=name;
+  plRefreshNames();
+}
+function plRefreshNames(){
+  const run=fn=>{ try{ if(typeof window[fn]==='function')window[fn](); }catch(e){console.error(fn,e);} };
+  ['renderPlayers','renderIndiv','renderPlayerLoad','renderCharge'].forEach(run);
+  if(typeof PSHEET!=='undefined'&&PSHEET)run('renderPlayerSheet');
+  // listes déroulantes et puces de sélection déjà construites avec les anciens noms
+  const f=document.getElementById('prFilterPlayer');
+  if(f&&f.options.length){ const cur=f.value; f.innerHTML='<option value="">Tous les joueurs</option>'+chgPlayerOptions(); f.value=cur; }
+  ['pr','chg'].forEach(ns=>{ try{ if(document.getElementById(ns+'PlayerBox'))mpRender(ns); }catch(e){} });
+  if(document.getElementById('prUpcoming')){ run('renderPrescUpcoming'); run('renderPrescList'); }
+  if(document.getElementById('indiv-tests')?.style.display==='block')run('renderCompare');
+  if(typeof BIB!=='undefined'&&BIB.tab==='fiches')run('renderBib');
 }
 async function removePlayer(id,name){
   if(!await customConfirm('Retirer '+name+' de l\'effectif ?\n\nSon historique d\'individualisation est conservé, il peut être réactivé plus tard si besoin.'))return;
