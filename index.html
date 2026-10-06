@@ -1408,8 +1408,48 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 .xtPg.L{page:xtL;width:297mm;height:209.5mm;padding:13mm 15mm 17mm}
 .xtPg.auto{page:xtAuto;height:auto}
 .xtPg.auto .xtIn{height:auto}
-.xbSecT{margin:7mm 0 4mm}
-.xbSecT .xtRule{margin-top:1.6mm}
+/* Fiche bilan, agencement B (06/10) : rayures dans un bandeau d'en-tête, page unie, cartes blanches à liseré rose ;
+   séparation « Tests & zones » reprise de l'agencement A (titre rose + filet sur toute la largeur). */
+.xtPg.L.xb{padding-top:7mm}
+.xbBand{position:absolute;left:0;top:0;right:0;height:56.6mm;background:#F5E8F1;overflow:hidden;z-index:0}
+.xbBand i{position:absolute;top:0;bottom:0;width:.53mm;background:#EFC2DA}
+.xbBand .xtCrest{position:absolute;right:14.8mm;top:7.9mm;width:20.6mm;height:20.6mm}
+.xb .xbTop{display:flex;gap:4.8mm;align-items:flex-end;padding-right:28mm}
+.xb .xbPh{width:22.2mm;height:27.5mm;font-size:16pt;border-radius:2.6mm 2.6mm 0 0;box-shadow:0 1.6mm 4.2mm rgba(43,21,105,.18)}
+.xb .xbId{padding-bottom:2.1mm}
+.xb .xbId .xtTitle{font-size:30pt;margin:.8mm 0 2.1mm}
+.xb .xbBadges{gap:1.6mm;margin-top:0}
+.xb .xbBadge{font-size:8.3pt;border:none;background:#fff;color:var(--xt-ink2);padding:1.05mm 2.9mm}
+.xb .xbBadge.sev{color:#fff}
+.xb .xbKpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3.7mm;margin:7.9mm 0 5.8mm}
+.xb .xbKpi{background:#fff;border:none;border-radius:3.2mm;padding:3.7mm 4.2mm 3.4mm;box-shadow:0 2.6mm 6.4mm rgba(43,21,105,.14)}
+.xb .xbKpi:first-child{padding-left:4.2mm}
+.xb .xbKpi .v{font-size:25.5pt}
+.xb .xbKpi .u{font-size:9pt;margin-top:1.6mm}
+.xb .xbKpi .d{font-size:7.9pt;margin-top:.5mm}
+.xbGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4.8mm}
+.xbGrid2{display:grid;grid-template-columns:.9fr 1.1fr;gap:4.8mm;align-items:start}
+.xbCard{background:#fff;border:.26mm solid #EADFEC;border-top:1.06mm solid var(--xt-rose);border-radius:3.2mm;box-shadow:0 2.1mm 5.8mm rgba(43,21,105,.10);padding:3.7mm 4.8mm 4.2mm;min-width:0}
+.xbCard.tbl{padding-bottom:2.2mm}
+.xbCardT{display:flex;align-items:baseline;justify-content:space-between;gap:3mm;margin:0 0 3.2mm;font-family:'Oswald',Arial,sans-serif;font-weight:600;font-size:12pt;letter-spacing:.02em;text-transform:uppercase;color:var(--xt-ink)}
+.xbCardT small{font-family:'DM Sans',Arial,sans-serif;font-size:7.9pt;font-weight:700;letter-spacing:.08em;color:var(--xt-mag);white-space:nowrap}
+.xbSep{display:flex;align-items:center;gap:3.2mm;margin:6.9mm 0 3.7mm}
+.xbSep span{font-size:8.3pt;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--xt-mag)}
+.xbSep i{flex:1;height:.53mm;background:var(--xt-stripe)}
+.xb .xbBar{height:3.2mm;border-radius:1.6mm;margin-bottom:1.6mm}
+.xb .xbRow{font-size:9.4pt;padding:1.85mm 0;gap:2.6mm}
+.xb .xbRow i{width:2.6mm;height:2.6mm}
+.xb .xbDl{grid-template-columns:35mm 1fr;gap:2.4mm 3.7mm;font-size:9.4pt;line-height:1.4}
+.xb .xbDl dt{font-size:7.5pt;letter-spacing:.1em}
+.xb .xbZones{gap:1.3mm}
+.xb .xbZone{font-size:9pt;padding:1.6mm 2.6mm;border-radius:1.6mm}
+.xb .xbTbl{font-size:9pt}
+.xb .xbTbl th{font-size:7.5pt;padding:2.1mm 2.6mm}
+.xb .xbTbl td{padding:1.85mm 2.6mm}
+.xb .xbWeeks{height:24mm;gap:2.1mm}
+.xb .xbWeeks .lb{font-size:7.5pt}
+.xb .xbLeg{font-size:7.9pt;margin-top:2.6mm}
+.xb .xbEmpty{font-size:9.4pt}
 .xtIn{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
 .xtHead{display:flex;align-items:flex-start;gap:6mm;margin-bottom:6mm}
 .xtHead .xtTitle{font-size:24pt;margin-top:1.6mm}
@@ -7998,18 +8038,18 @@ async function xtReady(root){
   }
   await waitForImages(root);
 }
-function xtPage(orient,inner,foot,style){
+function xtPage(orient,inner,foot,style,bg){
   const stripes=[1,2,3,4,5].map(k=>`<i style="left:${(k*100/6).toFixed(4)}%"></i>`).join('');
-  return `<section class="xtPg ${orient}"${style?` style="${style}"`:''}><div class="xtStripes">${stripes}</div><div class="xtWaveCorner"></div>
+  return `<section class="xtPg ${orient}"${style?` style="${style}"`:''}>${bg!=null?bg:`<div class="xtStripes">${stripes}</div>`}<div class="xtWaveCorner"></div>
     <div class="xtIn">${inner}</div><div class="xtFoot">${foot||''}</div></section>`;
 }
 /* Une seule page par document, hauteur ajustée au contenu (06/10, Pierrick) — même principe que la fiche de séance.
    Largeur fixe (A4 : 210 mm portrait, 297 mm paysage), hauteur mesurée hors écran ; jamais moins qu'un format 16:9 de même largeur. */
-async function xtPrintOne(orient,inner,foot,title){
-  const W=orient==='P'?210:297;
+async function xtPrintOne(orient,inner,foot,title,bg){
+  const W=/^P\b/.test(orient)?210:297;
   const meas=document.createElement('div');
   meas.style.cssText='position:fixed;left:-10000px;top:0;visibility:hidden';
-  meas.innerHTML=xtPage(orient+' auto',inner,foot);
+  meas.innerHTML=xtPage(orient+' auto',inner,foot,'',bg);
   document.body.appendChild(meas);
   await xtReady(meas);
   const hMm=meas.firstElementChild.getBoundingClientRect().height*25.4/96;
@@ -8018,7 +8058,7 @@ async function xtPrintOne(orient,inner,foot,title){
   let tag=document.getElementById('xtPageSize');
   if(!tag){tag=document.createElement('style');tag.id='xtPageSize';document.head.appendChild(tag);}
   tag.textContent=`@page xtAuto{size:${W}mm ${H}mm;margin:0}`;
-  await xtPrint(xtPage(orient+' auto',inner,foot,`height:${(H-.4).toFixed(1)}mm`),title);
+  await xtPrint(xtPage(orient+' auto',inner,foot,`height:${(H-.4).toFixed(1)}mm`,bg),title);
 }
 function xtPrint(html,title){
   const sheet=document.getElementById('printSheet');
@@ -8093,16 +8133,18 @@ async function exportBilan(pid){
   const contra=[c.addPain?'Douleur adducteurs':null,c.genou?'Vigilance genou':null,c.fadir==='R'?'FADIR positif':(c.fadir==='O'?'FADIR limite':null)].filter(Boolean);
   const vig=`<dl class="xbDl"><dt>Contre-indications</dt><dd>${contra.length?iEsc(contra.join(' · ')):'Aucune'}</dd>
     <dt>Alertes</dt><dd>${iEsc(p.alertes||'—')}</dd><dt>Douleurs</dt><dd>${iEsc(p.douleurs||'—')}</dd><dt>Priorités</dt><dd>${iEsc(p.priorites||'—')}</dd></dl>`;
-  const badge=(t,col)=>`<span class="xbBadge"${col?` style="border-color:${col};color:${col};background:${col}12"`:''}>${t}</span>`;
-  const page1=`<div class="xbTop">${xtPhoto(p,'xbPh')}
+  const badge=(t,col)=>`<span class="xbBadge${col?' sev':''}"${col?` style="background:${col}"`:''}>${t}</span>`;
+  const card=(title,cap,body,cls)=>`<div class="xbCard${cls?' '+cls:''}"><div class="xbCardT">${title}${cap?`<small>${cap}</small>`:''}</div>${body}</div>`;
+  const head=`<div class="xbTop">${xtPhoto(p,'xbPh')}
       <div class="xbId"><div class="xtEyebrow">Bilan joueur · ${XT_SEASON}</div><h1 class="xtTitle">${iEsc(p.name)}</h1>
-        <div class="xbBadges">${badge(gr.lbl)}${badge(st.lbl)}${badge('Individualisation : '+STATUT_LABEL[sev],XB_SEV[sev])}${badge('Édité le '+today)}</div></div>
-      <div class="xtCrest"></div></div>
-    <div class="xbKpis">${kpi(w7.length,'Séances · 7 jours','toutes séances confondues')}${kpi(w28.length,'Séances · 28 jours','')}${kpi(hrs(min28),'Volume · 28 jours','séances réalisées')}
+        <div class="xbBadges">${badge(gr.lbl)}${badge(st.lbl)}${badge('Individualisation : '+STATUT_LABEL[sev],XB_SEV[sev])}${badge('Édité le '+today)}</div></div></div>
+    <div class="xbKpis">${kpi(w7.length,'Séances · 7 jours','toutes séances confondues')}${kpi(w28.length,'Séances · 28 jours','toutes séances confondues')}${kpi(hrs(min28),'Volume · 28 jours','séances réalisées')}
       ${kpi(days==null?'—':(days===0?"Auj.":days+' j'),'Dernière séance',last?PL_KIND[last.kind].lbl:'aucune enregistrée')}</div>
-    <div class="xbCols">
-      <div class="xbBox"><h4>Répartition des séances · 28 jours</h4>${repHTML}<h4 style="margin-top:4mm">Séances par microcycle</h4>${weeksHTML}</div>
-      <div class="xbBox"><h4>Points de vigilance</h4>${vig}<h4 style="margin-top:4mm">Physique : haut / bas du corps · 90 jours</h4>${regHTML}</div>
+    <div class="xbGrid">
+      ${card('Répartition des séances','28 jours',repHTML)}
+      ${card('Points de vigilance','individualisation',vig)}
+      ${card('Séances par microcycle','8 dernières semaines',weeksHTML)}
+      ${card('Physique : haut / bas du corps','90 jours',regHTML)}
     </div>`;
   // page 2 : zones + tests
   const z=IZONES[p.id]||{};
@@ -8122,13 +8164,14 @@ async function exportBilan(pid){
         <td class="r" style="color:${asymCol(t2.asym)};font-weight:700">${t2.asym!=null?t2.asym.toFixed(0)+' %':'—'}</td>
         <td class="r" style="font-weight:700;color:${good==null?'var(--xt-mut)':(good?XB_SEV.V:XB_SEV.R)}">${evo==null?'1ᵉʳ test':(evo>0?'+':'')+evo.toFixed(1)+' %'}</td></tr>`;}).join('')}</tbody></table>`
     :'<div class="xbEmpty">Aucun test enregistré pour ce joueur.</div>';
-  const part2=`<div class="xbSecT"><div class="xtEyebrow">Tests &amp; zones</div><div class="xtRule"></div></div>
-    <div class="xbCols" style="grid-template-columns:.9fr 1.1fr;align-items:start">
-      <div class="xbBox"><h4>Zones évaluées · les plus sévères d'abord</h4>${zonesHTML}</div>
-      <div class="xbBox"><h4>Tests physiques · deux dernières campagnes</h4>${testsHTML}</div></div>`;
+  const part2=`<div class="xbSep"><span>Tests &amp; zones</span><i></i></div>
+    <div class="xbGrid2">
+      ${card('Zones évaluées','les plus sévères d\'abord',zonesHTML)}
+      ${card('Tests physiques','deux dernières campagnes',testsHTML,'tbl')}</div>`;
   const hasP2=zRows.length||rows.length;
-  // une seule page par joueur (06/10) : hauteur ajustée à ce qu'il y a à montrer
-  await xtPrintOne('L',page1+(hasP2?part2:''),`Bilan joueur · ${iEsc(p.name)} · ${today}`,`Bilan ${p.name} ${today.replace(/\//g,'-')}`);
+  // une seule page par joueur, hauteur ajustée à ce qu'il y a à montrer (06/10) ; fond « bandeau » choisi sur Claude Design
+  const band=`<div class="xbBand">${[1,2,3,4,5].map(k=>`<i style="left:${(k*100/6).toFixed(3)}%"></i>`).join('')}<span class="xtCrest"></span></div>`;
+  await xtPrintOne('L xb',head+(hasP2?part2:''),`Bilan joueur · ${iEsc(p.name)} · ${today}`,`Bilan ${p.name} ${today.replace(/\//g,'-')}`,band);
 }
 
 function renderIndiv(){
