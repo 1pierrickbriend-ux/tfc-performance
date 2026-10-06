@@ -1571,7 +1571,7 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 }
 @media print{#fsOverlay,#bibOverlay,#qaOverlay{display:none !important}}
 
-/* ═══ Fiches de séance : PDF 16:9 — 297 × 167 mm (06/10) ═══ */
+/* ═══ Fiches de séance : PDF 1 page — 297 mm de large, hauteur fixée en JS selon le nombre de blocs (06/10) ═══ */
 @page fsW{size:297mm 167.06mm;margin:0}
 .fpPg{page:fsW;position:relative;overflow:hidden;width:297mm;height:166.6mm;background:var(--xt-bg);color:var(--xt-ink);font-family:'DM Sans',Arial,sans-serif;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:page;page-break-after:always}
 .fpPg:last-child{break-after:auto;page-break-after:auto}
@@ -2944,7 +2944,7 @@ async function bibDelete(){
    · les exercices viennent de la banque : consignes, intentions, variante et vidéo saisies une seule fois ;
    · chaque case reste modifiable ; une case modifiée à la main n'est plus écrasée par le préréglage ;
    · blocs par plan de sollicitation : « enchaîné » (séries = tours, R′ après le bloc) ou « séries successives » ;
-   · sortie PDF 16:9 au format maillot extérieur ; la vignette d'un exercice ouvre sa vidéo (lien actif dans le PDF). */
+   · sortie PDF sur une seule page (297 mm de large, hauteur selon le nombre de blocs) au format maillot extérieur ; la vignette d'un exercice ouvre sa vidéo (lien actif dans le PDF). */
 let FICHES=[], FS_MISSING=false, FS=null, FS_PICK=null;
 const FS_PLANS=[['vertical','Vertical'],['horizontal','Horizontal'],['lateral','Latéral'],['rotation','Rotation'],
   ['anti_ext','Anti-extension'],['anti_rot','Anti-rotation'],['anti_lat','Anti-flexion latérale'],['multi','Multi-plan']];
@@ -3348,7 +3348,7 @@ async function fsDelete(){
   fsClose(true); fsRefreshLists();
 }
 
-/* ═══ PDF 16:9 (297 × 167 mm), template maillot extérieur ═══
+/* ═══ PDF : 1 page de 297 mm de large, hauteur selon le nombre de blocs, template maillot extérieur ═══
    Géométrie reprise du fond « fond_fiche_seance_epure » (1920 × 1080 → 297 × 167 mm) :
    marge 14,85 mm · filet d'en-tête à 30,9 mm · écusson 18,6 mm entre deux rayures tangentes. */
 const FP_COLS=[8.66,23.2,38.67,38.67,32.48,18.56,13.92,20.88,15.47,15.47,18.56];
@@ -3421,45 +3421,33 @@ function fpHead(st,nbB,nbE){
   </div></header>`;
 }
 function fpBg(){ return `<div class="fpBg" aria-hidden="true"><i class="fpS1"></i><i class="fpS2"></i><i class="fpLine"></i><span class="xtCrest"></span><div class="xtWaveCorner"></div></div>`; }
+/* Une seule page par séance (06/10, Pierrick) : largeur fixe 297 mm, hauteur ajustée au nombre de blocs
+   (jusqu'à 10 blocs et plus). Jamais plus petite que le format 16:9 (297 × 167 mm) pour 1 ou 2 blocs. */
+const FP_TOP=34.96, FP_BOTTOM=8.46, FP_MIN_H=167.06;
 async function fsPrint(st){
   if(!st)return;
   const blocs=st.blocs.map((b,i)=>({b,i})).filter(x=>x.b.rows.length);
   if(!blocs.length){alert('Ajoute au moins un exercice avant de générer le PDF.');return;}
   const nbE=blocs.reduce((n,x)=>n+x.b.rows.length,0);
-  const head=fpHead(st,blocs.length,nbE);
   const anyVid=blocs.some(x=>x.b.rows.some(r=>fsVideo(r,fsEx(r))));
-  // 1. mesure hors écran, à la largeur réelle de la page
+  const body=blocs.map(x=>fpBlocHTML(x.b,x.i,0,x.b.rows.length,false)).join('');
+  // hauteur réelle des blocs, mesurée hors écran à la largeur de la page
   const meas=document.createElement('div');
   meas.className='fpPg'; meas.style.cssText='position:fixed;left:-10000px;top:0;visibility:hidden;height:auto';
-  meas.innerHTML=`<div class="fpBody">${blocs.map(x=>fpBlocHTML(x.b,x.i,0,x.b.rows.length,false)).join('')}</div>`;
+  meas.innerHTML=`<div class="fpBody">${body}</div>`;
   document.body.appendChild(meas);
   await xtReady(meas);
-  const mm=px=>px*25.4/96;
-  const dims=[...meas.querySelectorAll('.fpTbl')].map(t=>{ const trs=[...t.rows]; return {h:mm(trs[0].getBoundingClientRect().height),rows:trs.slice(1).map(tr=>mm(tr.getBoundingClientRect().height))}; });
+  const bodyMm=meas.querySelector('.fpBody').getBoundingClientRect().height*25.4/96;
   meas.remove();
-  // 2. répartition : un bloc reste entier s'il tient sur une page, sinon il est coupé entre deux lignes
-  const AVAIL=158.6-34.96, GAP=3.4;
-  const pages=[]; let cur=[], used=0;
-  const newPage=()=>{ if(cur.length)pages.push(cur); cur=[]; used=0; };
-  blocs.forEach((x,k)=>{
-    const d=dims[k], total=d.h+d.rows.reduce((a,v)=>a+v,0);
-    if(cur.length&&used+GAP+total>AVAIL&&total<=AVAIL)newPage();
-    let i=0;
-    while(i<d.rows.length){
-      const room=AVAIL-used-(cur.length?GAP:0);
-      let n=0,h=d.h;
-      while(i+n<d.rows.length&&h+d.rows[i+n]<=room){h+=d.rows[i+n];n++;}
-      if(!n){ if(cur.length){newPage();continue;} n=1; h=d.h+d.rows[i]; }
-      cur.push({b:x.b,i:x.i,from:i,to:i+n,cont:i>0}); used+=(cur.length>1?GAP:0)+h; i+=n;
-      if(i<d.rows.length)newPage();
-    }
-  });
-  newPage();
+  const H=Math.max(FP_MIN_H,Math.ceil((FP_TOP+bodyMm+FP_BOTTOM)*10)/10);
+  let sizeTag=document.getElementById('fsPdfPageSize');
+  if(!sizeTag){sizeTag=document.createElement('style');sizeTag.id='fsPdfPageSize';document.head.appendChild(sizeTag);}
+  sizeTag.textContent=`@page fsW{size:297mm ${H}mm;margin:0}`;
   const titre=String(st.titre||'').trim()||fsPL(st.preset)||'Séance';
   const ds=st.date?fmtDateFR(st.date).replace(/\/(\d\d)$/,'/20$1'):'';
-  const html=pages.map((chunks,k)=>`<section class="fpPg">${fpBg()}${head}
-    <div class="fpBody">${chunks.map(c=>fpBlocHTML(c.b,c.i,c.from,c.to,c.cont)).join('')}</div>
-    <div class="fpFt">${iEsc(titre)}${ds?' · '+ds:''}${pages.length>1?` · ${k+1}/${pages.length}`:''}${anyVid?' · <b>▶&#xFE0E; clic sur une vignette = vidéo de l\'exercice</b>':''}</div></section>`).join('');
+  const html=`<section class="fpPg" style="height:${(H-.4).toFixed(1)}mm">${fpBg()}${fpHead(st,blocs.length,nbE)}
+    <div class="fpBody">${body}</div>
+    <div class="fpFt">${iEsc(titre)}${ds?' · '+ds:''}${anyVid?' · <b>▶&#xFE0E; clic sur une vignette = vidéo de l\'exercice</b>':''}</div></section>`;
   await xtPrint(html,`${titre}${ds?' - '+ds.replace(/\//g,'-'):''}`);
 }
 function fsPrintId(id){ const f=FICHES.find(x=>x.id===id); if(f)fsPrint(fsFromDb(f)); }
