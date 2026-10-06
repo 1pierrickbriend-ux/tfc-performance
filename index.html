@@ -624,7 +624,7 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .bibCur.warn{color:var(--warn);border-color:var(--warn)}
 .bibActions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .bibActions .btn.primary{min-width:140px}
-@media(max-width:600px){.bibTabs{display:grid;grid-template-columns:repeat(3,1fr);width:100%}.bibTab{justify-content:center;padding:9px 6px;font-size:12.5px;gap:6px}.bibTabX{display:none}}
+@media(max-width:600px){.bibTabs{display:grid;grid-template-columns:repeat(2,1fr);width:100%}.bibTab{justify-content:center;padding:9px 6px;font-size:12.5px;gap:6px}}
 .bibTabX{font-style:normal}
 @media(max-width:600px){.bibAddVid{margin-left:0;flex:1 1 calc(50% - 6px);padding:9px 6px}.bibAddVid+.bibAdd{flex:1 1 calc(50% - 6px);padding:9px 6px}}
 @media(max-width:600px){.bibAdd{margin-left:0;flex:1 1 100%}.bibSearch{margin-left:0;flex:1 1 100%}.bibGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bibThumb{height:96px}.bibSegs{grid-template-columns:repeat(2,1fr)}}
@@ -2972,7 +2972,9 @@ const BIB_CAT_LABEL=Object.fromEntries(BIB_CATS);
 // anciennes catégories (avant le script v42) lues proprement en attendant la conversion en base
 const BIB_LEGACY={echauffement:'prevention',technique:'terrain',tactique:'terrain',mental:'autre'};
 function bibCat(c){ c=BIB_LEGACY[c]||c; return BIB_CAT_LABEL[c]?c:'autre'; }
-let BIB={tab:'docs',cat:'',q:'',edit:null,formCat:'physique'};
+// v65 : l'onglet Documents est retiré (remplacé par les fiches de séance) — les documents restent stockés dans Supabase, rien n'est supprimé.
+// La bibliothèque s'ouvre sur les fiches de séance ; la banque d'exercices passe en second.
+let BIB={tab:'fiches',cat:'',q:'',edit:null,formCat:'physique'};
 
 async function loadProgrammes(){
   const [{data:pr,error:e1},{data:ex,error:e2}]=await Promise.all([
@@ -2993,8 +2995,9 @@ function renderExerciseBank(){ renderBib(); }  // idem
 function renderBib(){
   const tabs=document.getElementById('bibTabs'); if(!tabs)return;
   const t=(k,l,n)=>`<button type="button" role="tab" class="bibTab${BIB.tab===k?' on':''}" aria-selected="${BIB.tab===k}" onclick="bibSetTab('${k}')">${l}<span>${n}</span></button>`;
-  tabs.innerHTML=t('docs','Documents',PROGRAMMES.length)+t('ex','Exercices',EXBANK.length)+t('fiches','Fiches<i class="bibTabX"> de séance</i>',FICHES.length);
-  document.getElementById('bibAddBtn').textContent={docs:'＋ Ajouter un document',ex:'＋ Ajouter un exercice',fiches:'＋ Nouvelle fiche'}[BIB.tab];
+  if(BIB.tab!=='fiches'&&BIB.tab!=='ex')BIB.tab='fiches';
+  tabs.innerHTML=t('fiches','Fiches<i class="bibTabX"> de séance</i>',FICHES.length)+t('ex','Exercices',EXBANK.length);
+  document.getElementById('bibAddBtn').textContent={ex:'＋ Ajouter un exercice',fiches:'＋ Nouvelle fiche'}[BIB.tab];
   const av=document.getElementById('bibAddVid'); if(av)av.style.display=BIB.tab==='ex'?'':'none';
   let chips;
   if(BIB.tab==='fiches'){
