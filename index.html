@@ -1538,11 +1538,24 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 .fsToast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:var(--ok);color:#0b1f14;font-weight:800;font-size:12.5px;padding:8px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s}
 .fsToast.on{opacity:1}
 /* Bibliothèque : cartes « fiche » et repères de la banque */
-.fsThumb{flex-direction:column;gap:6px;padding:10px;text-align:center}
-.fsThumb .q{font-family:var(--font-display);font-weight:800;font-size:19px;text-transform:uppercase;color:var(--id-ink);line-height:1.05}
-.fsThumb .d{font-size:11px;font-weight:700;color:var(--id-sub)}
-.fsCardActs{display:flex;gap:6px;margin-top:4px}
-.fsCardActs .btn{flex:1;padding:6px 8px;font-size:12px}
+/* carte fiche : nombre de blocs, séance et photo(s), lisibles d'un coup d'œil (06/10) */
+.bibThumb.fsThumb{height:190px;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:12px 12px 0;text-align:left;overflow:hidden}
+.fsTop{display:flex;align-items:center;gap:8px;min-width:0;margin-bottom:8px}
+.fsBl{flex:none;background:#2B1569;color:#fff;border-radius:999px;padding:4px 11px 4px 4px;font-family:var(--font-display);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.04em;display:inline-flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(43,21,105,.22)}
+.fsBl b{background:#E5409A;border-radius:999px;min-width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;padding:0 6px}
+.fsEb{min-width:0;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--id-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fsTt{font-family:var(--font-display);font-weight:800;font-size:25px;line-height:1;text-transform:uppercase;color:var(--id-ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:break-word;hyphens:auto}
+.fsTb{margin-top:auto;display:flex;justify-content:flex-end;align-items:flex-end;min-width:0}
+.fsPhs{display:flex;align-items:flex-end;min-width:0}
+.phf.fsL{width:68px;height:86px;border-radius:12px 12px 0 0;font-size:24px}
+.phf.fsM{width:50px;height:64px;border-radius:9px 9px 0 0;font-size:16px;box-shadow:-2px 0 0 #ece8f4}
+.fsPhs .phf.fsM+.phf.fsM{margin-left:-12px}
+.fsMore{align-self:center;margin-left:5px;font-family:var(--font-display);font-weight:800;font-size:14px;color:var(--id-ink);background:#fff;border:2px solid var(--id-line);border-radius:999px;padding:3px 7px}
+.fsCrest{width:56px;height:56px;margin-bottom:8px;background:var(--xt-crest) center/contain no-repeat;flex:none}
+.fsCardActs{display:flex;gap:6px;padding:10px 12px 12px}
+.fsCardActs .btn{flex:1;padding:7px 8px;font-size:12.5px;font-weight:700}
+@media(max-width:600px){.bibThumb.fsThumb{height:168px;padding:10px 9px 0}.fsTop{gap:6px;margin-bottom:6px}.fsTt{font-size:19px}.fsBl{font-size:11.5px;padding:3px 8px 3px 3px;gap:5px}.fsBl b{min-width:21px;height:21px;font-size:13px}
+  .fsEb{font-size:9.5px}.phf.fsL{width:54px;height:68px}.phf.fsM{width:38px;height:48px;font-size:12px}.fsPhs .phf.fsM+.phf.fsM{margin-left:-11px}.fsMore{font-size:12px;padding:2px 5px}.fsCrest{width:44px;height:44px}}
 .bibVid{position:absolute;top:8px;left:8px;width:26px;height:26px;border-radius:50%;background:#E5409A;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;padding-left:2px;box-shadow:0 2px 8px rgba(229,64,154,.45)}
 .c-plan.bibTag{background:rgba(229,64,154,.14);color:#f7a6cf}
 .bibFsHead{margin:22px 0 2px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;font-weight:800;color:var(--ink);display:flex;flex-direction:column;gap:3px}
@@ -2774,12 +2787,16 @@ function renderBibGrid(){
     const list=FICHES.filter(f=>(!BIB.cat||fsFamily(f.preset)===BIB.cat)&&(!q||[f.titre,fsPL(f.preset),who(f)].join(' ').toLowerCase().includes(q)));
     if(!list.length){box.innerHTML=`<div class="bibEmpty">${FICHES.length?'Aucune fiche ne correspond.':'Aucune fiche. Crée la première avec « ＋ Nouvelle fiche », ou depuis une séance prévue (Prescription › 📄 Fiche).'}</div>`;return;}
     box.innerHTML=list.map(f=>{
-      const bl=((f.contenu&&f.contenu.blocs)||[]), nE=bl.reduce((n,b)=>n+((b.rows||[]).length),0);
-      return `<div class="bibCard fsCard" role="button" tabindex="0" onclick="fsOpen('${f.id}')" onkeydown="if(event.key==='Enter')fsOpen('${f.id}')" title="Ouvrir la fiche">
-        <div class="bibThumb fsThumb fam-${fsFamily(f.preset)||'x'}"><span class="q">${plEsc(fsPL(f.preset)||'Sans préréglage')}</span><span class="d">${f.date?plEsc(fsLongDate(f.date)):''}</span></div>
-        <div class="bibInfo"><b>${plEsc(f.titre||fsPL(f.preset)||'Séance')}</b>
-          <div class="bibMeta"><small>${plEsc(who(f))} · ${bl.length} bloc${bl.length>1?'s':''} · ${nE} exercice${nE>1?'s':''}${f.duree_min?' · '+f.duree_min+' min':''}</small></div>
-          <div class="fsCardActs"><button type="button" class="btn" onclick="event.stopPropagation();fsPrintId('${f.id}')">PDF</button><button type="button" class="btn" onclick="event.stopPropagation();fsDuplicate('${f.id}')">Dupliquer</button></div></div>
+      const nB=((f.contenu&&f.contenu.blocs)||[]).filter(b=>(b.rows||[]).length).length;
+      const titre=f.titre||fsPL(f.preset)||'Séance', pl=fsPL(f.preset);
+      const eyebrow=[pl&&pl!==titre?pl:'',f.date?fsShortDate(f.date):''].filter(Boolean).join(' · ');
+      return `<div class="bibCard fsCard" role="button" tabindex="0" onclick="fsOpen('${f.id}')" onkeydown="if(event.key==='Enter')fsOpen('${f.id}')" title="Ouvrir la fiche — ${plEsc(who(f))}">
+        <div class="bibThumb fsThumb fam-${fsFamily(f.preset)||'x'}">
+          <div class="fsTop"><span class="fsBl"><b>${nB}</b> bloc${nB>1?'s':''}</span>${eyebrow?`<span class="fsEb">${plEsc(eyebrow)}</span>`:''}</div>
+          <span class="fsTt">${plEsc(titre)}</span>
+          <div class="fsTb">${fsCardPhotos(f)}</div>
+        </div>
+        <div class="fsCardActs"><button type="button" class="btn" onclick="event.stopPropagation();fsPrintId('${f.id}')">PDF</button><button type="button" class="btn" onclick="event.stopPropagation();fsDuplicate('${f.id}')">Dupliquer</button></div>
       </div>`;
     }).join('');
     return;
@@ -3352,6 +3369,12 @@ async function fsDelete(){
    Géométrie reprise du fond « fond_fiche_seance_epure » (1920 × 1080 → 297 × 167 mm) :
    marge 14,85 mm · filet d'en-tête à 30,9 mm · écusson 18,6 mm entre deux rayures tangentes. */
 const FP_COLS=[8.66,23.2,38.67,38.67,32.48,18.56,13.92,20.88,15.47,15.47,18.56];
+function fsShortDate(iso){
+  if(!iso)return '';
+  const d=new Date(iso+'T12:00:00'); if(isNaN(d))return '';
+  const s=d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+  return s.charAt(0).toUpperCase()+s.slice(1);
+}
 function fsLongDate(iso){
   if(!iso)return '';
   const d=new Date(iso+'T12:00:00'); if(isNaN(d))return '';
@@ -3449,6 +3472,15 @@ async function fsPrint(st){
     <div class="fpBody">${body}</div>
     <div class="fpFt">${iEsc(titre)}${ds?' · '+ds:''}${anyVid?' · <b>▶&#xFE0E; clic sur une vignette = vidéo de l\'exercice</b>':''}</div></section>`;
   await xtPrint(html,`${titre}${ds?' - '+ds.replace(/\//g,'-'):''}`);
+}
+/* Vignette d'une fiche (Bibliothèque) : photo du joueur, ou du groupe (3 + « +N »), sinon l'écusson */
+function fsCardPhotos(f){
+  const ids=f.player_id?[f.player_id]:((f.contenu&&f.contenu.joueurs)||[]);
+  const pls=ids.map(id=>IPLAYERS.find(x=>x.id===id)).filter(Boolean);
+  if(!pls.length)return '<span class="fsCrest" title="Séance collective"></span>';
+  if(pls.length===1)return `<span class="fsPhs one" title="${plEsc(pls[0].name)}">${phFrame(pls[0],'fsL')}</span>`;
+  const show=pls.slice(0,3), more=pls.length-show.length;
+  return `<span class="fsPhs" title="${plEsc(pls.map(p=>p.name).join(', '))}">${show.map(p=>phFrame(p,'fsM')).join('')}${more>0?`<span class="fsMore">+${more}</span>`:''}</span>`;
 }
 function fsPrintId(id){ const f=FICHES.find(x=>x.id===id); if(f)fsPrint(fsFromDb(f)); }
 
