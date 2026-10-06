@@ -1570,6 +1570,9 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
 .bibVidFile video{width:120px;height:80px;object-fit:cover;border-radius:8px;background:#000;flex:none}
 .bibVidFile b{color:var(--ink);word-break:break-all}
 .bibVidFile.warn{color:var(--warn)}
+.bibVidBar{display:block;height:6px;border-radius:3px;background:var(--panel3);overflow:hidden;margin-top:7px;max-width:260px}
+.bibVidBar[hidden]{display:none}
+.bibVidBar i{display:block;height:100%;background:linear-gradient(90deg,#8a6fd6,#E5409A);border-radius:3px;transition:width .3s}
 .bibCurVid{width:26px;height:26px;border-radius:50%;background:#E5409A;color:#fff;font-size:10px;display:inline-flex;align-items:center;justify-content:center;padding-left:2px;flex:none}
 .bibVidRm{margin-left:auto;flex:none;background:none;border:1px solid var(--line);border-radius:7px;color:var(--ink);font:inherit;font-size:11.5px;font-weight:700;padding:5px 10px;cursor:pointer}
 .bibVidRm:hover{border-color:var(--bad)}
@@ -2899,7 +2902,7 @@ function bibOpen(kind,id,opts){
 }
 /* ── Vidéo d'un exercice (06/10) : fichier envoyé dans la plateforme (dossier exercise-videos, script v44)
    ou lien collé (YouTube non répertorié, Drive…). Un fichier remplace un lien et inversement. ── */
-const BIB_VID_MAX=50*1024*1024;
+let BIB_VID_MAX=50*1024*1024;   // limite d'un fichier sur le stockage Supabase (offre gratuite)
 function bibExVideo(e){
   if(!e)return '';
   if(e.video_path)return bibUrl('exercise-videos',e.video_path)||'';
@@ -2915,7 +2918,7 @@ function bibRenderVidBox(){
     </div>
     <div class="bibVidPane"${BIB.vidMode==='file'?'':' hidden'}>
       <input type="file" id="bibVidFile" class="bibInput" accept="video/mp4,video/quicktime,video/webm,video/x-m4v,video/*" onchange="bibVidPicked(this)">
-      <div class="bibVidHint">MP4 ou MOV depuis ton téléphone, 50 Mo maximum : un clip de 10 à 15 s suffit.</div>
+      <div class="bibVidHint">MP4 ou MOV depuis ton téléphone, telle quelle : une vidéo lourde ou au format iPhone est compressée automatiquement (720p, sans le son) avant l'envoi.</div>
       <div id="bibVidPrev"></div>
     </div>
     <div class="bibVidPane"${BIB.vidMode==='link'?'':' hidden'}>
@@ -2937,15 +2940,111 @@ function bibVidMode(m){
   document.querySelectorAll('#bibVidBox .bibVidSegs .qaSeg').forEach((b,k)=>b.classList.toggle('on',(k===0)===(m==='file')));
   const panes=document.querySelectorAll('#bibVidBox .bibVidPane'); panes[0].hidden=m!=='file'; panes[1].hidden=m!=='link';
 }
+/* ── Compression automatique dans le navigateur (06/10) ──
+   Une vidéo d'iPhone envoyée telle quelle (HEVC, 4K ou 1080p) dépasse vite 50 Mo, la limite du stockage Supabase,
+   et le format HEVC ne se lit pas partout. Avant l'envoi, la vidéo est relue et réenregistrée en 720p, sans le son,
+   en MP4 (H.264) quand le navigateur sait le faire (Safari, Chrome récent), sinon en WebM. Durée = durée de la vidéo. */
+let BIB_VID_SOFT=15*1024*1024;   // au-delà, compression même si la vidéo passe sous 50 Mo (place de stockage)
+let __bibRecMime;
+function bibRecMime(){
+  if(__bibRecMime!==undefined)return __bibRecMime;
+  const c=['video/mp4;codecs=avc1.42E01E','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+  let ok=null;
+  try{ if(window.MediaRecorder&&HTMLCanvasElement.prototype.captureStream)ok=c.find(t=>MediaRecorder.isTypeSupported(t))||null; }catch(e){}
+  return __bibRecMime=ok;
+}
+function bibVidNeedsCompress(f){
+  const rec=bibRecMime(); if(!rec||!f)return false;
+  const mov=/quicktime/i.test(f.type||'')||/\.mov$/i.test(f.name||'');
+  return f.size>BIB_VID_MAX||(rec.startsWith('video/mp4')&&(f.size>BIB_VID_SOFT||mov));
+}
+function bibFmtDur(sec){ if(!isFinite(sec)||sec<=0)return ''; sec=Math.round(sec); return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'); }
+function bibMo(n){ return (n/1048576).toFixed(n<10485760?1:0).replace('.',',')+' Mo'; }
+function bibCompressVideo(file,job){
+  return new Promise(resolve=>{
+    const mime=bibRecMime(); if(!mime)return resolve(null);
+    const url=URL.createObjectURL(file), v=document.createElement('video');
+    let rec=null, done=false, live=true, timer=null;
+    const fin=r=>{ if(done)return; done=true; live=false; clearTimeout(timer); try{v.pause();}catch(e){} URL.revokeObjectURL(url); v.removeAttribute('src'); resolve(r); };
+    job.cancel=()=>{ job.cancelled=true; if(rec&&rec.state!=='inactive'){rec.onstop=()=>fin(null);rec.stop();} else fin(null); };
+    v.muted=true; v.playsInline=true; v.preload='auto'; v.setAttribute('playsinline','');
+    v.onerror=()=>fin(null);
+    v.onloadeddata=async()=>{
+      if(done)return;
+      const d=v.duration, w0=v.videoWidth, h0=v.videoHeight;
+      if(!isFinite(d)||!d||!w0||!h0)return fin(null);
+      const sc=Math.min(1,1280/Math.max(w0,h0)), W=Math.max(2,Math.round(w0*sc/2)*2), H=Math.max(2,Math.round(h0*sc/2)*2);
+      const cv=document.createElement('canvas'); cv.width=W; cv.height=H; const ctx=cv.getContext('2d');
+      ctx.drawImage(v,0,0,W,H);
+      // 2,5 Mb/s ≈ 0,3 Mo/s ; débit réduit pour les longues vidéos afin de rester sous ~45 Mo
+      const bps=Math.round(Math.max(800000,Math.min(2500000,45*8e6/d)));
+      try{ rec=new MediaRecorder(cv.captureStream(30),{mimeType:mime,videoBitsPerSecond:bps}); }catch(e){ return fin(null); }
+      const chunks=[];
+      rec.ondataavailable=e=>{ if(e.data&&e.data.size)chunks.push(e.data); };
+      rec.onstop=()=>{
+        if(job.cancelled||!chunks.length)return fin(null);
+        const type=mime.split(';')[0], ext=type==='video/mp4'?'mp4':'webm';
+        fin(new File(chunks,file.name.replace(/\.[^.]+$/,'')+'.'+ext,{type}));
+      };
+      const draw=()=>{
+        if(!live)return;
+        ctx.drawImage(v,0,0,W,H);
+        job.progress=Math.min(1,v.currentTime/d); if(job.onProgress)job.onProgress(job.progress);
+        if(v.requestVideoFrameCallback)v.requestVideoFrameCallback(draw); else requestAnimationFrame(draw);
+      };
+      v.onended=()=>{ live=false; job.progress=1; if(job.onProgress)job.onProgress(1); if(rec.state!=='inactive')rec.stop(); };
+      rec.start(500);
+      try{ await v.play(); }catch(e){ live=false; if(rec.state!=='inactive'){rec.onstop=()=>fin(null);rec.stop();} return; }
+      draw();
+      timer=setTimeout(()=>{ if(rec.state!=='inactive')rec.stop(); },d*2000+20000);   // sécurité : jamais bloqué
+    };
+    v.src=url; v.load();
+  });
+}
+function bibVidJobCancel(){ if(BIB.vidJob&&BIB.vidJob.cancel&&!BIB.vidJob.done)BIB.vidJob.cancel(); BIB.vidJob=null; }
 function bibVidPicked(inp){
   const f=inp.files[0], prev=document.getElementById('bibVidPrev'); if(!prev)return;
+  bibVidJobCancel();
   if(prev._url){URL.revokeObjectURL(prev._url);prev._url=null;}
   if(!f){prev.innerHTML='';return;}
-  const mo=(f.size/1048576).toFixed(f.size<10485760?1:0);
-  const tooBig=f.size>BIB_VID_MAX;
+  const comp=bibVidNeedsCompress(f), tooBig=f.size>BIB_VID_MAX&&!comp;
   prev._url=URL.createObjectURL(f);
   prev.innerHTML=`<div class="bibVidFile${tooBig?' warn':''}"><video src="${prev._url}" muted playsinline controls preload="metadata"></video>
-    <span><b>${plEsc(f.name)}</b><br>${mo} Mo${tooBig?' — trop lourde (50 Mo max) : filme un clip plus court ou en 1080p.':''}</span></div>`;
+    <span><b>${plEsc(f.name)}</b><br><span id="bibVidInfo"></span>
+      ${comp?'<span class="bibVidBar"><i style="width:0%"></i></span>':''}</span></div>`;
+  const info=document.getElementById('bibVidInfo'), bar=prev.querySelector('.bibVidBar i');
+  let dur='';
+  const head=()=>`${bibMo(f.size)}${dur?' · '+dur:''}`;
+  const pv=prev.querySelector('video');
+  pv.addEventListener('loadedmetadata',()=>{ dur=bibFmtDur(pv.duration); if(!comp||!BIB.vidJob||BIB.vidJob.done)return; info.textContent=head()+' — '+info.dataset.msg; });
+  if(tooBig){ info.textContent=head()+' — trop lourde (50 Mo max) et ce navigateur ne sait pas la compresser : filme un clip plus court ou en 1080p.'; }
+  else if(!comp){ info.textContent=head()+' — prête à être envoyée.'; }
+  else{
+    const job={src:f,progress:0,done:false,result:null};
+    const msg=p=>`compression automatique (720p, sans le son)… ${Math.round(p*100)} % — garde cette page ouverte`;
+    info.dataset.msg=msg(0); info.textContent=head()+' — '+msg(0);
+    job.onProgress=p=>{
+      if(bar)bar.style.width=Math.round(p*100)+'%';
+      info.dataset.msg=msg(p); if(!job.done)info.textContent=head()+' — '+msg(p);
+      const btn=document.getElementById('bibSaveBtn'); if(BIB.vidSaving&&btn)btn.textContent=`Compression de la vidéo… ${Math.round(p*100)} %`;
+    };
+    job.promise=bibCompressVideo(f,job).then(r=>{
+      job.done=true;
+      // résultat gardé seulement s'il est plus léger que l'original (ou si l'original est un .mov à convertir)
+      const mov=/quicktime/i.test(f.type||'')||/\.mov$/i.test(f.name||'');
+      job.result=r&&(r.size<f.size||mov)?r:null;
+      if(BIB.vidJob!==job)return job.result;
+      if(bar)bar.parentNode.hidden=true;
+      const out=job.result;
+      const warn=(out?out.size:f.size)>BIB_VID_MAX;
+      prev.querySelector('.bibVidFile').classList.toggle('warn',warn);
+      info.textContent=out
+        ?`${head()} → ${bibMo(out.size)} (720p, ${out.type==='video/mp4'?'MP4':'WebM'})${warn?' — encore trop lourde : coupe la vidéo (2 min max).':' — prête à être envoyée.'}`
+        :job.cancelled?'':`${head()} — ${f.size>BIB_VID_MAX?'compression impossible et vidéo trop lourde (50 Mo max) : filme un clip plus court ou en 1080p.':'compression impossible : la vidéo sera envoyée telle quelle.'}`;
+      return out;
+    });
+    BIB.vidJob=job;
+  }
   const nm=document.getElementById('bibName');
   if(nm&&!nm.value.trim()){
     const base=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
@@ -2982,7 +3081,7 @@ function bibRenderPlanBox(){
   const box=document.getElementById('bibPlanBox'); if(!box)return;
   box.innerHTML=FS_PLANS.map(([k,l])=>`<button type="button" class="qaSeg${BIB.formPlan===k?' on':''}" onclick="BIB.formPlan=BIB.formPlan==='${k}'?'':'${k}';bibRenderPlanBox()">${l}</button>`).join('');
 }
-function bibClose(){ document.getElementById('bibOverlay').classList.remove('on'); BIB.edit=null; }
+function bibClose(){ document.getElementById('bibOverlay').classList.remove('on'); BIB.edit=null; if(typeof bibVidJobCancel==='function')bibVidJobCancel(); BIB.vidSaving=false; }
 async function bibUpload(bucket,name,file,maxDim,q){
   let body=file, ext='pdf';
   if(file.type!=='application/pdf'){
@@ -3013,7 +3112,8 @@ async function bibSave(){
   }
   if(vf){
     if(!/^video\//.test(vf.type)&&!/\.(mp4|mov|m4v|webm)$/i.test(vf.name)){alert('Choisis un fichier vidéo (MP4 ou MOV).');return;}
-    if(vf.size>BIB_VID_MAX){alert(`Vidéo trop lourde (${Math.round(vf.size/1048576)} Mo, 50 Mo maximum).\n\nFilme un clip plus court (10-15 s) ou en 1080p.`);return;}
+    const job=BIB.vidJob&&BIB.vidJob.src===vf?BIB.vidJob:null;
+    if(vf.size>BIB_VID_MAX&&!job){alert(`Vidéo trop lourde (${Math.round(vf.size/1048576)} Mo, 50 Mo maximum) et ce navigateur ne sait pas la compresser.\n\nFilme un clip plus court (10-15 s) ou en 1080p.`);return;}
   }
   if(link&&!/^https?:\/\//i.test(link)){alert('Le lien vidéo doit commencer par https:// (copie le lien de partage complet).');return;}
   const btn=document.getElementById('bibSaveBtn'); btn.disabled=true; btn.textContent='Enregistrement…';
@@ -3022,13 +3122,25 @@ async function bibSave(){
   // documents : 1600 px (texte scanné encore lisible) · exercices : 700 px
   let path=file?await bibUpload(bucket,name,file,isDoc?1600:700,isDoc?.88:.85):null;
   if(file&&!path){reset();return;}
-  // envoi de la vidéo
-  let vpath=null;
+  // compression (lancée dès le choix du fichier) puis envoi de la vidéo
+  let vpath=null, up=vf;
   if(vf){
-    btn.textContent=`Envoi de la vidéo (${Math.max(1,Math.round(vf.size/1048576))} Mo)…`;
-    const ext=((vf.name.match(/\.(mp4|mov|m4v|webm)$/i)||[])[1]||(vf.type==='video/quicktime'?'mov':vf.type==='video/webm'?'webm':'mp4')).toLowerCase();
+    const job=BIB.vidJob&&BIB.vidJob.src===vf?BIB.vidJob:null;
+    if(job){
+      if(!job.done){ BIB.vidSaving=true; btn.textContent=`Compression de la vidéo… ${Math.round((job.progress||0)*100)} %`; }
+      const r=await job.promise; BIB.vidSaving=false;
+      if(r)up=r;
+    }
+    if(up.size>BIB_VID_MAX){
+      if(path)supa.storage.from(bucket).remove([path]);
+      alert(up===vf?`Vidéo trop lourde (${Math.round(up.size/1048576)} Mo, 50 Mo maximum) : la compression n'a pas fonctionné sur ce navigateur.\n\nEssaie depuis Safari ou Chrome à jour, ou coupe la vidéo dans Photos › Modifier.`
+        :`La vidéo fait encore ${Math.round(up.size/1048576)} Mo après compression (50 Mo maximum).\n\nCoupe-la (2 min maximum) dans Photos › Modifier, puis réessaie.`);
+      reset(); return;
+    }
+    btn.textContent=`Envoi de la vidéo (${Math.max(1,Math.round(up.size/1048576))} Mo)…`;
+    const ext=((up.name.match(/\.(mp4|mov|m4v|webm)$/i)||[])[1]||(up.type==='video/quicktime'?'mov':up.type==='video/webm'?'webm':'mp4')).toLowerCase();
     vpath=`${slugify(name)}-${Date.now()}.${ext}`;
-    const {error:ve}=await supa.storage.from('exercise-videos').upload(vpath,vf,{upsert:true,contentType:vf.type||'video/mp4'});
+    const {error:ve}=await supa.storage.from('exercise-videos').upload(vpath,up,{upsert:true,contentType:up.type||'video/mp4'});
     if(ve){
       if(path)supa.storage.from(bucket).remove([path]);
       alert("La vidéo n'a pas pu être envoyée : "+ve.message+(/bucket|not found|policy|row-level|exceeded|size|mime/i.test(ve.message)?'\n\nVérifie que le script schema_supabase_v44_videos_exercices.sql a été exécuté dans Supabase (50 Mo maximum, MP4 / MOV).':''));
@@ -3037,7 +3149,7 @@ async function bibSave(){
     // pas de photo : une image de la vidéo sert de vignette
     if(!path&&!(it&&it.image_path)){
       btn.textContent='Création de la vignette…';
-      const frame=await bibVideoFrame(vf);
+      const frame=await bibVideoFrame(up);
       if(frame){ const ip=`${slugify(name)}-${Date.now()}.jpg`; const {error:ie}=await supa.storage.from('exercise-images').upload(ip,frame,{upsert:true,contentType:'image/jpeg'}); if(!ie)path=ip; }
     }
     btn.textContent='Enregistrement…';
