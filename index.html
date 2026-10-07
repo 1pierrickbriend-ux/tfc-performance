@@ -1625,6 +1625,38 @@ table.sheet thead th:hover{background:var(--id-line);color:var(--id-ink)}
   .fsEb{font-size:9.5px}.phf.fsL{width:54px;height:68px}.phf.fsM{width:38px;height:48px;font-size:12px}.fsPhs .phf.fsM+.phf.fsM{margin-left:-11px}.fsMore{font-size:12px;padding:2px 5px}.fsCrest{width:44px;height:44px}}
 .bibVid{position:absolute;top:8px;left:8px;width:26px;height:26px;border-radius:50%;background:#E5409A;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;padding-left:2px;box-shadow:0 2px 8px rgba(229,64,154,.45)}
 .c-plan.bibTag{background:rgba(229,64,154,.14);color:#f7a6cf}
+/* ── Patron / Plan / Unilatéral (v68) ── */
+.c-todo.bibTag{background:transparent;border:1px dashed rgba(255,255,255,.28);color:var(--muted);padding:2px 6px}
+.c-uni.bibTag{background:#FFD60A;color:#241446}
+.bibCat.todo{border-style:dashed}
+.bibCat.todo:not(.on) span{color:#FFD60A}
+.bibSelBtn{font-weight:700}
+.bibSelBtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.bibAddVid~.bibAdd{margin-left:0}
+.bibChk{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(10,4,28,.6);border:2px solid rgba(255,255,255,.85);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.bibCard.picked{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.bibCard.picked .bibChk{background:var(--accent);border-color:var(--accent)}
+.bibBulk{position:sticky;bottom:10px;z-index:20;margin-top:14px;background:var(--panel2);border:1px solid var(--accent);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.bibBulk[hidden]{display:none}
+.bibBulk .bkTop{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px}
+.bibBulk .bkTop b{font-size:13px;margin-right:auto}
+.bibBulk .bkTop .btn{font-size:12px;padding:6px 11px}
+.bibBulk .bkFields{display:flex;align-items:flex-end;flex-wrap:wrap;gap:8px 12px}
+.bibBulk label{display:flex;flex-direction:column;gap:4px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);flex:1 1 150px;min-width:0}
+.bibBulk select{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 9px;font:inherit;font-size:13px;font-weight:600;text-transform:none;letter-spacing:0}
+.bibBulk .btn.primary{flex:0 0 auto;padding:9px 18px;font-weight:800}
+.bibUniChk{display:flex;align-items:flex-start;gap:10px;margin:12px 0 2px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);cursor:pointer;font-size:13px}
+.bibUniChk input{width:18px;height:18px;margin-top:1px;accent-color:#FFD60A;flex:none}
+.bibUniChk:has(input:checked){border-color:#FFD60A;background:rgba(255,214,10,.1)}
+.fsUni{display:inline-flex;align-items:center;gap:6px;flex:none;border:1px solid var(--line);border-radius:999px;padding:5px 10px 5px 8px;font-size:11.5px;font-weight:800;color:var(--muted);cursor:pointer;user-select:none}
+.fsUni input{width:14px;height:14px;margin:0;accent-color:#241446}
+.fsUni.on{background:#FFD60A;border-color:#FFD60A;color:#241446}
+@media(max-width:600px){.bibSelBtn{order:3;flex:1 1 100%;margin-left:0}
+  .bibBulk{bottom:6px;padding:9px 10px;gap:8px}
+  .bibBulk .bkTop{gap:6px}.bibBulk .bkTop b{flex:1 1 100%;font-size:12px}.bibBulk .bkTop .btn{flex:1;padding:6px 8px}
+  .bibBulk .bkFields{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;align-items:end}
+  .bibBulk label{font-size:9.5px;gap:3px}.bibBulk select{padding:7px 6px;font-size:12.5px}
+  .bibBulk .btn.primary{padding:8px 10px}}
 .bibAddVid{margin-left:auto;font-weight:700}
 .bibAddVid+.bibAdd{margin-left:0}
 .bibVidSegs{margin-bottom:8px}
@@ -1662,6 +1694,7 @@ a.bibVid:hover{transform:scale(1.08)}
   .fsRowNm{flex:1 1 calc(100% - 60px)}
   .qaBody .fsRowQ{order:3;flex:1 1 120px;max-width:none}
   .fsRowTop .fsActs{order:4}
+  .fsRowTop .fsUni{order:3}
   .fsBlocH .fsActs{margin-left:0}
   .fsFoot{flex-wrap:wrap;padding:10px 12px}
   .fsPickList{grid-template-columns:1fr}
@@ -1709,6 +1742,9 @@ a.bibVid:hover{transform:scale(1.08)}
 .fpTh.img .fpPlay{top:50%}
 .fpTbl td.fpNm{font-family:'Oswald',Arial,sans-serif;font-weight:600;font-size:9.2pt;text-transform:uppercase;color:var(--xt-ink);line-height:1.1;overflow-wrap:normal}
 .fpNm i{display:block;font-family:'DM Sans',Arial,sans-serif;font-style:normal;font-weight:700;font-size:5.5pt;text-transform:none;color:var(--xt-mag);margin-top:.5mm}
+/* Unilatéral (v68) : pastille jaune vif, lisible d'un coup d'œil par les joueurs */
+.fpUni{display:inline-block;margin-top:1mm;padding:.55mm 1.9mm .45mm;border-radius:1.2mm;background:#FFD60A;color:#241446;font-family:'DM Sans',Arial,sans-serif;font-weight:800;font-size:5.6pt;letter-spacing:.08em;text-transform:uppercase;line-height:1.35;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.fpUni small{font-size:inherit;font-weight:700;letter-spacing:.02em;text-transform:none}
 .fpTbl td.fpIt{font-style:italic}
 .fpTbl td.fpNum{font-family:'Oswald',Arial,sans-serif;font-weight:600;font-size:9.6pt;color:var(--xt-vio);line-height:1.15;overflow-wrap:normal}
 .fpNum span{display:block;font-family:'DM Sans',Arial,sans-serif;font-size:5.3pt;font-weight:700;color:var(--xt-mut)}
@@ -2297,6 +2333,7 @@ a.bibVid:hover{transform:scale(1.08)}
   <div class="bibBar">
     <div class="bibTabs" id="bibTabs" role="tablist"></div>
     <button class="btn bibAddVid" id="bibAddVid" onclick="bibOpen('ex',null,{video:true})" style="display:none">🎬 Ajouter une vidéo</button>
+    <button class="btn bibSelBtn" id="bibSelBtn" onclick="bibSelToggleMode()" style="display:none">☑ Classer en lot</button>
     <button class="btn primary bibAdd" id="bibAddBtn" onclick="BIB.tab==='fiches'?fsOpen(null):bibOpen(BIB.tab,null)">＋ Ajouter</button>
   </div>
   <div class="bibFilters">
@@ -2304,6 +2341,7 @@ a.bibVid:hover{transform:scale(1.08)}
     <input type="search" id="bibSearch" class="bibSearch" placeholder="Rechercher…" oninput="BIB.q=this.value;renderBibGrid()">
   </div>
   <div class="bibGrid" id="bibGrid"></div>
+  <div class="bibBulk" id="bibBulk" hidden></div>
   <div id="indiv-presc" style="display:none">
     <div class="chgTop">
       <div class="chgCard chgForm">
@@ -3028,6 +3066,7 @@ function renderBib(){
   const tabs=document.getElementById('bibTabs'); if(!tabs)return;
   if(!['fiches','presc','ex'].includes(BIB.tab))BIB.tab='fiches';
   bibRenderTabs();
+  if(BIB.tab!=='ex'||!BIB.sel){ const bb=document.getElementById('bibBulk'); if(bb){bb.hidden=true;bb.innerHTML='';} }
   // Prescription (v67) : même onglet, son propre écran ; les outils fiches / bibliothèque sont masqués
   const isP=BIB.tab==='presc';
   const pr=document.getElementById('indiv-presc'); if(pr)pr.style.display=isP?'block':'none';
@@ -3037,6 +3076,7 @@ function renderBib(){
   if(isP){ const av0=document.getElementById('bibAddVid'); if(av0)av0.style.display='none'; return; }
   ab.textContent={ex:'＋ Ajouter un exercice',fiches:'＋ Nouvelle fiche'}[BIB.tab];
   const av=document.getElementById('bibAddVid'); if(av)av.style.display=BIB.tab==='ex'?'':'none';
+  const sb=document.getElementById('bibSelBtn'); if(sb){ sb.style.display=BIB.tab==='ex'?'':'none'; sb.classList.toggle('on',!!BIB.sel); sb.textContent=BIB.sel?'✓ Terminer le classement':'☑ Classer en lot'; }
   let chips;
   if(BIB.tab==='fiches'){
     // filtres = familles de préréglage réellement utilisées
@@ -3046,13 +3086,81 @@ function renderBib(){
     const src=BIB.tab==='docs'?PROGRAMMES:EXBANK;
     const cnt=k=>src.filter(x=>bibCat(x.categorie)===k).length;
     chips=[['','Tout',src.length],...BIB_CATS.map(([k,l])=>[k,l,cnt(k)])];
+    const todo=EXBANK.filter(bibTodo).length;
+    if(BIB.tab==='ex'&&(todo||BIB.cat==='_todo'))chips.push(['_todo','À classer',todo]);
   }
   document.getElementById('bibCats').innerHTML=chips
-    .map(([k,l,n])=>`<button type="button" class="bibCat${BIB.cat===k?' on':''}" onclick="bibSetCat('${k}')">${l} <span>${n}</span></button>`).join('');
+    .map(([k,l,n])=>`<button type="button" class="bibCat${BIB.cat===k?' on':''}${k==='_todo'?' todo':''}" onclick="bibSetCat('${k}')"${k==='_todo'?' title="Exercices sans patron ou sans plan (hors catégorie Terrain)"':''}>${l} <span>${n}</span></button>`).join('');
   renderBibGrid();
 }
-function bibSetTab(k){ BIB.tab=k; BIB.cat=''; BIB.q=''; const q=document.getElementById('bibSearch'); if(q)q.value=''; renderBib(); if(BIB.tab==='presc'&&typeof renderPresc==='function')renderPresc(); }
+function bibSetTab(k){ if(k!=='ex')BIB.sel=null; BIB.tab=k; BIB.cat=''; BIB.q=''; const q=document.getElementById('bibSearch'); if(q)q.value=''; renderBib(); if(BIB.tab==='presc'&&typeof renderPresc==='function')renderPresc(); }
 function bibSetCat(k){ BIB.cat=k; renderBib(); }
+/* ── Classement Patron / Plan / Unilatéral (v68) ── */
+function bibTodo(e){ return bibCat(e.categorie)!=='terrain'&&(!e.patron||!e.plan); }
+function bibClassTags(e){
+  const cls=fsClassLabel(e.patron,e.plan);
+  const miss=!e.patron&&!e.plan?'':(!e.patron?'Patron ?':!e.plan?'Plan ?':'');
+  return (cls?`<span class="bibTag c-plan">${plEsc(cls)}</span>`:(bibCat(e.categorie)!=='terrain'?'<span class="bibTag c-todo">À classer</span>':''))
+    +(miss&&bibCat(e.categorie)!=='terrain'?`<span class="bibTag c-todo">${miss}</span>`:'')+(e.unilateral?'<span class="bibTag c-uni">Unilatéral</span>':'');
+}
+function bibExVisible(){
+  const q=BIB.q.trim().toLowerCase();
+  return EXBANK.filter(e=>(BIB.cat==='_todo'?bibTodo(e):(!BIB.cat||bibCat(e.categorie)===BIB.cat))
+    &&(!q||((e.nom||'')+' '+(e.tags||[]).join(' ')+' '+fsClassLabel(e.patron,e.plan)+' '+(e.unilateral?'unilatéral':'')).toLowerCase().includes(q)));
+}
+function bibSelToggleMode(){
+  BIB.sel=BIB.sel?null:new Set(); if(BIB.sel&&!BIB.bk)BIB.bk={patron:'',plan:'',uni:''};
+  renderBib();
+}
+function bibSelPick(id){
+  if(!BIB.sel)return;
+  BIB.sel.has(id)?BIB.sel.delete(id):BIB.sel.add(id);
+  const c=[...document.querySelectorAll('#bibGrid .bibCard')].find(x=>(x.getAttribute('onclick')||'').includes(`'${id}'`));
+  if(c){ const on=BIB.sel.has(id); c.classList.toggle('picked',on); c.setAttribute('aria-pressed',on); const k=c.querySelector('.bibChk'); if(k)k.textContent=on?'✓':''; }
+  bibBulkCount();
+}
+function bibSelAll(on){ if(!BIB.sel)return; (BIB.visible||[]).forEach(id=>on?BIB.sel.add(id):BIB.sel.delete(id)); renderBibGrid(); }
+function bibBulkCount(){
+  const n=BIB.sel?BIB.sel.size:0, el=document.getElementById('bibBulkN'); if(el)el.textContent=n?`${n} exercice${n>1?'s':''} sélectionné${n>1?'s':''}`:'Touche les exercices à classer';
+  const ap=document.getElementById('bibBulkGo'); if(ap)ap.disabled=!n;
+}
+function bibRenderBulk(){
+  const box=document.getElementById('bibBulk'); if(!box)return;
+  if(!BIB.sel||BIB.tab!=='ex'){box.hidden=true;box.innerHTML='';return;}
+  const bk=BIB.bk||(BIB.bk={patron:'',plan:'',uni:''});
+  const opt=(list,cur)=>`<option value="">— inchangé —</option>${list.map(([k,l])=>`<option value="${k}"${cur===k?' selected':''}>${l}</option>`).join('')}<option value="-"${cur==='-'?' selected':''}>(retirer)</option>`;
+  const vis=(BIB.visible||[]).length;
+  box.hidden=false;
+  box.innerHTML=`<div class="bkTop"><b id="bibBulkN"></b>
+      <button type="button" class="btn" onclick="bibSelAll(true)">Tout sélectionner (${vis})</button>
+      <button type="button" class="btn" onclick="bibSelAll(false)">Aucun</button></div>
+    <div class="bkFields">
+      <label>Patron<select onchange="BIB.bk.patron=this.value">${opt(FS_PATRONS,bk.patron)}</select></label>
+      <label>Plan<select onchange="BIB.bk.plan=this.value">${opt(FS_PLANS,bk.plan)}</select></label>
+      <label>Unilatéral<select onchange="BIB.bk.uni=this.value"><option value="">— inchangé —</option><option value="1"${bk.uni==='1'?' selected':''}>Oui</option><option value="0"${bk.uni==='0'?' selected':''}>Non</option></select></label>
+      <button type="button" class="btn primary" id="bibBulkGo" onclick="bibBulkApply()">Appliquer</button>
+    </div>`;
+  bibBulkCount();
+}
+async function bibBulkApply(){
+  if(!BIB.sel||!BIB.sel.size)return;
+  const bk=BIB.bk||{}, pay={};
+  if(bk.patron)pay.patron=bk.patron==='-'?null:bk.patron;
+  if(bk.plan)pay.plan=bk.plan==='-'?null:bk.plan;
+  if(bk.uni)pay.unilateral=bk.uni==='1';
+  if(!Object.keys(pay).length){alert('Choisis au moins un patron, un plan ou « Unilatéral » à appliquer.');return;}
+  const ids=[...BIB.sel], btn=document.getElementById('bibBulkGo'); if(btn){btn.disabled=true;btn.textContent='Enregistrement…';}
+  const {error}=await supa.from('exercise_bank').update(pay).in('id',ids);
+  if(btn){btn.disabled=false;btn.textContent='Appliquer';}
+  if(error){
+    alert('Classement non enregistré : '+error.message+(/patron|unilateral|column|schema cache/i.test(error.message)?'\n\nExécute le script schema_supabase_v45_patron_unilateral.sql dans Supabase.':''));
+    return;
+  }
+  EXBANK.forEach(e=>{ if(BIB.sel.has(e.id))Object.assign(e,pay); });
+  BIB.sel=new Set();
+  renderBib();
+  const el=document.getElementById('bibBulkN'); if(el)el.textContent=`✓ ${ids.length} exercice${ids.length>1?'s':''} classé${ids.length>1?'s':''} — sélectionne le groupe suivant`;
+}
 function renderBibGrid(){
   const box=document.getElementById('bibGrid'); if(!box)return;
   const q=BIB.q.trim().toLowerCase();
@@ -3093,13 +3201,16 @@ function renderBibGrid(){
       </div>`;
     }).join('');
   }else{
-    const list=EXBANK.filter(e=>(!BIB.cat||bibCat(e.categorie)===BIB.cat)&&(!q||((e.nom||'')+' '+(e.tags||[]).join(' ')).toLowerCase().includes(q)));
+    const list=bibExVisible();
+    BIB.visible=list.map(e=>e.id); bibRenderBulk();
     if(!list.length){box.innerHTML=`<div class="bibEmpty">${EXBANK.length?'Aucun exercice ne correspond.':'Aucun exercice. Ajoute le premier avec « ＋ Ajouter un exercice ».'}</div>`;return;}
     box.innerHTML=list.map(e=>{
       const url=bibUrl('exercise-images',e.image_path);
-      return `<div class="bibCard bibEx" role="button" tabindex="0" onclick="bibOpen('ex','${e.id}')" onkeydown="if(event.key==='Enter')bibOpen('ex','${e.id}')" title="Modifier">
+      const act=BIB.sel?`bibSelPick('${e.id}')`:`bibOpen('ex','${e.id}')`;
+      return `<div class="bibCard bibEx${BIB.sel&&BIB.sel.has(e.id)?' picked':''}" role="button" tabindex="0" onclick="${act}" onkeydown="if(event.key==='Enter')${act}" title="${BIB.sel?'Sélectionner / désélectionner':'Modifier'}"${BIB.sel?` aria-pressed="${BIB.sel.has(e.id)}"`:''}>
         <div class="bibThumb">${url?`<img src="${url}" alt="" loading="lazy">`:`<span class="bibNoFile">${plEsc((e.nom||'?').slice(0,1).toUpperCase())}</span>`}</div>
-        <div class="bibInfo"><b>${plEsc(e.nom||'')}</b><div class="bibMeta">${tag(e.categorie)}${e.plan&&FS_PLAN_LABEL[e.plan]?`<span class="bibTag c-plan">${FS_PLAN_LABEL[e.plan]}</span>`:''}</div></div>
+        <div class="bibInfo"><b>${plEsc(e.nom||'')}</b><div class="bibMeta">${tag(e.categorie)}${bibClassTags(e)}</div></div>
+        ${BIB.sel?`<span class="bibChk" aria-hidden="true">${BIB.sel.has(e.id)?'✓':''}</span>`:''}
         ${bibExVideo(e)?`<a class="bibVid" href="${plEsc(bibExVideo(e))}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Voir la vidéo" aria-label="Voir la vidéo">▶</a>`:''}
       </div>`;
     }).join('');
@@ -3133,13 +3244,16 @@ function bibOpen(kind,id,opts){
   const vidBlk=k=>`<div class="qaStep">${n(k)}Vidéo <span class="qaSub">${vidFirst?'obligatoire':'facultative'} — ouverte au clic sur la vignette de l'exercice</span></div>
     <div id="bibVidBox"></div>`;
   const fsBlk=k=>`<div class="bibFsHead">Pour les fiches de séance <span class="qaSub">facultatif — rempli une fois, repris automatiquement dans chaque fiche</span></div>
-    <div class="qaStep">${n(k)}Plan de sollicitation</div>
+    <div class="qaStep">${n(k)}Patron <span class="qaSub">ce que fait le mouvement</span></div>
+    <div class="bibPlans" id="bibPatronBox"></div>
+    <div class="qaStep">${n(k+1)}Plan <span class="qaSub">la direction de la force — « Poussée · Horizontal » devient le titre du bloc dans la fiche</span></div>
     <div class="bibPlans" id="bibPlanBox"></div>
-    <div class="qaStep">${n(k+1)}Variante / matériel</div>
+    <label class="bibUniChk"><input type="checkbox" id="bibUni" ${it&&it.unilateral?'checked':''}><span><b>Unilatéral</b> <span class="qaSub">une jambe / un bras à la fois — signalé en couleur vive sur la fiche</span></span></label>
+    <div class="qaStep">${n(k+2)}Variante / matériel</div>
     <input type="text" id="bibMat" class="bibInput" value="${plEsc(it?.materiel||'')}" placeholder="Ex. pieds décalés · aquabag">
-    <div class="qaStep">${n(k+2)}Consignes</div>
+    <div class="qaStep">${n(k+3)}Consignes</div>
     <input type="text" id="bibCons" class="bibInput" value="${plEsc(it?.consignes||'')}" placeholder="Ex. Réagir au signal sonore">
-    <div class="qaStep">${n(k+3)}Intentions</div>
+    <div class="qaStep">${n(k+4)}Intentions</div>
     <input type="text" id="bibInt" class="bibInput" value="${plEsc(it?.intentions||'')}" placeholder="Ex. Le plus haut possible (vitesse max)">`;
   const body=isDoc?nameBlk(1)+catBlk(2)+photoBlk(3)
     :vidFirst?vidBlk(1)+nameBlk(2)+catBlk(3)+photoBlk(4)+fsBlk(5)
@@ -3149,8 +3263,8 @@ function bibOpen(kind,id,opts){
       ${it?`<button type="button" class="btn danger" onclick="bibDelete()">Supprimer</button>`:''}
       <button type="button" class="btn primary" id="bibSaveBtn" onclick="bibSave()">Enregistrer</button>
     </div>`;
-  BIB.formPlan=it?.plan||'';
-  bibRenderCatBox(); bibRenderPlanBox(); bibRenderVidBox();
+  BIB.formPlan=it?.plan||''; BIB.formPatron=it?.patron||'';
+  bibRenderCatBox(); bibRenderPatronBox(); bibRenderPlanBox(); bibRenderVidBox();
   document.getElementById('bibOverlay').classList.add('on');
   if(vidFirst)document.getElementById('bibVidFile')?.click();   // « Ajouter une vidéo » : le choix du fichier s'ouvre tout de suite
   else setTimeout(()=>document.getElementById('bibName')?.focus(),30);
@@ -3332,6 +3446,10 @@ function bibRenderCatBox(){
   const box=document.getElementById('bibCatBox'); if(!box)return;
   box.innerHTML=BIB_CATS.map(([k,l])=>`<button type="button" class="qaSeg${BIB.formCat===k?' on':''}" onclick="BIB.formCat='${k}';bibRenderCatBox()">${l}</button>`).join('');
 }
+function bibRenderPatronBox(){
+  const box=document.getElementById('bibPatronBox'); if(!box)return;
+  box.innerHTML=FS_PATRONS.map(([k,l])=>`<button type="button" class="qaSeg${BIB.formPatron===k?' on':''}" onclick="BIB.formPatron=BIB.formPatron==='${k}'?'':'${k}';bibRenderPatronBox()">${l}</button>`).join('');
+}
 function bibRenderPlanBox(){
   const box=document.getElementById('bibPlanBox'); if(!box)return;
   box.innerHTML=FS_PLANS.map(([k,l])=>`<button type="button" class="qaSeg${BIB.formPlan===k?' on':''}" onclick="BIB.formPlan=BIB.formPlan==='${k}'?'':'${k}';bibRenderPlanBox()">${l}</button>`).join('');
@@ -3416,7 +3534,7 @@ async function bibSave(){
   let extra=null, vidCols=null;
   if(!isDoc){
     const v=id=>(document.getElementById(id)?.value||'').trim()||null;
-    extra={plan:BIB.formPlan||null,materiel:v('bibMat'),consignes:v('bibCons'),intentions:v('bibInt')};
+    extra={plan:BIB.formPlan||null,patron:BIB.formPatron||null,unilateral:!!document.getElementById('bibUni')?.checked,materiel:v('bibMat'),consignes:v('bibCons'),intentions:v('bibInt')};
     if(BIB.vidRemove&&!vf&&!link)vidCols={video_url:null,video_path:null};
     else if(vf)vidCols={video_path:vpath,video_url:null};
     else if(BIB.vidMode==='link'&&(link||(it&&it.video_url&&!it.video_path)))vidCols={video_url:link||null,video_path:null};
@@ -3424,15 +3542,28 @@ async function bibSave(){
   const oldPath=it?(isDoc?it.pdf_path:it.image_path):null, oldVid=it&&!isDoc?it.video_path||null:null;
   const save=r=>it?supa.from(table).update(r).eq('id',it.id):supa.from(table).insert({...r,created_by:CURRENT_USER_LABEL});
   const strip=o=>{ if(!o)return o; const c={...o}; delete c.video_path; return c; };
-  let {error}=await save({...row,...(extra||{}),...(vidCols||{})}), lost='';
-  if(error&&!isDoc&&/column|schema cache/i.test(error.message)&&/video_path/.test(error.message)){
-    if(vpath)supa.storage.from('exercise-videos').remove([vpath]);
-    ({error}=await save({...row,...extra,...strip(vidCols)}));
-    if(!error)lost=vf?"Exercice enregistré, mais sans la vidéo envoyée : exécute le script schema_supabase_v44_videos_exercices.sql dans Supabase (ou colle un lien à la place).":'';
+  // Script pas encore exécuté dans Supabase : on retire seulement le groupe de colonnes signalé, l'exercice s'enregistre quand même
+  //   patron / unilateral → v45 · video_path → v44 · autre colonne (plan, consignes…) → v43 (enregistrement de base)
+  const drop=new Set();
+  const build=()=>{ if(drop.has('v43'))return {...row}; const ex={...(extra||{})}, vc={...(vidCols||{})};
+    if(drop.has('v45')){delete ex.patron;delete ex.unilateral;} if(drop.has('v44'))delete vc.video_path; return {...row,...ex,...vc}; };
+  let error=null, lost='';
+  for(let k=0;k<4;k++){
+    ({error}=await save(build()));
+    if(!error||isDoc||!/column|schema cache/i.test(error.message))break;
+    const g=/patron|unilateral/.test(error.message)?'v45':/video_path/.test(error.message)?'v44':'v43';
+    if(drop.has('v43'))break;
+    drop.add(drop.has(g)?'v43':g);
   }
-  if(error&&!isDoc&&/column|schema cache/i.test(error.message)){
-    ({error}=await save(row));
-    if(!error)lost="Exercice enregistré, mais sans la vidéo, le plan, les consignes, les intentions ni le matériel : exécute les scripts schema_supabase_v43_fiches_seance.sql puis schema_supabase_v44_videos_exercices.sql dans Supabase.";
+  if(!error&&drop.size){
+    if(vpath&&(drop.has('v44')||drop.has('v43')))supa.storage.from('exercise-videos').remove([vpath]);
+    if(drop.has('v43'))lost="Exercice enregistré, mais sans la vidéo, le plan, le patron, les consignes, les intentions ni le matériel : exécute les scripts schema_supabase_v43_fiches_seance.sql, schema_supabase_v44_videos_exercices.sql puis schema_supabase_v45_patron_unilateral.sql dans Supabase.";
+    else{
+      const miss=[], scr=[];
+      if(drop.has('v44')&&vf){miss.push('la vidéo envoyée');scr.push('schema_supabase_v44_videos_exercices.sql');}
+      if(drop.has('v45')&&extra&&(extra.patron||extra.unilateral)){miss.push('le patron ni la case Unilatéral');scr.push('schema_supabase_v45_patron_unilateral.sql');}
+      if(miss.length)lost=`Exercice enregistré, mais sans ${miss.join(', ')} : exécute ${scr.length>1?'les scripts':'le script'} ${scr.join(' puis ')} dans Supabase${drop.has('v44')&&vf?' (ou colle un lien à la place)':''}.`;
+    }
   }
   if(error){
     if(path)supa.storage.from(bucket).remove([path]);   // pas de fichier orphelin
@@ -3473,6 +3604,27 @@ let FICHES=[], FS_MISSING=false, FS=null, FS_PICK=null;
 const FS_PLANS=[['vertical','Vertical'],['horizontal','Horizontal'],['lateral','Latéral'],['rotation','Rotation'],
   ['anti_ext','Anti-extension'],['anti_rot','Anti-rotation'],['anti_lat','Anti-flexion latérale'],['multi','Multi-plan']];
 const FS_PLAN_LABEL=Object.fromEntries(FS_PLANS);
+/* Patron moteur (v68) : ce que fait le mouvement ; le Plan dit dans quelle direction. Un exercice classé une fois
+   dans la Bibliothèque nomme automatiquement le bloc de la fiche (« Poussée · Horizontal »). */
+const FS_PATRONS=[['genou','Dominante genou'],['hanche','Dominante hanche'],['poussee','Poussée'],['tirage','Tirage'],
+  ['triple','Triple extension'],['saut','Saut / réception'],['rotation','Rotation'],['gainage','Gainage'],['port','Port de charge'],['analytique','Analytique']];
+const FS_PATRON_LABEL=Object.fromEntries(FS_PATRONS);
+function fsClassLabel(pa,pl){
+  const a=FS_PATRON_LABEL[pa]||'', c=FS_PLAN_LABEL[pl]||'';
+  return a&&c&&a.toLowerCase()===c.toLowerCase()?a:[a,c].filter(Boolean).join(' · ');
+}
+function fsAutoLabel(b){
+  const exs=(b.rows||[]).map(fsEx).filter(Boolean), uq=a=>[...new Set(a.filter(Boolean))];
+  const pa=uq(exs.map(e=>e.patron)).filter(k=>FS_PATRON_LABEL[k]), pl=uq(exs.map(e=>e.plan)).filter(k=>FS_PLAN_LABEL[k]);
+  const A=pa.length>2?'Mixte':pa.map(k=>FS_PATRON_LABEL[k]).join(' + ');
+  const C=pl.length>2?'Multi-plan':pl.map(k=>FS_PLAN_LABEL[k]).join(' + ');
+  return A&&C&&A.toLowerCase()===C.toLowerCase()?A:[A,C].filter(Boolean).join(' · ');
+}
+// titre de bloc : automatique tant qu'il n'a pas été tapé à la main (le vider le remet en automatique)
+function fsRefreshAutoLabel(b){ if(b&&(b.labelAuto||!String(b.label||'').trim())){ b.label=fsAutoLabel(b); b.labelAuto=true; } }
+const FS_LABEL_SUGG=[...new Set(['Poussée · Vertical','Poussée · Horizontal','Tirage · Vertical','Tirage · Horizontal',
+  'Dominante genou · Vertical','Dominante hanche · Horizontal','Gainage · Anti-extension','Gainage · Anti-rotation','Gainage · Anti-flexion latérale',
+  ...FS_PATRONS.map(x=>x[1]),...FS_PLANS.map(x=>x[1])])];
 // exercice de la banque classé « anti-… » → préréglage gainage correspondant, quel que soit celui de la fiche
 const FS_PLAN_GAIN={anti_ext:'g_aext',anti_rot:'g_arot',anti_lat:'g_alat'};
 const FS_FIELDS=[['series','Séries'],['reps','Rép. / durée'],['tempo','Tempo'],['intensite','Intensité'],['vbt','VBT m/s'],['rpe','RPE / RIR'],['recup','R′']];
@@ -3529,7 +3681,7 @@ function fsRefreshLists(){
 /* ── état de l'éditeur ── */
 function fsNewBloc(presetKey){
   const p=FS_P[presetKey];
-  return {uid:fsUid(),label:'',mode:p?p.mode:'ench',tours:p?p.v.series:'',recup:p?p.v.recup:'',man:[],rows:[]};
+  return {uid:fsUid(),label:'',labelAuto:true,mode:p?p.mode:'ench',tours:p?p.v.series:'',recup:p?p.v.recup:'',man:[],rows:[]};
 }
 function fsBlank(over){
   const st={id:null,titre:'',titreAuto:true,preset:'',date:fsToday(),duree_min:null,player_id:null,presc_key:null,joueurs:[],blocs:[],dirty:false,...over};
@@ -3541,7 +3693,8 @@ function fsFromDb(f){
   return {id:f.id,titre:f.titre||'',titreAuto:!f.titre||f.titre===fsPL(f.preset),preset:f.preset||'',date:f.date||'',duree_min:f.duree_min||null,
     player_id:f.player_id||null,presc_key:f.presc_key||null,joueurs:fsIds(f).slice(),dirty:false,
     blocs:(c.blocs||[]).map(b=>({label:'',mode:'ench',tours:'',recup:'',...b,uid:fsUid(),man:Array.isArray(b.man)?b.man:[],
-      rows:(b.rows||[]).map(r=>({nom:'',sub:'',consignes:'',intentions:'',video:'',q:f.preset||'',qSet:false,...r,uid:fsUid(),man:Array.isArray(r.man)?r.man:[]}))}))};
+      labelAuto:b.labelAuto!=null?!!b.labelAuto:!String(b.label||'').trim(),
+      rows:(b.rows||[]).map(r=>({nom:'',sub:'',consignes:'',intentions:'',video:'',q:f.preset||'',qSet:false,uni:false,...r,uid:fsUid(),man:Array.isArray(r.man)?r.man:[]}))}))};
 }
 function fsMan(o,f,on){ o.man=(o.man||[]).filter(x=>x!==f); if(on)o.man.push(f); }
 function fsApplyRow(r){ const p=FS_P[r.q]; if(!p)return; FS_FIELD_KEYS.forEach(f=>{ if(!r.man.includes(f))r[f]=p.v[f]||''; }); }
@@ -3646,7 +3799,7 @@ function fsRender(){
     <div class="qaStep"><span class="qaNum">3</span>Blocs et exercices <span class="qaSub">une case modifiée à la main est encadrée en rose : le préréglage ne l'écrase plus</span></div>
     <div id="fsBlocs"></div>
     <button type="button" class="btn fsAddBloc" onclick="fsAddBloc()">＋ Ajouter un bloc</button>
-    <datalist id="fsPlanList">${FS_PLANS.map(([,l])=>`<option value="${l}">`).join('')}</datalist>`;
+    <datalist id="fsPlanList">${FS_LABEL_SUGG.map(l=>`<option value="${l}">`).join('')}</datalist>`;
   fsRenderBlocs();
   document.getElementById('fsFoot').innerHTML=`
     ${st.id?`<button type="button" class="btn danger" onclick="fsDelete()">Supprimer</button><button type="button" class="btn" onclick="fsDuplicate()">Dupliquer</button>`:''}
@@ -3670,7 +3823,7 @@ function fsBlocEdHTML(b,bi,ready){
   return `<section class="fsBlocEd" data-b="${bi}">
     <div class="fsBlocH">
       <span class="fsBlocN">${bi+1}</span>
-      <input type="text" class="fsBlocL" list="fsPlanList" value="${plEsc(b.label)}" placeholder="Plan : Vertical, Horizontal…" data-b="${bi}" data-f="label" oninput="fsIn(this)">
+      <input type="text" class="fsBlocL" list="fsPlanList" value="${plEsc(b.label)}" placeholder="Patron · plan (auto avec les exercices)" title="${b.labelAuto?'Titre automatique d\'après les exercices de la Bibliothèque — tape pour le personnaliser':'Titre personnalisé — vide le champ pour revenir au titre automatique'}" data-b="${bi}" data-f="label" oninput="fsIn(this)">
       <div class="fsMode" role="group" aria-label="Organisation du bloc">
         <button type="button" class="${ench?'on':''}" onclick="fsSetMode(${bi},'ench')" title="Exercices enchaînés, récupération après le bloc">Enchaîné</button>
         <button type="button" class="${ench?'':'on'}" onclick="fsSetMode(${bi},'succ')" title="Toutes les séries d'un exercice, puis le suivant">Séries successives</button>
@@ -3698,6 +3851,7 @@ function fsRowEdHTML(b,bi,r,ri){
         <input type="text" class="fsNm" value="${plEsc(r.nom)}" data-b="${bi}" data-r="${ri}" data-f="nom" oninput="fsIn(this)" aria-label="Exercice">
         <input type="text" class="fsSub" value="${plEsc(r.sub||'')}" placeholder="variante / matériel" data-b="${bi}" data-r="${ri}" data-f="sub" oninput="fsIn(this)" aria-label="Variante ou matériel">
       </div>
+      <label class="fsUni${r.uni?' on':''}" title="Exercice unilatéral : signalé en couleur vive sur le PDF"><input type="checkbox" ${r.uni?'checked':''} onchange="fsSetUni(${bi},${ri},this)">Unilatéral</label>
       <select class="fsRowQ${r.qSet?' set':''}" onchange="fsRowQ(${bi},${ri},this.value)" title="Préréglage de cet exercice">${fsQOptions(r.q)}</select>
       <span class="fsActs">
         <button type="button" class="fsReset" onclick="fsResetRow(${bi},${ri})" ${r.man.length?'':'hidden'} title="Revenir aux valeurs du préréglage" aria-label="Revenir au préréglage">↺</button>
@@ -3760,6 +3914,7 @@ function fsIn(el){
   fsDirty();
   if(ri===undefined||ri===''){
     b[f]=v;
+    if(f==='label')b.labelAuto=!v.trim();
     if(f==='tours'||f==='recup'){
       const p=FS_P[FS.preset], pv=p?(f==='tours'?p.v.series:p.v.recup):'';
       fsMan(b,f,v.trim()!==String(pv)); el.classList.toggle('man',b.man.includes(f));
@@ -3788,13 +3943,17 @@ function fsResetRow(bi,ri){
   const r=FS.blocs[bi]?.rows[ri]; if(!r)return;
   r.man=[]; fsApplyRow(r); fsDirty(); fsRenderBlocs();
 }
+function fsSetUni(bi,ri,el){
+  const r=FS&&FS.blocs[bi]&&FS.blocs[bi].rows[ri]; if(!r)return;
+  r.uni=!!el.checked; el.closest('.fsUni').classList.toggle('on',r.uni); fsDirty();
+}
 function fsMoveRow(bi,ri,d){
   const rows=FS.blocs[bi]?.rows, j=ri+d; if(!rows||j<0||j>=rows.length)return;
   [rows[ri],rows[j]]=[rows[j],rows[ri]]; fsDirty(); fsRenderBlocs();
 }
 function fsDelRow(bi,ri){
   const rows=FS.blocs[bi]?.rows; if(!rows)return;
-  rows.splice(ri,1); fsDirty(); fsRenderBlocs();
+  rows.splice(ri,1); if(FS.blocs[bi].labelAuto)fsRefreshAutoLabel(FS.blocs[bi]); fsDirty(); fsRenderBlocs();
 }
 function fsAddBloc(){
   FS.blocs.push(fsNewBloc(FS.preset)); fsDirty(); FS_PICK=null; fsRenderBlocs();
@@ -3830,39 +3989,44 @@ function fsPlanKeyOf(label){
 function fsPickList(){
   const box=document.getElementById('fsPickList'); if(!box||!FS_PICK)return;
   if(!EXBANK.length){box.innerHTML='<div class="fsPickEmpty">La banque est vide : ajoute tes exercices dans Bibliothèque › Exercices, ou saisis un exercice hors banque ci-dessous.</div>';return;}
-  const b=FS.blocs[FS_PICK.b], plan=fsPlanKeyOf(b&&b.label), q=(FS_PICK.q||'').trim().toLowerCase();
+  const b=FS.blocs[FS_PICK.b], q=(FS_PICK.q||'').trim().toLowerCase();
+  // exercices du même patron / plan que le bloc en tête de liste (d'après les exercices déjà choisis, sinon le titre)
+  const inB=(b?b.rows:[]).map(fsEx).filter(Boolean), lt=String(b&&b.label||'').toLowerCase();
+  const wPa=new Set(inB.length?inB.map(e=>e.patron):FS_PATRONS.filter(([,l])=>lt.includes(l.toLowerCase())).map(x=>x[0]));
+  const wPl=new Set(inB.length?inB.map(e=>e.plan):FS_PLANS.filter(([,l])=>lt.includes(l.toLowerCase())).map(x=>x[0]));
+  const score=e=>(e.patron&&wPa.has(e.patron)?2:0)+(e.plan&&wPl.has(e.plan)?1:0);
   const used={}; FS.blocs.forEach(x=>x.rows.forEach(r=>{ if(r.ex_id)used[r.ex_id]=(used[r.ex_id]||0)+1; }));
-  const list=EXBANK.filter(e=>!q||((e.nom||'')+' '+(e.materiel||'')+' '+(FS_PLAN_LABEL[e.plan]||'')+' '+(e.tags||[]).join(' ')).toLowerCase().includes(q))
-    .sort((a,c)=>(plan?((c.plan===plan)-(a.plan===plan)):0)||(a.nom||'').localeCompare(c.nom||'','fr'));
+  const list=EXBANK.filter(e=>!q||((e.nom||'')+' '+(e.materiel||'')+' '+fsClassLabel(e.patron,e.plan)+' '+(e.unilateral?'unilatéral':'')+' '+(e.tags||[]).join(' ')).toLowerCase().includes(q))
+    .sort((a,c)=>(score(c)-score(a))||(a.nom||'').localeCompare(c.nom||'','fr'));
   if(!list.length){box.innerHTML='<div class="fsPickEmpty">Aucun exercice ne correspond. Saisis-le ci-dessous comme exercice hors banque.</div>';return;}
   box.innerHTML=list.slice(0,60).map(e=>{
     const img=fsImg(e);
     return `<button type="button" class="fsPickIt${used[e.id]?' used':''}" onclick="fsAddEx('${e.id}')">
       <span class="th">${img?`<img src="${img}" alt="" loading="lazy">`:plEsc((e.nom||'?').slice(0,1).toUpperCase())}</span>
-      <span class="tx"><b>${plEsc(e.nom||'')}</b><small>${[FS_PLAN_LABEL[e.plan],e.materiel].filter(Boolean).map(plEsc).join(' · ')||BIB_CAT_LABEL[bibCat(e.categorie)]}</small></span>
+      <span class="tx"><b>${plEsc(e.nom||'')}</b><small>${[fsClassLabel(e.patron,e.plan),e.unilateral?'Unilatéral':'',e.materiel].filter(Boolean).map(plEsc).join(' · ')||BIB_CAT_LABEL[bibCat(e.categorie)]}</small></span>
       ${bibExVideo(e)?'<span class="vd" title="Vidéo disponible">▶</span>':''}${used[e.id]?`<span class="ok" title="Déjà dans la fiche">✓${used[e.id]>1?used[e.id]:''}</span>`:''}</button>`;
   }).join('');
 }
 function fsPushRow(row,plan){
   const b=FS.blocs[FS_PICK.b]; if(!b)return;
   fsApplyRow(row); b.rows.push(row);
-  if(!b.label.trim()&&plan&&FS_PLAN_LABEL[plan])b.label=FS_PLAN_LABEL[plan];
+  fsRefreshAutoLabel(b);
   fsDirty(); fsRenderBlocs();
 }
 function fsAddEx(id){
   const e=EXBANK.find(x=>x.id===id); if(!e||!FS_PICK)return;
   const q=FS_PLAN_GAIN[e.plan]||FS.preset;
-  fsPushRow({uid:fsUid(),ex_id:e.id,nom:e.nom||'',sub:e.materiel||'',consignes:e.consignes||'',intentions:e.intentions||'',video:'',q,qSet:q!==FS.preset,man:[]},e.plan);
+  fsPushRow({uid:fsUid(),ex_id:e.id,nom:e.nom||'',sub:e.materiel||'',consignes:e.consignes||'',intentions:e.intentions||'',video:'',q,qSet:q!==FS.preset,uni:!!e.unilateral,man:[]},e.plan);
 }
 function fsAddFree(){
   const inp=document.getElementById('fsPickFree'), nom=(inp?.value||'').trim(); if(!nom||!FS_PICK)return;
-  fsPushRow({uid:fsUid(),ex_id:null,nom,sub:'',consignes:'',intentions:'',video:'',q:FS.preset,qSet:false,man:[]},'');
+  fsPushRow({uid:fsUid(),ex_id:null,nom,sub:'',consignes:'',intentions:'',video:'',q:FS.preset,qSet:false,uni:false,man:[]},'');
 }
 
 /* ── enregistrer / supprimer ── */
 function fsSerialize(st){
-  return {v:1,joueurs:st.joueurs||[],blocs:st.blocs.map(b=>({label:b.label||'',mode:b.mode,tours:b.tours||'',recup:b.recup||'',man:b.man||[],
-    rows:b.rows.map(r=>{ const o={ex_id:r.ex_id||null,nom:r.nom||'',sub:r.sub||'',consignes:r.consignes||'',intentions:r.intentions||'',video:r.video||'',q:r.q,qSet:!!r.qSet,man:r.man||[]};
+  return {v:1,joueurs:st.joueurs||[],blocs:st.blocs.map(b=>({label:b.label||'',labelAuto:!!b.labelAuto,mode:b.mode,tours:b.tours||'',recup:b.recup||'',man:b.man||[],
+    rows:b.rows.map(r=>{ const o={ex_id:r.ex_id||null,nom:r.nom||'',sub:r.sub||'',consignes:r.consignes||'',intentions:r.intentions||'',video:r.video||'',q:r.q,qSet:!!r.qSet,uni:!!r.uni,man:r.man||[]};
       FS_FIELD_KEYS.forEach(f=>o[f]=r[f]||''); return o; })}))};
 }
 async function fsSave(){
@@ -3943,6 +4107,8 @@ function fpThumb(r){
    (≈ en-tête 8,7 mm + 16,1 mm par ligne ; Oswald capitales ≈ 0,236 mm par caractère et par point). */
 function fpBandParts(label){
   if(label.length<=14||!label.includes(' '))return [label];
+  const dot=label.indexOf(' · '); if(dot>0)return [label.slice(0,dot),label.slice(dot+3)];
+  const plus=label.indexOf(' + '); if(plus>0)return [label.slice(0,plus),label.slice(plus+1)];   // « VERTICAL » / « + ANTI-ROTATION »
   const i=label.lastIndexOf(' ',Math.ceil(label.length/2)+3);
   return i>0?[label.slice(0,i),label.slice(i+1)]:[label];
 }
@@ -3962,7 +4128,7 @@ function fpBlocHTML(b,idx,from,to,cont){
     const series=ench?b.tours:r.series;
     const rest=ench?(k===0?`<td class="fpRest" rowspan="${n}"><b>${iEsc(String(b.recup||'—').trim()||'—')}</b><small>après le bloc<br>(enchaîné avant)</small></td>`:''):fpCell(r.recup);
     return `<tr><td class="fpThC">${fpThumb(r)}</td>
-      <td class="fpNm">${iEsc(r.nom||'')}${r.sub?`<i>${iEsc(r.sub)}</i>`:''}</td>
+      <td class="fpNm">${iEsc(r.nom||'')}${r.sub?`<i>${iEsc(r.sub)}</i>`:''}${r.uni?'<span class="fpUni">Unilatéral<small> · chaque côté</small></span>':''}</td>
       <td>${iEsc(r.consignes||'')||'—'}</td><td class="fpIt">${iEsc(r.intentions||'')||'—'}</td>
       <td class="fpNum">${fpSR(series,r.reps)}</td>${fpCell(r.tempo)}${fpCell(r.intensite,'s')}${fpCell(r.vbt)}${fpCell(r.rpe)}${rest}</tr>`;
   }).join('');
