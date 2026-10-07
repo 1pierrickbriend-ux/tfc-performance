@@ -638,7 +638,7 @@ main{padding:20px 22px;max-width:1650px;margin:0 auto}
 .bibCur.warn{color:var(--warn);border-color:var(--warn)}
 .bibActions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .bibActions .btn.primary{min-width:140px}
-@media(max-width:600px){.bibTabs{display:grid;grid-template-columns:repeat(2,1fr);width:100%}.bibTab{justify-content:center;padding:9px 6px;font-size:12.5px;gap:6px}}
+@media(max-width:600px){.bibTabs{display:grid;grid-template-columns:repeat(3,1fr);width:100%}.bibTab{justify-content:center;padding:9px 4px;font-size:12px;gap:5px}.bibTabX{display:none}}
 .bibTabX{font-style:normal}
 @media(max-width:600px){.bibAddVid{margin-left:0;flex:1 1 calc(50% - 6px);padding:9px 6px}.bibAddVid+.bibAdd{flex:1 1 calc(50% - 6px);padding:9px 6px}}
 @media(max-width:600px){.bibAdd{margin-left:0;flex:1 1 100%}.bibSearch{margin-left:0;flex:1 1 100%}.bibGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bibThumb{height:96px}.bibSegs{grid-template-columns:repeat(2,1fr)}}
@@ -1982,8 +1982,9 @@ a.bibVid:hover{transform:scale(1.08)}
   <button data-t="board" class="on">Board</button>
   <button data-t="mois">Vue d'ensemble</button>
   <button data-t="semaine">Planification semaine</button>
-  <button data-t="programmes">Bibliothèque</button>
+  <button data-t="programmes">Programmation</button>
   <button data-t="indiv">Individualisation</button>
+  <button data-t="monitoring">Monitoring</button>
   <button data-t="joueurs">Joueurs</button>
 </nav>
 
@@ -2176,87 +2177,13 @@ a.bibVid:hover{transform:scale(1.08)}
     <span class="note" id="indivStatus"></span>
   </div>
   <div class="subTabs">
-    <span class="subGroupLabel">Diagnostic</span>
     <button onclick="indivTab(this,'tests')" title="Import des tests, zones à surveiller et statut de chaque joueur">Tests &amp; zones</button>
-    <span class="subGroupLabel">Prescription</span>
-    <button class="on" onclick="indivTab(this,'seance')" title="Rotation automatique — effectif complet">Séance du jour</button>
-    <button onclick="indivTab(this,'presc')" title="Prévoir une séance : date, type, durée, joueurs — puis la valider une fois réalisée">Prescription</button>
-    <span class="subGroupLabel">Suivi</span>
-    <button onclick="indivTab(this,'charge')">Charge externe</button>
-    <button onclick="indivTab(this,'analyse')">Analyse</button>
+    <button class="on" onclick="indivTab(this,'seance')" title="Rotation automatique — effectif complet">Prévention adaptée</button>
   </div>
 
   <div id="indiv-seance">
     <div class="indivCtrls" id="indivControls"></div>
     <div id="indivMain"></div>
-  </div>
-
-  <div id="indiv-charge" style="display:none">
-
-    <div class="dashHead">
-      <div class="dashFilters">
-        <button class="dfBtn on" data-f="all" onclick="setDashFilter('all',this)">Tout l'effectif</button>
-        <button class="dfBtn" data-f="top" onclick="setDashFilter('top',this)">Sollicitation élevée</button>
-        <button class="dfBtn" data-f="bottom" onclick="setDashFilter('bottom',this)">Sollicitation faible</button>
-        <button class="dfBtn" data-f="none" onclick="setDashFilter('none',this)">Non sollicités</button>
-      </div>
-      <button class="btn primary" onclick="openQuickAdd()">＋ Enregistrer une séance réalisée</button>
-    </div>
-
-    <div class="dashStrip" id="dashStrip"></div>
-
-    <div class="dashGrid" id="dashGrid"></div>
-
-
-    <div class="hmWrap" id="hmWrap"></div>
-  </div>
-
-
-
-  <div id="indiv-presc" style="display:none">
-    <div class="chgTop">
-      <div class="chgCard chgForm">
-        <div class="chgCardHead">🎯 Prévoir une séance</div>
-        <div class="chgRow2">
-          <label style="grid-column:1/-1">Date<input type="date" id="prDate"></label>
-          <label>Type de séance<select id="prType"></select></label>
-          <label>Durée prévue (min)<input type="number" id="prDuree" placeholder="60"></label>
-          <div class="mpField" style="grid-column:1/-1">Joueurs <span class="mpCount" id="prPlayerCount">0 sélectionné</span>
-            <div class="mpBox" id="prPlayerBox"></div>
-            <div class="mpQuick"><button type="button" onclick="mpAll('pr',true)">Tout</button><button type="button" onclick="mpAll('pr',false)">Aucun</button></div>
-          </div>
-        </div>
-        <button class="btn primary" onclick="createPrescSession()">Créer la séance</button>
-        <div class="prDone" id="prDoneMsg"></div>
-      </div>
-
-      <div class="prRight">
-        <div class="chgCard">
-          <div class="chgCardHead">📌 Séances prévues</div>
-          <div id="prUpcoming"></div>
-        </div>
-        <div class="chgCard">
-          <div class="chgCardHead">✅ Séances réalisées <span class="prHint">30 derniers jours</span></div>
-          <div id="prDone"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Composition détaillée des prescriptions retirée le 05/10 (Pierrick) : une prescription = date, type, durée, joueurs. -->
-    <div class="chgCard" style="margin-top:14px">
-      <div class="chgCardHead">
-        📋 Historique des prescriptions
-        <select id="prFilterPlayer" onchange="renderPrescList()" style="margin-left:auto;max-width:200px"></select>
-        <button class="btn ghost" id="prSelBtn" style="font-size:11px" onclick="togglePSel()">☑︎ Sélectionner</button>
-      </div>
-      <div class="jSelBar" id="prSelBar" style="display:none">
-        <span id="prSelCount">0 sélectionnée</span>
-        <button class="btn ghost" onclick="togglePSel()">Annuler</button>
-        <button class="btn primary" onclick="markPSelectionDone()">✅ Marquer réalisées</button>
-        <button class="btn danger" onclick="deletePSelection()">🗑 Supprimer la sélection</button>
-      </div>
-      <div id="prList"></div>
-    </div>
   </div>
 
   <div id="indiv-tests" style="display:none">
@@ -2293,6 +2220,34 @@ a.bibVid:hover{transform:scale(1.08)}
     <div class="dgLegend" id="dgLegend"></div>
     <div class="cmpGridWrap"><div id="cmpGrid"></div></div>
     <p class="cmpHint" style="margin-top:8px">Clique sur un joueur pour ouvrir sa fiche : zones, points de vigilance, réglette bilatérale et historique des mesures.</p>
+  </div>
+
+</section>
+
+<section class="view" id="v-monitoring">
+  <div class="rowHead"><h2>Monitoring</h2><span class="tag live">Données partagées Supabase</span></div>
+  <div class="subTabs" id="monTabs">
+    <button class="on" data-m="charge" onclick="monTab(this,'charge')">Charge externe</button>
+    <button data-m="analyse" onclick="monTab(this,'analyse')">Analyse</button>
+  </div>
+  <div id="indiv-charge" style="display:block">
+
+    <div class="dashHead">
+      <div class="dashFilters">
+        <button class="dfBtn on" data-f="all" onclick="setDashFilter('all',this)">Tout l'effectif</button>
+        <button class="dfBtn" data-f="top" onclick="setDashFilter('top',this)">Sollicitation élevée</button>
+        <button class="dfBtn" data-f="bottom" onclick="setDashFilter('bottom',this)">Sollicitation faible</button>
+        <button class="dfBtn" data-f="none" onclick="setDashFilter('none',this)">Non sollicités</button>
+      </div>
+      <button class="btn primary" onclick="openQuickAdd()">＋ Enregistrer une séance réalisée</button>
+    </div>
+
+    <div class="dashStrip" id="dashStrip"></div>
+
+    <div class="dashGrid" id="dashGrid"></div>
+
+
+    <div class="hmWrap" id="hmWrap"></div>
   </div>
 
   <div id="indiv-analyse" style="display:none">
@@ -2338,7 +2293,7 @@ a.bibVid:hover{transform:scale(1.08)}
 </section>
 
 <section class="view" id="v-programmes">
-  <div class="rowHead"><h2>Bibliothèque</h2><span class="tag live">Données partagées Supabase</span></div>
+  <div class="rowHead"><h2>Programmation</h2><span class="tag live">Données partagées Supabase</span></div>
   <div class="bibBar">
     <div class="bibTabs" id="bibTabs" role="tablist"></div>
     <button class="btn bibAddVid" id="bibAddVid" onclick="bibOpen('ex',null,{video:true})" style="display:none">🎬 Ajouter une vidéo</button>
@@ -2349,6 +2304,51 @@ a.bibVid:hover{transform:scale(1.08)}
     <input type="search" id="bibSearch" class="bibSearch" placeholder="Rechercher…" oninput="BIB.q=this.value;renderBibGrid()">
   </div>
   <div class="bibGrid" id="bibGrid"></div>
+  <div id="indiv-presc" style="display:none">
+    <div class="chgTop">
+      <div class="chgCard chgForm">
+        <div class="chgCardHead">🎯 Prévoir une séance</div>
+        <div class="chgRow2">
+          <label style="grid-column:1/-1">Date<input type="date" id="prDate"></label>
+          <label>Type de séance<select id="prType"></select></label>
+          <label>Durée prévue (min)<input type="number" id="prDuree" placeholder="60"></label>
+          <div class="mpField" style="grid-column:1/-1">Joueurs <span class="mpCount" id="prPlayerCount">0 sélectionné</span>
+            <div class="mpBox" id="prPlayerBox"></div>
+            <div class="mpQuick"><button type="button" onclick="mpAll('pr',true)">Tout</button><button type="button" onclick="mpAll('pr',false)">Aucun</button></div>
+          </div>
+        </div>
+        <button class="btn primary" onclick="createPrescSession()">Créer la séance</button>
+        <div class="prDone" id="prDoneMsg"></div>
+      </div>
+
+      <div class="prRight">
+        <div class="chgCard">
+          <div class="chgCardHead">📌 Séances prévues</div>
+          <div id="prUpcoming"></div>
+        </div>
+        <div class="chgCard">
+          <div class="chgCardHead">✅ Séances réalisées <span class="prHint">30 derniers jours</span></div>
+          <div id="prDone"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Composition détaillée des prescriptions retirée le 05/10 (Pierrick) : une prescription = date, type, durée, joueurs. -->
+    <div class="chgCard" style="margin-top:14px">
+      <div class="chgCardHead">
+        📋 Historique des prescriptions
+        <select id="prFilterPlayer" onchange="renderPrescList()" style="margin-left:auto;max-width:200px"></select>
+        <button class="btn ghost" id="prSelBtn" style="font-size:11px" onclick="togglePSel()">☑︎ Sélectionner</button>
+      </div>
+      <div class="jSelBar" id="prSelBar" style="display:none">
+        <span id="prSelCount">0 sélectionnée</span>
+        <button class="btn ghost" onclick="togglePSel()">Annuler</button>
+        <button class="btn primary" onclick="markPSelectionDone()">✅ Marquer réalisées</button>
+        <button class="btn danger" onclick="deletePSelection()">🗑 Supprimer la sélection</button>
+      </div>
+      <div id="prList"></div>
+    </div>
+  </div>
 </section>
 
 <section class="view" id="v-joueurs">
@@ -3012,12 +3012,30 @@ function bibIsImg(path){ return /\.(png|jpe?g|webp)$/i.test(path||''); }
 function renderProgrammes(){ renderBib(); }
 function renderProgList(){ renderBib(); }      // appelé par la synchro temps réel
 function renderExerciseBank(){ renderBib(); }  // idem
+/* Programmation (v67) : Fiches de séance · Prescription · Bibliothèque (banque d'exercices) */
+function bibPrescCount(){
+  if(typeof PRESC==='undefined'||typeof prescKey!=='function')return 0;
+  return new Set(PRESC.filter(p=>p.statut==='prevu').map(prescKey)).size;
+}
+function bibRenderTabs(){
+  const tabs=document.getElementById('bibTabs'); if(!tabs)return;
+  const t=(k,l,n,tip)=>`<button type="button" role="tab" class="bibTab${BIB.tab===k?' on':''}" aria-selected="${BIB.tab===k}" onclick="bibSetTab('${k}')"${tip?` title="${tip}"`:''}>${l}<span>${n}</span></button>`;
+  tabs.innerHTML=t('fiches','Fiches<i class="bibTabX"> de séance</i>',FICHES.length)
+    +t('presc','Prescription',bibPrescCount(),'Séances prévues (date, type, durée, joueurs), à valider une fois réalisées')
+    +t('ex','Bibliothèque',EXBANK.length,'Banque d\'exercices (photos, vidéos, consignes)');
+}
 function renderBib(){
   const tabs=document.getElementById('bibTabs'); if(!tabs)return;
-  const t=(k,l,n)=>`<button type="button" role="tab" class="bibTab${BIB.tab===k?' on':''}" aria-selected="${BIB.tab===k}" onclick="bibSetTab('${k}')">${l}<span>${n}</span></button>`;
-  if(BIB.tab!=='fiches'&&BIB.tab!=='ex')BIB.tab='fiches';
-  tabs.innerHTML=t('fiches','Fiches<i class="bibTabX"> de séance</i>',FICHES.length)+t('ex','Exercices',EXBANK.length);
-  document.getElementById('bibAddBtn').textContent={ex:'＋ Ajouter un exercice',fiches:'＋ Nouvelle fiche'}[BIB.tab];
+  if(!['fiches','presc','ex'].includes(BIB.tab))BIB.tab='fiches';
+  bibRenderTabs();
+  // Prescription (v67) : même onglet, son propre écran ; les outils fiches / bibliothèque sont masqués
+  const isP=BIB.tab==='presc';
+  const pr=document.getElementById('indiv-presc'); if(pr)pr.style.display=isP?'block':'none';
+  ['bibGrid'].forEach(id=>{const e=document.getElementById(id); if(e)e.style.display=isP?'none':'';});
+  document.querySelectorAll('#v-programmes .bibFilters').forEach(e=>e.style.display=isP?'none':'');
+  const ab=document.getElementById('bibAddBtn'); ab.style.display=isP?'none':''; 
+  if(isP){ const av0=document.getElementById('bibAddVid'); if(av0)av0.style.display='none'; return; }
+  ab.textContent={ex:'＋ Ajouter un exercice',fiches:'＋ Nouvelle fiche'}[BIB.tab];
   const av=document.getElementById('bibAddVid'); if(av)av.style.display=BIB.tab==='ex'?'':'none';
   let chips;
   if(BIB.tab==='fiches'){
@@ -3033,7 +3051,7 @@ function renderBib(){
     .map(([k,l,n])=>`<button type="button" class="bibCat${BIB.cat===k?' on':''}" onclick="bibSetCat('${k}')">${l} <span>${n}</span></button>`).join('');
   renderBibGrid();
 }
-function bibSetTab(k){ BIB.tab=k; BIB.cat=''; BIB.q=''; const q=document.getElementById('bibSearch'); if(q)q.value=''; renderBib(); }
+function bibSetTab(k){ BIB.tab=k; BIB.cat=''; BIB.q=''; const q=document.getElementById('bibSearch'); if(q)q.value=''; renderBib(); if(BIB.tab==='presc'&&typeof renderPresc==='function')renderPresc(); }
 function bibSetCat(k){ BIB.cat=k; renderBib(); }
 function renderBibGrid(){
   const box=document.getElementById('bibGrid'); if(!box)return;
@@ -4301,6 +4319,8 @@ function goTab(t){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+t));
   if(t==='mois')renderMonth();
   if(t==='joueurs')renderPlayerLoad();
+  if(t==='monitoring'){ const on=document.querySelector('#monTabs button.on'); monTab(on,on?on.dataset.m:'charge'); }
+  if(t==='programmes'&&typeof BIB!=='undefined'&&BIB.tab==='presc'&&typeof renderPresc==='function')renderPresc();
 }
 
 function openSettingsView(t){ goTab(t); window.scrollTo({top:0}); }
@@ -5195,12 +5215,8 @@ function jTab(btn,name){
   btn.classList.add('on'); jFilter=name; renderSeances();
 }
 function indivQuickFromSeances(){
-  goTab('indiv');
-  setTimeout(()=>{
-    const b=[...document.querySelectorAll('#v-indiv .subTabs button')].find(x=>x.textContent.includes('Charge externe'));
-    if(b)b.click();
-    setTimeout(()=>openQuickAdd(),120);
-  },60);
+  goTab('monitoring'); monTab(null,'charge');
+  setTimeout(()=>openQuickAdd(),120);
 }
 /* Type de jour issu de la planification, pour colorer chaque journée du journal */
 function jDayType(isoDate){
@@ -6438,18 +6454,27 @@ function iSetAutoDate(v){ IAUTO_DATE=v?new Date(v+'T12:00:00'):null; renderIndiv
 function iSetAutoOrient(v){ IAUTO_ORIENT=v; renderIndivControls(); }
 
 /* ---------- Rendu ---------- */
+/* v67 : Individualisation = Tests & zones + Prévention adaptée. La Prescription est passée dans Programmation,
+   Charge externe et Analyse dans Monitoring : indivTab() redirige ces anciens noms vers leur nouvel onglet. */
 function indivTab(btn,name){
-  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
+  if(name==='presc'){ goTab('programmes'); bibSetTab('presc'); return; }
+  if(name==='charge'||name==='analyse'){ goTab('monitoring'); monTab(null,name); return; }
+  const box=document.querySelector('#v-indiv .subTabs');
+  if(!btn&&box)btn=box.querySelector(`[onclick*="'${name}'"]`);
+  if(box)box.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn));
   document.getElementById('indiv-seance').style.display=name==='seance'?'block':'none';
-  document.getElementById('indiv-charge').style.display=name==='charge'?'block':'none';
-  document.getElementById('indiv-presc').style.display=name==='presc'?'block':'none';
-  document.getElementById('indiv-analyse').style.display=name==='analyse'?'block':'none';
   document.getElementById('indiv-tests').style.display=name==='tests'?'block':'none';
   if(name==='tests')renderTests();
-  if(name==='charge')renderCharge();
-  if(name==='presc')renderPresc();
-  if(name==='analyse')renderAnalyse();
+}
+/* Monitoring : Charge externe · Analyse */
+function monTab(btn,name){
+  const box=document.getElementById('monTabs');
+  if(!btn&&box)btn=box.querySelector(`[data-m="${name}"]`);
+  if(box)box.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn));
+  document.getElementById('indiv-charge').style.display=name==='charge'?'block':'none';
+  document.getElementById('indiv-analyse').style.display=name==='analyse'?'block':'none';
+  if(name==='charge'&&typeof renderCharge==='function')renderCharge();
+  if(name==='analyse'&&typeof renderAnalyse==='function')renderAnalyse();
 }
 
 /* ═══════ IMPORT DES TESTS DU CENTRE ═══════
@@ -7367,6 +7392,7 @@ function prFillTypes(){
 function prescKey(p){ return p.date+'|'+(p.action_id||p.objectif||p.titre||''); }
 function prescGroup(p){ return PRESC.filter(s=>s.statut==='prevu'&&prescKey(s)===prescKey(p)); }
 function renderPrescUpcoming(){
+  if(typeof bibRenderTabs==='function')bibRenderTabs();   // compteur « Prescription » de l'onglet Programmation
   const today=new Date().toISOString().slice(0,10);
   const box=document.getElementById('prUpcoming'); if(!box)return;
   const groups={};
